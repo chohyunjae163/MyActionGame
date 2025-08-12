@@ -1,0 +1,23 @@
+﻿# Unreal build / cache
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+# IDE
+.vs/
+*.VC.db
+*.VC.opendb
+.idea/
+# User/OS clutter
+*.suo
+*.user
+*.log
+*.tmp
+.DS_Store
+
+# Optional: ignore cooked builds
+# Saved/Cooked/
+# WindowsNoEditor/
+# *.pak
+# *.ucas
+# *.utoc
