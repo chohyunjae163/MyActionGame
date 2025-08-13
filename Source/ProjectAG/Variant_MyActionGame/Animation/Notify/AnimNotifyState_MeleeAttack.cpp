@@ -25,7 +25,7 @@ void UAnimNotifyState_MeleeAttack::NotifyBegin(USkeletalMeshComponent* MeshComp,
 	const FGameplayTag Channel = ActionGameGameplayTags::TAG_Animation_MeleeAttack_Message;
 	const FMeleeAttackMessage Message {
 		.Owner = MeshComp->GetOwner(),
-		.CollisionShape = ShapeParam.ToCollisionShape(),
+		.CollisionShape = Shape.ToCollisionShape(),
 		.BoneCSTransforms = BoneCSTransforms,
 	};
 	GameplayMessageSubsystem.BroadcastMessage<FMeleeAttackMessage>(Channel,Message);
@@ -51,6 +51,17 @@ void UAnimNotifyState_MeleeAttack::NotifyEnd(USkeletalMeshComponent* MeshComp, U
 	GameplayMessageSubsystem.BroadcastMessage<FMeleeAttackMessage>(Channel,FMeleeAttackMessage());
 
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
+}
+
+void UAnimNotifyState_MeleeAttack::GetShapes(FCollisionShape& OutShape, TArray<FTransform>& OutTransforms)
+{
+	OutTransforms.Empty();
+	for (FTransform Transform : BoneCSTransforms)
+	{
+		OutTransforms.Add(Transform);
+	}
+
+	OutShape = Shape.ToCollisionShape();
 }
 
 void UAnimNotifyState_MeleeAttack::SetBoneCSTransforms(const TConstArrayView<FTransform>& InBoneCSTransforms)

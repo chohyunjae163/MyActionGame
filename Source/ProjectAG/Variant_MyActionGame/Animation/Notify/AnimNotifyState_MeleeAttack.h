@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Variant_MyActionGame/ActionGameShapeParam.h"
+#include "Variant_MyActionGame/Interface/DrawShapesInterface.h"
 #include "AnimNotifyState_MeleeAttack.generated.h"
 
 
@@ -12,7 +13,7 @@
  * 
  */
 UCLASS()
-class PROJECTAG_API UAnimNotifyState_MeleeAttack : public UAnimNotifyState
+class PROJECTAG_API UAnimNotifyState_MeleeAttack : public UAnimNotifyState, public IDrawShapesInterface
 {
 	GENERATED_BODY()
 
@@ -21,6 +22,10 @@ public:
 	virtual void NotifyBegin(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 
+	//~ Begin IDrawShapesInterface Interface
+	virtual void GetShapes(FCollisionShape& OutShape, TArray<FTransform>& OutTransforms) override;
+	//~ End IDrawShapesInterface Interface
+	
 #if WITH_EDITOR
 	void SetBoneCSTransforms(const TConstArrayView<FTransform>& InBoneCSTransforms);
 #endif
@@ -36,7 +41,7 @@ public:
 	UPROPERTY(EditInstanceOnly, Category=ActionGame,DisplayName=Bone)
 	FBoneReference BoneRef;
 	UPROPERTY(EditInstanceOnly, Category=ActionGame)
-	FActionGameShapeParam ShapeParam;
+	FActionGameShape Shape;
 #endif
 
 private:

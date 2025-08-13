@@ -48,7 +48,7 @@ struct FBoxParams
 };
 
 USTRUCT(BlueprintType)
-struct FActionGameShapeParam
+struct FActionGameShape
 {
 	GENERATED_BODY()
 

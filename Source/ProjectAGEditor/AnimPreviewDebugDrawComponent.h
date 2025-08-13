@@ -18,9 +18,9 @@ class PROJECTAGEDITOR_API UAnimPreviewDebugDrawComponent : public UPrimitiveComp
 public:
 	UAnimPreviewDebugDrawComponent();
 	// Sets default values for this component's properties
-	void Init(const FCollisionShape& InCollisionShape,TConstArrayView<FTransform> InTransform)
+	void Init(const FCollisionShape& InShape,TConstArrayView<FTransform> InTransform)
 	{
-		CollisionShape = InCollisionShape;
+		Shape = InShape;
 		Transforms = InTransform;
 	}
 
@@ -29,6 +29,6 @@ public:
 	virtual FBoxSphereBounds CalcBounds(const FTransform& LocalToWorld) const override;
 
 public:
-	FCollisionShape		CollisionShape;
+	FCollisionShape		Shape;
 	TArray<FTransform>	Transforms;
 };

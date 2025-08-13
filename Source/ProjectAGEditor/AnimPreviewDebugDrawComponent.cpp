@@ -6,8 +6,12 @@
 class FAnimPreviewDrawShapeProxy : public FPrimitiveSceneProxy
 {
 public:
-	FAnimPreviewDrawShapeProxy(const UPrimitiveComponent* InComponent)
+	FAnimPreviewDrawShapeProxy(const UPrimitiveComponent* InComponent,
+		FCollisionShape& InCollisionShape,
+		TConstArrayView<FTransform> InTransforms)
 	: FPrimitiveSceneProxy(InComponent)
+	, Shape(InCollisionShape)
+	, Transforms(InTransforms)
 	{
 		
 	}
@@ -42,6 +46,7 @@ public:
 		return reinterpret_cast<SIZE_T>(&UniquePointer);
 	}
 
+	FCollisionShape Shape;
 	TArray<FTransform> Transforms;
 };
 
@@ -57,7 +62,7 @@ UAnimPreviewDebugDrawComponent::UAnimPreviewDebugDrawComponent()
 
 FPrimitiveSceneProxy* UAnimPreviewDebugDrawComponent::CreateSceneProxy()
 {
-	return new FAnimPreviewDrawShapeProxy(this);
+	return new FAnimPreviewDrawShapeProxy(this,Shape,Transforms);
 }
 
 FBoxSphereBounds UAnimPreviewDebugDrawComponent::CalcBounds(const FTransform& LocalToWorld) const

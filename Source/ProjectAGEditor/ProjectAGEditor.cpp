@@ -1,13 +1,13 @@
 ﻿#pragma once
 
 
+#include "AnimNotifyCustomDetails.h"
 #include "AnimPreviewDebugDrawComponent.h"
 #include "EditorUtilLib.h"
 #include "FAnimationEditorCommands.h"
 #include "IAnimationEditorModule.h"
 #include "IPersonaPreviewScene.h"
 #include "IPersonaToolkit.h"
-#include "Selection.h"
 #include "Animation/DebugSkelMeshComponent.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Modules/ModuleManager.h"
@@ -21,20 +21,19 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 	{
 		if (GEditor)
 		{
-			UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();
-			if (AssetEditorSubsystem)
+			if (UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();IsValid(AssetEditorSubsystem))
 			{
 				AssetEditorSubsystem->OnAssetEditorOpened().RemoveAll(this);
 			}
 		}
 	}
 
-
-
+	
 
 	virtual void StartupModule() override
 	{
 		FEditorDelegates::OnEditorInitialized.AddRaw(this, &FProjectAGEditorModule::OnPostEditorInit);
+		FEditorDelegates::OnEditorPreExit.AddRaw(this,&FProjectAGEditorModule::OnPostEditorPreExit);
 		FAnimationEditorCommands::Register();
 		//Bake Melee Attack Data
 		{
@@ -50,18 +49,24 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 		}
 
 		
-		// 툴바 익스텐더 생성
+		// new toolbar extender 
 		ToolbarExtender = MakeShared<FExtender>();
 		ToolbarExtender->AddToolBarExtension(
-			"Asset",                   // 기존 섹션 뒤에 붙이기(필요 시 "Settings" 등으로 변경)
+			"Asset",                   
 			EExtensionHook::After,
 			AnimationEditorCommands,
 			FToolBarExtensionDelegate::CreateRaw(this, &FProjectAGEditorModule::AddToolbarButton));
 
+		//
 		IAnimationEditorModule& AnimEditorModule =
 			FModuleManager::LoadModuleChecked<IAnimationEditorModule>("AnimationEditor");
 		AnimEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
 
+
+		auto& PropEd = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+		PropEd.RegisterCustomClassLayout(
+			UAnimNotifyState::StaticClass()->GetFName(),
+			FOnGetDetailCustomizationInstance::CreateStatic(&FAnimNotifyCustomDetails::MakeInstance));
 	};
 
 	void AddToolbarButton(FToolBarBuilder& Builder)
@@ -146,19 +151,34 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 		}
 	}
 
+	
+
 	void OnPostEditorInit(double Duration)
 	{
 		if (GEditor)
 		{
 			UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();
-			if (AssetEditorSubsystem)
+			if (IsValid(AssetEditorSubsystem))
 			{
 				AssetEditorSubsystem->OnAssetEditorOpened().AddRaw(this, &FProjectAGEditorModule::OnAssetEditorOpened);
+				AssetEditorSubsystem->OnAssetClosedInEditor().AddRaw(this,&FProjectAGEditorModule::OnAssetEditorClosed);
 			}
-
-			GEditor->GetSelectedObjects()->SelectionChangedEvent.AddRaw(this,&FProjectAGEditorModule::OnEditorObjectChanged);
 		}
 	}
+
+	void OnPostEditorPreExit()
+	{
+		if (GEditor)
+		{
+			UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();
+			if (IsValid(AssetEditorSubsystem))
+			{
+				AssetEditorSubsystem->OnAssetEditorOpened().RemoveAll(this);
+				AssetEditorSubsystem->OnAssetClosedInEditor().RemoveAll(this);
+			}
+		}
+	}
+
 	void OnAssetEditorOpened(UObject* Object)
 	{
 		if (Object->IsA<UAnimSequenceBase>())
@@ -181,21 +201,30 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 					PreviewDrawComponent->RegisterComponentWithWorld(PreviewWorld);
 					PreviewDrawComponent->AttachToComponent(PreviewComp, FAttachmentTransformRules::KeepWorldTransform);
 				}
-			}
 
+				FAnimNotifyCustomDetails::OnAnimNotifySelected.AddRaw(this,&FProjectAGEditorModule::OnAnimNotifySelected);
+			}
 		}
 	}
-	void OnEditorObjectChanged(UObject* Object)
+
+	void OnAssetEditorClosed(UObject* Object, IAssetEditorInstance* AssetEditorInstance)
 	{
-		if (Object->IsA<UAnimNotifyState>())
-		{
-			
-		}
-		else if (Object->IsA<UAnimNotifyState>())
-		{
-			
-		}
+		FAnimNotifyCustomDetails::OnAnimNotifySelected.RemoveAll(this);
 	}
+	
+	void OnAnimNotifySelected(UObject* Object)
+	{
+		if (IDrawShapesInterface* DrawShapes = Cast<IDrawShapesInterface>(Object))
+		{
+			FCollisionShape Shape;
+			TArray<FTransform> Transforms;
+			DrawShapes->GetShapes(OUT Shape,OUT Transforms);
+
+			PreviewDrawComponent->Init(Shape,Transforms);
+		}
+			
+	}
+
 
 private:
 	TSharedPtr<FUICommandList> AnimationEditorCommands;
