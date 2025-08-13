@@ -1,9 +1,14 @@
 ﻿#pragma once
 
 
+#include "AnimPreviewDebugDrawComponent.h"
 #include "EditorUtilLib.h"
 #include "FAnimationEditorCommands.h"
 #include "IAnimationEditorModule.h"
+#include "IPersonaPreviewScene.h"
+#include "IPersonaToolkit.h"
+#include "Selection.h"
+#include "Animation/DebugSkelMeshComponent.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Modules/ModuleManager.h"
 #include "Variant_MyActionGame/Animation/Notify/AnimNotifyState_MeleeAttack.h"
@@ -11,8 +16,25 @@
 
 class FProjectAGEditorModule : public FDefaultGameModuleImpl
 {
+	
+	virtual void ShutdownModule() override
+	{
+		if (GEditor)
+		{
+			UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();
+			if (AssetEditorSubsystem)
+			{
+				AssetEditorSubsystem->OnAssetEditorOpened().RemoveAll(this);
+			}
+		}
+	}
+
+
+
+
 	virtual void StartupModule() override
 	{
+		FEditorDelegates::OnEditorInitialized.AddRaw(this, &FProjectAGEditorModule::OnPostEditorInit);
 		FAnimationEditorCommands::Register();
 		//Bake Melee Attack Data
 		{
@@ -36,16 +58,11 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 			AnimationEditorCommands,
 			FToolBarExtensionDelegate::CreateRaw(this, &FProjectAGEditorModule::AddToolbarButton));
 
-		{
-			IAnimationEditorModule& AnimEditorModule =
-				FModuleManager::LoadModuleChecked<IAnimationEditorModule>("AnimationEditor");
-			AnimEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
-		}		
+		IAnimationEditorModule& AnimEditorModule =
+			FModuleManager::LoadModuleChecked<IAnimationEditorModule>("AnimationEditor");
+		AnimEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
+
 	};
-	virtual void ShutdownModule() override
-	{
-		
-	}
 
 	void AddToolbarButton(FToolBarBuilder& Builder)
 	{
@@ -129,9 +146,63 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 		}
 	}
 
+	void OnPostEditorInit(double Duration)
+	{
+		if (GEditor)
+		{
+			UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();
+			if (AssetEditorSubsystem)
+			{
+				AssetEditorSubsystem->OnAssetEditorOpened().AddRaw(this, &FProjectAGEditorModule::OnAssetEditorOpened);
+			}
+
+			GEditor->GetSelectedObjects()->SelectionChangedEvent.AddRaw(this,&FProjectAGEditorModule::OnEditorObjectChanged);
+		}
+	}
+	void OnAssetEditorOpened(UObject* Object)
+	{
+		if (Object->IsA<UAnimSequenceBase>())
+		{
+			TSharedPtr<IPersonaToolkit> PersonaToolkit = EditorUtil::GetActivePersonaToolKit();
+			if (PersonaToolkit.IsValid())
+			{
+				const IPersonaToolkit& PersonaToolkitRef = PersonaToolkit.ToSharedRef().Get();
+				IPersonaPreviewScene& PreviewScene = PersonaToolkitRef.GetPreviewScene().Get();
+				UDebugSkelMeshComponent* PreviewComp = PreviewScene.GetPreviewMeshComponent();
+
+				PreviewDrawComponent =
+					NewObject<UAnimPreviewDebugDrawComponent>(PreviewComp);
+
+				if (IsValid(PreviewDrawComponent))
+				{
+					//PreviewDrawComponent->Init();
+					UWorld* PreviewWorld = PreviewScene.GetWorld();
+					check(PreviewWorld);
+					PreviewDrawComponent->RegisterComponentWithWorld(PreviewWorld);
+					PreviewDrawComponent->AttachToComponent(PreviewComp, FAttachmentTransformRules::KeepWorldTransform);
+				}
+			}
+
+		}
+	}
+	void OnEditorObjectChanged(UObject* Object)
+	{
+		if (Object->IsA<UAnimNotifyState>())
+		{
+			
+		}
+		else if (Object->IsA<UAnimNotifyState>())
+		{
+			
+		}
+	}
+
 private:
 	TSharedPtr<FUICommandList> AnimationEditorCommands;
 	TSharedPtr<FExtender>      ToolbarExtender;
+
+
+	TObjectPtr<UAnimPreviewDebugDrawComponent> PreviewDrawComponent;
 };
 
 IMPLEMENT_MODULE(FProjectAGEditorModule, ProjectAGEditor);
