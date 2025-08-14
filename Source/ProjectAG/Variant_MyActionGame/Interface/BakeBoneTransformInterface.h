@@ -2,26 +2,31 @@
 
 #pragma once
 
+#if WITH_EDITOR
+
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "DrawShapesInterface.generated.h"
+#include "BakeBoneTransformInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UDrawShapesInterface : public UInterface
+class UBakeBoneTransformInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
 /**
- * a class which implements this interface should fill a shape and transform data
- * to provide the information for drawing
+ * 
  */
-class PROJECTAG_API IDrawShapesInterface
+class PROJECTAG_API IBakeBoneTransformInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual bool GetShapes(FCollisionShape& OutShape,TArray<FTransform>& OutTransforms) = 0;
+	virtual FName	GetBoneName() = 0;
+	virtual void	SetBoneCSTransforms(const TConstArrayView<FTransform>& InBoneCSTransforms) = 0;
 };
+
+
+#endif

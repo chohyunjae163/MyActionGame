@@ -10,8 +10,10 @@
 #include "IPersonaToolkit.h"
 #include "Animation/DebugSkelMeshComponent.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Modules/ModuleManager.h"
-#include "Variant_MyActionGame/Animation/Notify/AnimNotifyState_MeleeAttack.h"
+#include "Variant_MyActionGame/Interface/BakeBoneTransformInterface.h"
+#include "Variant_MyActionGame/Interface/DrawShapesInterface.h"
 
 
 class FProjectAGEditorModule : public FDefaultGameModuleImpl
@@ -61,11 +63,11 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 		IAnimationEditorModule& AnimEditorModule =
 			FModuleManager::LoadModuleChecked<IAnimationEditorModule>("AnimationEditor");
 		AnimEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
-
-
-		auto& PropEd = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-		PropEd.RegisterCustomClassLayout(
-			UAnimNotifyState::StaticClass()->GetFName(),
+		
+		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+		FName ClassName = "EditorAnimBaseObj";
+		PropertyModule.RegisterCustomClassLayout(
+			ClassName,
 			FOnGetDetailCustomizationInstance::CreateStatic(&FAnimNotifyCustomDetails::MakeInstance));
 	};
 
@@ -95,8 +97,12 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 		UAnimSequenceBase* AnimSequence = Cast<UAnimSequence>(AnimAsset);
 		for (const FAnimNotifyEvent& NotifyEvent : AnimSequence->Notifies)
 		{
-			UAnimNotifyState* NotifyState = NotifyEvent.NotifyStateClass;
-			if (UAnimNotifyState_MeleeAttack* AnimNotifyState_MeleeAttack = Cast<UAnimNotifyState_MeleeAttack>(NotifyState); IsValid(AnimNotifyState_MeleeAttack))
+			if (NotifyEvent.NotifyStateClass != SelectedAnimNotify)
+			{
+				continue;
+			}
+			UAnimNotifyState* NotifyState = Cast<UAnimNotifyState>(SelectedAnimNotify);
+			if (IBakeBoneTransformInterface* BakeBoneTransformInterface = Cast<IBakeBoneTransformInterface>(NotifyState))
 			{
 				const float TriggerTime = NotifyEvent.GetTriggerTime();
 				const float EndTime = NotifyEvent.GetEndTriggerTime();
@@ -107,7 +113,9 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 					FMemMark Mark(FMemStack::Get());
 					FCompactPose OutPose;
 					TArray<FBoneIndexType> RequiredBoneIndexArray;
-					RequiredBoneIndexArray.AddUninitialized(AnimSequence->GetSkeleton()->GetReferenceSkeleton().GetNum());
+					USkeleton* Skeleton = AnimSequence->GetSkeleton();
+					const FReferenceSkeleton& RefSkeleton = Skeleton->GetReferenceSkeleton();
+					RequiredBoneIndexArray.AddUninitialized(RefSkeleton.GetNum());
 					for (int32 BoneIndex = 0; BoneIndex < RequiredBoneIndexArray.Num(); ++BoneIndex)
 					{
 						RequiredBoneIndexArray[BoneIndex] = BoneIndex;
@@ -128,17 +136,41 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 					AnimSequence->GetAnimationPose(AnimationPoseData, ExtractionContext);
 					const FCompactPose& CurrentPose =  AnimationPoseData.GetPose();
 					const FBoneContainer& CurrentBoneContainer = CurrentPose.GetBoneContainer();
-					int32 BoneIndex = CurrentBoneContainer.GetPoseBoneIndexForBoneName(AnimNotifyState_MeleeAttack->BoneRef.BoneName);
-					FCompactPoseBoneIndex CPIndex = CurrentPose.GetBoneContainer().MakeCompactPoseIndex(FMeshPoseBoneIndex(BoneIndex));
+					const FName BoneName = BakeBoneTransformInterface->GetBoneName();
+					int32 BoneIndex = CurrentBoneContainer.GetPoseBoneIndexForBoneName(BoneName);
+					FTransform LocalSocketTransform = FTransform::Identity;
+					if (BoneIndex == INDEX_NONE)
+					{
+						int32 DummyIndex;
+						USkeletalMeshSocket* SkeletonSocket = Skeleton->FindSocketAndIndex(BoneName, DummyIndex);
+						BoneIndex = Skeleton->GetReferenceSkeleton().FindBoneIndex(SkeletonSocket->BoneName);
+						LocalSocketTransform = SkeletonSocket->GetSocketLocalTransform();
+					}
+					const FCompactPoseBoneIndex CPIndex = CurrentPose.GetBoneContainer().MakeCompactPoseIndex(FMeshPoseBoneIndex(BoneIndex));
 					FCSPose<FCompactPose> ComponentSpacePose;
 					ComponentSpacePose.InitPose(CurrentPose);
 					const FTransform& CS_Transform = ComponentSpacePose.GetComponentSpaceTransform(CPIndex);
-					BoneCSTransforms.Emplace(CS_Transform);
+					BoneCSTransforms.Emplace(LocalSocketTransform * CS_Transform);		
 				}
 
-				AnimNotifyState_MeleeAttack->SetBoneCSTransforms(BoneCSTransforms);
+				BakeBoneTransformInterface->SetBoneCSTransforms(BoneCSTransforms);
+				if (IDrawShapesInterface* DrawShapes = Cast<IDrawShapesInterface>(NotifyState))
+				{
+					FCollisionShape Shape;
+					TArray<FTransform> Transforms;
+					if (DrawShapes->GetShapes(OUT Shape,OUT Transforms))
+					{
+						if (IsValid(PreviewDrawComponent))
+						{
+							PreviewDrawComponent->Update(Shape,BoneCSTransforms);
+						}				
+					}				
+				}
+
+
 			}
 		}
+
 	}
 
 	void OnToggleViewDebugDraw()
@@ -150,9 +182,7 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 			UAnimNotifyState* NotifyState = NotifyEvent.NotifyStateClass;
 		}
 	}
-
 	
-
 	void OnPostEditorInit(double Duration)
 	{
 		if (GEditor)
@@ -195,10 +225,6 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 
 				if (IsValid(PreviewDrawComponent))
 				{
-					//PreviewDrawComponent->Init();
-					UWorld* PreviewWorld = PreviewScene.GetWorld();
-					check(PreviewWorld);
-					PreviewDrawComponent->RegisterComponentWithWorld(PreviewWorld);
 					PreviewDrawComponent->AttachToComponent(PreviewComp, FAttachmentTransformRules::KeepWorldTransform);
 				}
 
@@ -212,25 +238,46 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 		FAnimNotifyCustomDetails::OnAnimNotifySelected.RemoveAll(this);
 	}
 	
-	void OnAnimNotifySelected(UObject* Object)
+	void OnAnimNotifySelected(const FAnimNotifyEvent& NotifyEvent)
 	{
-		if (IDrawShapesInterface* DrawShapes = Cast<IDrawShapesInterface>(Object))
+		//todo: handle a animnotify too.
+		UAnimNotifyState* NotifyState = NotifyEvent.NotifyStateClass;
+		if (IDrawShapesInterface* DrawShapes = Cast<IDrawShapesInterface>(NotifyState))
 		{
 			FCollisionShape Shape;
 			TArray<FTransform> Transforms;
-			DrawShapes->GetShapes(OUT Shape,OUT Transforms);
+			if (DrawShapes->GetShapes(OUT Shape,OUT Transforms))
+			{ 
+				if (IsValid(PreviewDrawComponent))
+				{
+					PreviewDrawComponent->Update(Shape,Transforms);
+				}
+			}
+			SelectedAnimNotify = NotifyState;
+			TSharedPtr<IPersonaToolkit> PersonaToolkit = EditorUtil::GetActivePersonaToolKit();
+			if (PersonaToolkit.IsValid())
+			{
+				const IPersonaToolkit& PersonaToolkitRef = PersonaToolkit.ToSharedRef().Get();
+				IPersonaPreviewScene& PreviewScene = PersonaToolkitRef.GetPreviewScene().Get();
+				UWorld* PreviewWorld = PreviewScene.GetWorld();
+				check(PreviewWorld);
+				if (PreviewDrawComponent->IsRegistered())
+				{
+					PreviewDrawComponent->UnregisterComponent();
+				}
+				PreviewDrawComponent->RegisterComponentWithWorld(PreviewWorld);
+			}
 
-			PreviewDrawComponent->Init(Shape,Transforms);
 		}
-			
 	}
+
 
 
 private:
 	TSharedPtr<FUICommandList> AnimationEditorCommands;
 	TSharedPtr<FExtender>      ToolbarExtender;
 
-
+	TObjectPtr<UObject>			SelectedAnimNotify;
 	TObjectPtr<UAnimPreviewDebugDrawComponent> PreviewDrawComponent;
 };
 

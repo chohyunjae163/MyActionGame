@@ -7,11 +7,11 @@ class FAnimPreviewDrawShapeProxy : public FPrimitiveSceneProxy
 {
 public:
 	FAnimPreviewDrawShapeProxy(const UPrimitiveComponent* InComponent,
-		FCollisionShape& InCollisionShape,
+		const FCollisionShape& InCollisionShape,
 		TConstArrayView<FTransform> InTransforms)
-	: FPrimitiveSceneProxy(InComponent)
-	, Shape(InCollisionShape)
-	, Transforms(InTransforms)
+			: FPrimitiveSceneProxy(InComponent)
+			, Shape(InCollisionShape)
+			, Transforms(InTransforms)
 	{
 		
 	}
@@ -21,7 +21,54 @@ public:
 									   uint32 VisibilityMap,
 									   FMeshElementCollector& Collector) const override
 	{
-		
+		static constexpr int32 NumSides = 24;
+		static constexpr float Thickness = 0.25f;
+
+		const FLinearColor LinearColor = IsSelected() ? FLinearColor::Yellow * 1.25f : FLinearColor::White;
+		for (int32 ViewIndex = 0; ViewIndex < Views.Num(); ++ViewIndex)
+		{
+			
+			FPrimitiveDrawInterface* PDI = Collector.GetPDI(ViewIndex);
+			FLinearColor Color = FLinearColor::Black;
+			float a = 0.f;
+			uint32 Index = 0;
+			const uint32 NumTransforms = Transforms.Num();
+			for (const FTransform& Transform : Transforms)
+			{
+				a = Index / static_cast<float>(NumTransforms);
+				Color.R = Color.G = Color.B = a;
+				const FVector UnitXAxis   = Transform.GetUnitAxis( EAxis::X );
+				const FVector UnitYAxis   = Transform.GetUnitAxis( EAxis::Y );
+				const FVector UnitZAxis   = Transform.GetUnitAxis( EAxis::Z );
+				switch ( Shape.ShapeType )
+				{
+				case ECollisionShape::Line:
+					break;
+				case ECollisionShape::Box:
+					break;
+				case ECollisionShape::Sphere:
+					break;
+				case ECollisionShape::Capsule:
+					const FVector CapsuleAdjust = UnitZAxis * Shape.GetCapsuleHalfHeight();
+					const FVector BaseLocation = Transform.GetLocation() + CapsuleAdjust;
+					DrawWireCapsule(
+						PDI,
+						BaseLocation,
+						UnitXAxis,
+						UnitYAxis,
+						UnitZAxis,
+						Color,
+						Shape.GetCapsuleRadius(),
+						Shape.GetCapsuleHalfHeight(),
+						NumSides,
+						SDPG_World,
+						Thickness
+				);
+					break;
+				}
+				Index++;
+			}
+		}
 	}
 
 	virtual FPrimitiveViewRelevance GetViewRelevance(const FSceneView* View) const override
@@ -67,6 +114,11 @@ FPrimitiveSceneProxy* UAnimPreviewDebugDrawComponent::CreateSceneProxy()
 
 FBoxSphereBounds UAnimPreviewDebugDrawComponent::CalcBounds(const FTransform& LocalToWorld) const
 {
-	return Super::CalcBounds(LocalToWorld);
+	FBoxSphereBounds NewBounds;
+	NewBounds.Origin = FVector(0, 0, 0);
+	NewBounds.BoxExtent = FVector(1000, 1000, 1000);
+	NewBounds.SphereRadius = 1000;
+	
+	return NewBounds;
 }
 

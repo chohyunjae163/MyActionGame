@@ -1,8 +1,7 @@
 ﻿
 #include "AnimNotifyCustomDetails.h"
-
 #include "DetailLayoutBuilder.h"
-
+#include "Animation/EditorNotifyObject.h"
 
 FOnAnimNotifyPicked FAnimNotifyCustomDetails::OnAnimNotifySelected;
 
@@ -15,6 +14,9 @@ void FAnimNotifyCustomDetails::CustomizeDetails(IDetailLayoutBuilder& DetailBuil
 		return;
 	}
 	UObject* ClickedObj = Selected[0].Get();
-	OnAnimNotifySelected.Broadcast(ClickedObj);
-
+	if (UEditorNotifyObject* EditorNotifyObject = Cast<UEditorNotifyObject>(ClickedObj); IsValid(EditorNotifyObject))
+	{
+		
+		OnAnimNotifySelected.Broadcast(EditorNotifyObject->Event);
+	}
 }

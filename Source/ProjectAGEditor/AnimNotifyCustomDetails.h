@@ -7,9 +7,10 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(
 	FOnAnimNotifyPicked,
-	UObject*           /*ClickedObject*/);
+	const FAnimNotifyEvent&
+	);
 
-class FAnimNotifyCustomDetails : public IDetailCustomization
+class FAnimNotifyCustomDetails final : public IDetailCustomization
 {
 public:
 	static TSharedRef<class IDetailCustomization> MakeInstance()

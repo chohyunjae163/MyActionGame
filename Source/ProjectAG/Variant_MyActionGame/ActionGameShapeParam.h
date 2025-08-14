@@ -64,19 +64,47 @@ struct FActionGameShape
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="Type==EActionGameShapeType::Box"))
 	FBoxParams Box;
 
-	// 헬퍼: 현재 타입에 맞는 데이터를 꺼내오는 함수들
-	FCollisionShape ToCollisionShape() const
+	
+
+	//
+	bool ToCollisionShape(OUT FCollisionShape& Shape) const
 	{
 		switch (Type)
 		{
 		case EActionGameShapeType::Box:
-			return FCollisionShape::MakeBox(Box.HalfExtent);
+			{
+				if ( Box.HalfExtent.SquaredLength() <= KINDA_SMALL_NUMBER)
+				{
+					return false;
+				}
+				Shape =  FCollisionShape::MakeBox(Box.HalfExtent);
+				break;
+			}
+			
 		case EActionGameShapeType::Capsule:
-			return FCollisionShape::MakeCapsule(Capsule.Radius, Capsule.HalfHeight);
+			{
+				if ( Capsule.Radius <= KINDA_SMALL_NUMBER || Capsule.HalfHeight <= KINDA_SMALL_NUMBER)
+				{
+					return false;
+				}
+				Shape = FCollisionShape::MakeCapsule(Capsule.Radius, Capsule.HalfHeight);
+				break;
+			}
+			
 		case EActionGameShapeType::Sphere:
-			return FCollisionShape::MakeSphere(Sphere.Radius);
+			{
+				if (Sphere.Radius <= KINDA_SMALL_NUMBER)
+				{
+					return false;
+				}
+				Shape = FCollisionShape::MakeSphere(Sphere.Radius);	
+			}
+			
+			break;
 		default:
-			return FCollisionShape();
+			return false;
 		}
+
+		return true;
 	}
 };
