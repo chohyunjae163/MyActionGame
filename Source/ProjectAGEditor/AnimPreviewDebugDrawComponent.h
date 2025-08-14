@@ -18,11 +18,11 @@ class PROJECTAGEDITOR_API UAnimPreviewDebugDrawComponent : public UPrimitiveComp
 public:
 	UAnimPreviewDebugDrawComponent();
 	// Sets default values for this component's properties
-	void Update(const FCollisionShape& InShape,TConstArrayView<FTransform> InTransform)
+	void Update(const FCollisionShape& InShape,TConstArrayView<FTransform> InTransform,const FLinearColor& InColor)
 	{
 		Shape = InShape;
 		Transforms = InTransform;
-
+		Color = InColor;
 		MarkRenderStateDirty();
 	}
 
@@ -33,4 +33,5 @@ public:
 public:
 	FCollisionShape		Shape;
 	TArray<FTransform>	Transforms;
+	FLinearColor		Color;
 };

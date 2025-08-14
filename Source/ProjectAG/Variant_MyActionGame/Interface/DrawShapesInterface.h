@@ -23,5 +23,5 @@ class PROJECTAG_API IDrawShapesInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual bool GetShapes(FCollisionShape& OutShape,TArray<FTransform>& OutTransforms) = 0;
+	virtual bool GetShapes(FCollisionShape& OutShape,TArray<FTransform>& OutTransforms,FLinearColor& OutDrawColor) = 0;
 };

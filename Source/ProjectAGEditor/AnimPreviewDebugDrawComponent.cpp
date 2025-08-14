@@ -8,10 +8,12 @@ class FAnimPreviewDrawShapeProxy : public FPrimitiveSceneProxy
 public:
 	FAnimPreviewDrawShapeProxy(const UPrimitiveComponent* InComponent,
 		const FCollisionShape& InCollisionShape,
-		TConstArrayView<FTransform> InTransforms)
+		TConstArrayView<FTransform> InTransforms,
+		const FLinearColor& InColor)
 			: FPrimitiveSceneProxy(InComponent)
 			, Shape(InCollisionShape)
 			, Transforms(InTransforms)
+			, DrawColor(InColor)
 	{
 		
 	}
@@ -29,14 +31,14 @@ public:
 		{
 			
 			FPrimitiveDrawInterface* PDI = Collector.GetPDI(ViewIndex);
-			FLinearColor Color = FLinearColor::Black;
-			float a = 0.f;
-			uint32 Index = 0;
+			/*FLinearColor Color = FLinearColor::Black;*/
+			//float a = 0.f;
+			//uint32 Index = 0;
 			const uint32 NumTransforms = Transforms.Num();
 			for (const FTransform& Transform : Transforms)
 			{
-				a = Index / static_cast<float>(NumTransforms);
-				Color.R = Color.G = Color.B = a;
+				//a = Index / static_cast<float>(NumTransforms);
+				//Color.R = Color.G = Color.B = a;
 				const FVector UnitXAxis   = Transform.GetUnitAxis( EAxis::X );
 				const FVector UnitYAxis   = Transform.GetUnitAxis( EAxis::Y );
 				const FVector UnitZAxis   = Transform.GetUnitAxis( EAxis::Z );
@@ -57,7 +59,7 @@ public:
 						UnitXAxis,
 						UnitYAxis,
 						UnitZAxis,
-						Color,
+						DrawColor,
 						Shape.GetCapsuleRadius(),
 						Shape.GetCapsuleHalfHeight(),
 						NumSides,
@@ -66,7 +68,7 @@ public:
 				);
 					break;
 				}
-				Index++;
+				//Index++;
 			}
 		}
 	}
@@ -95,6 +97,7 @@ public:
 
 	FCollisionShape Shape;
 	TArray<FTransform> Transforms;
+	FLinearColor DrawColor;
 };
 
 // Sets default values for this component's properties
@@ -109,7 +112,7 @@ UAnimPreviewDebugDrawComponent::UAnimPreviewDebugDrawComponent()
 
 FPrimitiveSceneProxy* UAnimPreviewDebugDrawComponent::CreateSceneProxy()
 {
-	return new FAnimPreviewDrawShapeProxy(this,Shape,Transforms);
+	return new FAnimPreviewDrawShapeProxy(this,Shape,Transforms,Color);
 }
 
 FBoxSphereBounds UAnimPreviewDebugDrawComponent::CalcBounds(const FTransform& LocalToWorld) const

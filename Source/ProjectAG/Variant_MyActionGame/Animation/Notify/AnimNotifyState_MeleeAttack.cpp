@@ -58,7 +58,7 @@ void UAnimNotifyState_MeleeAttack::NotifyEnd(USkeletalMeshComponent* MeshComp, U
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 }
 
-bool UAnimNotifyState_MeleeAttack::GetShapes(FCollisionShape& OutShape, TArray<FTransform>& OutTransforms)
+bool UAnimNotifyState_MeleeAttack::GetShapes(FCollisionShape& OutShape, TArray<FTransform>& OutTransforms,FLinearColor& InDrawColor)
 {
 	if (BoneCSTransforms.IsEmpty())
 	{
@@ -69,6 +69,8 @@ bool UAnimNotifyState_MeleeAttack::GetShapes(FCollisionShape& OutShape, TArray<F
 	{
 		OutTransforms.Add(Transform);
 	}
+
+	InDrawColor = DrawColor;
 
 	 if (Shape.ToCollisionShape(OutShape))
 	 {

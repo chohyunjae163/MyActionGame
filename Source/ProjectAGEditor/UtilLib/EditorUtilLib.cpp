@@ -4,11 +4,11 @@
 #include "IAnimationEditor.h"
 #include "IHasPersonaToolkit.h"
 #include "IPersonaToolkit.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 
 namespace EditorUtil
 {
-	
 	IAnimationEditor* GetActiveAnimationEditor()
 	{
 		if (GEditor)

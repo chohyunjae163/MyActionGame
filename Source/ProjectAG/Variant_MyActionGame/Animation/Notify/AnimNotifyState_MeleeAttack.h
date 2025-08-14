@@ -27,7 +27,7 @@ public:
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 
 	//~ Begin IDrawShapes Interface 
-	virtual bool GetShapes(FCollisionShape& OutShape, TArray<FTransform>& OutTransforms) override;
+	virtual bool GetShapes(FCollisionShape& OutShape, TArray<FTransform>& OutTransforms,FLinearColor& DrawColor) override;
 	//~ End IDrawShapes Interface 
 
 #if WITH_EDITOR

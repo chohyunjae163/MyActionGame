@@ -7,5 +7,6 @@ namespace EditorUtil
 {
     TSharedPtr<IPersonaToolkit> GetActivePersonaToolKit();
     IAnimationEditor* GetActiveAnimationEditor();
-    UAnimationAsset* GetActiveAnimationAsset(); 
+    UAnimationAsset* GetActiveAnimationAsset();
+
 }

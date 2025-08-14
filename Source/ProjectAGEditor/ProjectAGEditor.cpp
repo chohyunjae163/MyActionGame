@@ -3,15 +3,16 @@
 
 #include "AnimNotifyCustomDetails.h"
 #include "AnimPreviewDebugDrawComponent.h"
-#include "EditorUtilLib.h"
 #include "FAnimationEditorCommands.h"
 #include "IAnimationEditorModule.h"
 #include "IPersonaPreviewScene.h"
 #include "IPersonaToolkit.h"
 #include "Animation/DebugSkelMeshComponent.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
-#include "Engine/SkeletalMeshSocket.h"
 #include "Modules/ModuleManager.h"
+#include "UtilLib/AnimationUtilLib.h"
+#include "UtilLib/EditorUtilLib.h"
+#include "UtilLib/MathUtilLib.h"
 #include "Variant_MyActionGame/Interface/BakeBoneTransformInterface.h"
 #include "Variant_MyActionGame/Interface/DrawShapesInterface.h"
 
@@ -108,61 +109,32 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 				const float EndTime = NotifyEvent.GetEndTriggerTime();
 				constexpr float SecondPerFrame = 1 / 30.f;
 				TArray<FTransform> BoneCSTransforms;
-				for (float CurTime  = TriggerTime; CurTime <= EndTime; CurTime += SecondPerFrame)
+				const FName BoneName = BakeBoneTransformInterface->GetBoneName();
+				FTransform PrevTransform = AnimationUtil::GetCSTransform(AnimSequence,BoneName,TriggerTime);
+				for (float CurTime = TriggerTime + SecondPerFrame; CurTime <= EndTime; CurTime += SecondPerFrame)
 				{
-					FMemMark Mark(FMemStack::Get());
-					FCompactPose OutPose;
-					TArray<FBoneIndexType> RequiredBoneIndexArray;
-					USkeleton* Skeleton = AnimSequence->GetSkeleton();
-					const FReferenceSkeleton& RefSkeleton = Skeleton->GetReferenceSkeleton();
-					RequiredBoneIndexArray.AddUninitialized(RefSkeleton.GetNum());
-					for (int32 BoneIndex = 0; BoneIndex < RequiredBoneIndexArray.Num(); ++BoneIndex)
+					const FTransform& CurTransform = AnimationUtil::GetCSTransform(AnimSequence,BoneName,CurTime);
+					TArray<FTransform> BetweenTransforms = MathUtil::InterpolateBetween(PrevTransform,CurTransform);
+					BoneCSTransforms.Emplace(PrevTransform);
+					if (BetweenTransforms.Num() > 0)
 					{
-						RequiredBoneIndexArray[BoneIndex] = BoneIndex;
+						BoneCSTransforms.Append(BetweenTransforms);
 					}
-
-					FBoneContainer BoneContainer(
-						RequiredBoneIndexArray,
-						UE::Anim::FCurveFilterSettings(UE::Anim::ECurveFilterMode::None),
-						*AnimSequence->GetSkeleton());
-					OutPose.ResetToRefPose(BoneContainer);
-					FBlendedCurve OutCurve;
-					OutCurve.InitFrom(BoneContainer);
-					UE::Anim::FStackAttributeContainer TempAttributes;
-
-					FAnimationPoseData AnimationPoseData(OutPose, OutCurve, TempAttributes);
-					FAnimExtractContext ExtractionContext(CurTime, false);
-
-					AnimSequence->GetAnimationPose(AnimationPoseData, ExtractionContext);
-					const FCompactPose& CurrentPose =  AnimationPoseData.GetPose();
-					const FBoneContainer& CurrentBoneContainer = CurrentPose.GetBoneContainer();
-					const FName BoneName = BakeBoneTransformInterface->GetBoneName();
-					int32 BoneIndex = CurrentBoneContainer.GetPoseBoneIndexForBoneName(BoneName);
-					FTransform LocalSocketTransform = FTransform::Identity;
-					if (BoneIndex == INDEX_NONE)
-					{
-						int32 DummyIndex;
-						USkeletalMeshSocket* SkeletonSocket = Skeleton->FindSocketAndIndex(BoneName, DummyIndex);
-						BoneIndex = Skeleton->GetReferenceSkeleton().FindBoneIndex(SkeletonSocket->BoneName);
-						LocalSocketTransform = SkeletonSocket->GetSocketLocalTransform();
-					}
-					const FCompactPoseBoneIndex CPIndex = CurrentPose.GetBoneContainer().MakeCompactPoseIndex(FMeshPoseBoneIndex(BoneIndex));
-					FCSPose<FCompactPose> ComponentSpacePose;
-					ComponentSpacePose.InitPose(CurrentPose);
-					const FTransform& CS_Transform = ComponentSpacePose.GetComponentSpaceTransform(CPIndex);
-					BoneCSTransforms.Emplace(LocalSocketTransform * CS_Transform);		
+					BoneCSTransforms.Emplace(CurTransform);
+					PrevTransform = CurTransform;
 				}
-
+				AnimAsset->Modify();
 				BakeBoneTransformInterface->SetBoneCSTransforms(BoneCSTransforms);
 				if (IDrawShapesInterface* DrawShapes = Cast<IDrawShapesInterface>(NotifyState))
 				{
 					FCollisionShape Shape;
 					TArray<FTransform> Transforms;
-					if (DrawShapes->GetShapes(OUT Shape,OUT Transforms))
+					FLinearColor DrawColor;
+					if (DrawShapes->GetShapes(OUT Shape,OUT Transforms,OUT DrawColor))
 					{
 						if (IsValid(PreviewDrawComponent))
 						{
-							PreviewDrawComponent->Update(Shape,BoneCSTransforms);
+							PreviewDrawComponent->Update(Shape,BoneCSTransforms,DrawColor);
 						}				
 					}				
 				}
@@ -246,11 +218,12 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 		{
 			FCollisionShape Shape;
 			TArray<FTransform> Transforms;
-			if (DrawShapes->GetShapes(OUT Shape,OUT Transforms))
+			FLinearColor DrawColor;
+			if (DrawShapes->GetShapes(OUT Shape,OUT Transforms,OUT DrawColor))
 			{ 
 				if (IsValid(PreviewDrawComponent))
 				{
-					PreviewDrawComponent->Update(Shape,Transforms);
+					PreviewDrawComponent->Update(Shape,Transforms,DrawColor);
 				}
 			}
 			SelectedAnimNotify = NotifyState;
