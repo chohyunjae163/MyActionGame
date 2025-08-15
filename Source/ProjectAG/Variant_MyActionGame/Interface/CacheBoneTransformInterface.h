@@ -6,11 +6,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "BakeBoneTransformInterface.generated.h"
+#include "CacheBoneTransformInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UBakeBoneTransformInterface : public UInterface
+class UCacheBoneTransformInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -18,14 +18,15 @@ class UBakeBoneTransformInterface : public UInterface
 /**
  * 
  */
-class PROJECTAG_API IBakeBoneTransformInterface
+class PROJECTAG_API ICacheBoneTransformInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual FName	GetBoneName() = 0;
-	virtual void	SetBoneCSTransforms(const TConstArrayView<FTransform>& InBoneCSTransforms) = 0;
+	virtual void	Cache(const TConstArrayView<FTransform>& InBoneTransforms) = 0;
+	virtual void	ClearCache() = 0;
 };
 
 

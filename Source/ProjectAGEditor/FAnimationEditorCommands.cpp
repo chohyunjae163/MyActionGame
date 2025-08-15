@@ -9,11 +9,18 @@ void FAnimationEditorCommands::RegisterCommands()
 	UI_COMMAND(
 		BakeMeleeAttack,
 		"Bake Melee Attack",
-		"Bake Melee Attack on current Animation asset",
+		"Bake Melee Attack on current Anim Notify",
 		EUserInterfaceActionType::Button,
 		FInputChord()
 		);
 
+	UI_COMMAND(
+		ClearBakes,
+		"Clear Bake Data",
+		"CLear Bake Data on current Anim Notify",
+		EUserInterfaceActionType::ToggleButton,
+		FInputChord()
+	);
 	
 	UI_COMMAND(
 		ToggleViewDebugDraw,

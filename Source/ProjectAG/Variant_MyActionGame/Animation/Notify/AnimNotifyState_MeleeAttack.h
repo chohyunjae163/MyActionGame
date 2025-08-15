@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Variant_MyActionGame/ActionGameShapeParam.h"
-#include "Variant_MyActionGame/Interface/BakeBoneTransformInterface.h"
+#include "Variant_MyActionGame/Interface/CacheBoneTransformInterface.h"
 #include "Variant_MyActionGame/Interface/DrawShapesInterface.h"
 #include "AnimNotifyState_MeleeAttack.generated.h"
 
@@ -17,7 +17,7 @@ UCLASS()
 class PROJECTAG_API UAnimNotifyState_MeleeAttack
 	: public UAnimNotifyState
 	, public IDrawShapesInterface
-	, public IBakeBoneTransformInterface
+	, public ICacheBoneTransformInterface
 {
 	GENERATED_BODY()
 
@@ -31,10 +31,11 @@ public:
 	//~ End IDrawShapes Interface 
 
 #if WITH_EDITOR
-	//~ Begin IBakeBoneTransform Interface
+	//~ Begin ICacheBoneTransform Interface
 	virtual FName GetBoneName() override;
-	virtual void SetBoneCSTransforms(const TConstArrayView<FTransform>& InBoneCSTransforms) override;
-	//~ End IBakeBoneTransform Interface
+	virtual void Cache(const TConstArrayView<FTransform>& InBoneCSTransforms) override;
+	virtual void ClearCache() override;
+	//~ End ICacheBoneTransform Interface
 	
 	virtual void DrawInEditor(FPrimitiveDrawInterface* PDI, USkeletalMeshComponent* MeshComp, const UAnimSequenceBase* Animation, const FAnimNotifyEvent& NotifyEvent) const override;
 

@@ -17,5 +17,7 @@ public:
 
 public:
 	TSharedPtr<FUICommandInfo> BakeMeleeAttack;
+	TSharedPtr<FUICommandInfo> ClearBakes;
 	TSharedPtr<FUICommandInfo> ToggleViewDebugDraw;
+	
 };

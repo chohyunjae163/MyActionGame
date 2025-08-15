@@ -87,13 +87,18 @@ FName UAnimNotifyState_MeleeAttack::GetBoneName()
 	return SocketName;
 }
 
-void UAnimNotifyState_MeleeAttack::SetBoneCSTransforms(const TConstArrayView<FTransform>& InBoneCSTransforms)
+void UAnimNotifyState_MeleeAttack::Cache(const TConstArrayView<FTransform>& InBoneCSTransforms)
 {
 	BoneCSTransforms = InBoneCSTransforms;
 }
 
+void UAnimNotifyState_MeleeAttack::ClearCache()
+{
+	BoneCSTransforms.Empty();
+}
+
 void UAnimNotifyState_MeleeAttack::DrawInEditor(FPrimitiveDrawInterface* PDI, USkeletalMeshComponent* MeshComp,
-	const UAnimSequenceBase* Animation, const FAnimNotifyEvent& NotifyEvent) const
+                                                const UAnimSequenceBase* Animation, const FAnimNotifyEvent& NotifyEvent) const
 {
 	Super::DrawInEditor(PDI, MeshComp, Animation, NotifyEvent);
 

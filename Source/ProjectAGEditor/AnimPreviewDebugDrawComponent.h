@@ -26,6 +26,12 @@ public:
 		MarkRenderStateDirty();
 	}
 
+	void Clear()
+	{
+		Transforms.Empty();
+		MarkRenderStateDirty();
+	}
+
 	// 필수 오버라이드
 	virtual FPrimitiveSceneProxy* CreateSceneProxy() override;
 	virtual FBoxSphereBounds CalcBounds(const FTransform& LocalToWorld) const override;

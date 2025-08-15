@@ -13,7 +13,7 @@
 #include "UtilLib/AnimationUtilLib.h"
 #include "UtilLib/EditorUtilLib.h"
 #include "UtilLib/MathUtilLib.h"
-#include "Variant_MyActionGame/Interface/BakeBoneTransformInterface.h"
+#include "Variant_MyActionGame/Interface/CacheBoneTransformInterface.h"
 #include "Variant_MyActionGame/Interface/DrawShapesInterface.h"
 
 
@@ -31,8 +31,6 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 		}
 	}
 
-	
-
 	virtual void StartupModule() override
 	{
 		FEditorDelegates::OnEditorInitialized.AddRaw(this, &FProjectAGEditorModule::OnPostEditorInit);
@@ -46,6 +44,9 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 			AnimationEditorCommands->MapAction(
 				FAnimationEditorCommands::Get().BakeMeleeAttack,
 				FExecuteAction::CreateRaw(this,&FProjectAGEditorModule::OnBakeAttackCommandClicked));
+			AnimationEditorCommands->MapAction(
+				FAnimationEditorCommands::Get().ClearBakes,
+				FExecuteAction::CreateRaw(this,&FProjectAGEditorModule::OnClearBakes));			
 			AnimationEditorCommands->MapAction(
 				FAnimationEditorCommands::Get().ToggleViewDebugDraw,
 				FExecuteAction::CreateRaw(this,&FProjectAGEditorModule::OnToggleViewDebugDraw));
@@ -78,17 +79,27 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 			FAnimationEditorCommands::Get().BakeMeleeAttack,
 			NAME_None,
 			FText::FromString("Bake Melee Attack"),
-			FText::FromString("Bake Melee Attack for the current Animation asset"),
+			FText::FromString("Bake Data on the selected AnimNotify"),
 			FSlateIcon(FAppStyle::GetAppStyleSetName(), "Kismet.Tabs.Palette")
 		);
-
+		
+		Builder.AddToolBarButton(
+			FAnimationEditorCommands::Get().ClearBakes,
+			NAME_None,
+			FText::FromString("Clear Bake Data"),
+			FText::FromString("Clear Bake Data on the selected AnimNotify"),
+			FSlateIcon(FAppStyle::GetAppStyleSetName(), "Kismet.Tabs.Palette")
+		);
+		
 		Builder.AddToolBarButton(
 			FAnimationEditorCommands::Get().ToggleViewDebugDraw,
 			NAME_None,
 			FText::FromString("Toggle Debug Draw"),
 			FText::FromString("Toggle Debug Draw for the current Animation asset"),
 			FSlateIcon(FAppStyle::GetAppStyleSetName(), "Kismet.Tabs.Palette")
-		);		
+		);
+
+
 	}
 	
 	void OnBakeAttackCommandClicked()
@@ -103,46 +114,55 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 				continue;
 			}
 			UAnimNotifyState* NotifyState = Cast<UAnimNotifyState>(SelectedAnimNotify);
-			if (IBakeBoneTransformInterface* BakeBoneTransformInterface = Cast<IBakeBoneTransformInterface>(NotifyState))
+			if (ICacheBoneTransformInterface* BakeBoneTransformInterface = Cast<ICacheBoneTransformInterface>(NotifyState))
 			{
 				const float TriggerTime = NotifyEvent.GetTriggerTime();
 				const float EndTime = NotifyEvent.GetEndTriggerTime();
-				constexpr float SecondPerFrame = 1 / 30.f;
 				TArray<FTransform> BoneCSTransforms;
 				const FName BoneName = BakeBoneTransformInterface->GetBoneName();
-				FTransform PrevTransform = AnimationUtil::GetCSTransform(AnimSequence,BoneName,TriggerTime);
-				for (float CurTime = TriggerTime + SecondPerFrame; CurTime <= EndTime; CurTime += SecondPerFrame)
-				{
-					const FTransform& CurTransform = AnimationUtil::GetCSTransform(AnimSequence,BoneName,CurTime);
-					TArray<FTransform> BetweenTransforms = MathUtil::InterpolateBetween(PrevTransform,CurTransform);
-					BoneCSTransforms.Emplace(PrevTransform);
-					if (BetweenTransforms.Num() > 0)
-					{
-						BoneCSTransforms.Append(BetweenTransforms);
-					}
-					BoneCSTransforms.Emplace(CurTransform);
-					PrevTransform = CurTransform;
-				}
-				AnimAsset->Modify();
-				BakeBoneTransformInterface->SetBoneCSTransforms(BoneCSTransforms);
-				if (IDrawShapesInterface* DrawShapes = Cast<IDrawShapesInterface>(NotifyState))
-				{
-					FCollisionShape Shape;
-					TArray<FTransform> Transforms;
-					FLinearColor DrawColor;
-					if (DrawShapes->GetShapes(OUT Shape,OUT Transforms,OUT DrawColor))
-					{
-						if (IsValid(PreviewDrawComponent))
-						{
-							PreviewDrawComponent->Update(Shape,BoneCSTransforms,DrawColor);
-						}				
-					}				
-				}
-
-
+				EditorUtil::Bake(AnimSequence,TriggerTime,EndTime,BoneName, OUT BoneCSTransforms);
+				BakeBoneTransformInterface->Cache(BoneCSTransforms);
+				UpdateDraw(NotifyEvent.NotifyStateClass,BoneCSTransforms);
 			}
 		}
+		AnimAsset->Modify();
+	}
+	
+	void UpdateDraw(UAnimNotifyState* NotifyState,TConstArrayView<FTransform> BoneCSTransforms) const
+	{
+		//draw baked transforms with shapes and color
+		if (IDrawShapesInterface* DrawShapes = Cast<IDrawShapesInterface>(NotifyState))
+		{
+			FCollisionShape Shape;
+			TArray<FTransform> Transforms;
+			FLinearColor DrawColor;
+			if (DrawShapes->GetShapes(OUT Shape,OUT Transforms,OUT DrawColor))
+			{
+				if (IsValid(PreviewDrawComponent))
+				{
+					PreviewDrawComponent->Update(Shape,BoneCSTransforms,DrawColor);
+				}				
+			}				
+		}
+	}
+	
 
+	void OnClearBakes()
+	{
+		if (IsValid(SelectedAnimNotify) == false)
+		{
+			return;
+		}
+		UAnimNotifyState* NotifyState = Cast<UAnimNotifyState>(SelectedAnimNotify);
+		if (ICacheBoneTransformInterface* BakeBoneTransformInterface = Cast<ICacheBoneTransformInterface>(NotifyState))
+		{
+			BakeBoneTransformInterface->ClearCache();
+			if (IsValid(PreviewDrawComponent))
+			{
+				PreviewDrawComponent->Clear();
+			}
+		}
+		
 	}
 
 	void OnToggleViewDebugDraw()
