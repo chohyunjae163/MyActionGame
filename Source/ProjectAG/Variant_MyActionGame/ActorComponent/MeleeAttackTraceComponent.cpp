@@ -5,6 +5,7 @@
 
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
+#include "Variant_MyActionGame/Consts.h"
 #include "Variant_MyActionGame/GameplayMessage/MeleeAttackMessage.h"
 
 // Sets default values for this component's properties
@@ -44,8 +45,7 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 	// ...
 	
-	constexpr float SecondPerFrame = 1 / 30.f;
-	const uint8 NumCheck = DeltaTime / SecondPerFrame;
+	const uint8 NumCheck = DeltaTime / Consts::AnimTargetFPS;
 	for (int32 i = 0; i < NumCheck; i++)
 	{
 		if (FTransform StartTransform,EndTransform; Transforms.Dequeue(StartTransform))

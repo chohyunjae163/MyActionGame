@@ -8,6 +8,7 @@
 #include "IPersonaToolkit.h"
 #include "MathUtilLib.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Variant_MyActionGame/Consts.h"
 
 
 namespace EditorUtil
@@ -59,9 +60,8 @@ namespace EditorUtil
 		FName BoneName,
 		OUT TArray<FTransform>& OutBoneCSTransforms )
 	{
-		constexpr float SecondPerFrame = 1 / 30.f;
 		FTransform PrevTransform = AnimationUtil::GetCSTransform(AnimSequence,BoneName,TriggerTime);
-		for (float CurTime = TriggerTime + SecondPerFrame; CurTime <= EndTime; CurTime += SecondPerFrame)
+		for (float CurTime = TriggerTime + Consts::AnimTargetFPS; CurTime <= EndTime; CurTime += Consts::AnimTargetFPS)
 		{
 			const FTransform& CurTransform = AnimationUtil::GetCSTransform(AnimSequence,BoneName,CurTime);
 			TArray<FTransform> BetweenTransforms = MathUtil::InterpolateBetween(PrevTransform,CurTransform);

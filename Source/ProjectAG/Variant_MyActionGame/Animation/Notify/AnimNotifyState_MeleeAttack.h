@@ -13,8 +13,8 @@
 /**
  * 
  */
-UCLASS()
-class PROJECTAG_API UAnimNotifyState_MeleeAttack
+UCLASS(MinimalAPI)
+class UAnimNotifyState_MeleeAttack
 	: public UAnimNotifyState
 	, public IDrawShapesInterface
 	, public ICacheBoneTransformInterface

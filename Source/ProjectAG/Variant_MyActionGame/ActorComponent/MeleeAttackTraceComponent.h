@@ -21,8 +21,8 @@ struct FMeleeAttackCapsuleTraceData
 /*
 	근접 공격 충돌을 트레이스 하는 컴포넌트.
 */
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTAG_API UMeleeAttackTraceComponent : public UActorComponent
+UCLASS(MinimalAPI, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class UMeleeAttackTraceComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

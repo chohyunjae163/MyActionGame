@@ -11,12 +11,13 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"UMG"
+				"UMG",
+				"EnhancedInput"
 			]
 		},
 		{
 			"Name": "ProjectAGEditor",
-			"Type": "Editor",           
+			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
 	],
@@ -38,6 +39,10 @@
 		},
 		{
 			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "ModularGameplay",
 			"Enabled": true
 		}
 	]

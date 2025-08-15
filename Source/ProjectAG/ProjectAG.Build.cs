@@ -15,7 +15,12 @@ public class ProjectAG : ModuleRules
 			"GameplayTags"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayMessageRuntime", });
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"GameplayMessageRuntime", 
+			"ModularGameplayActors",
+			"ModularGamePlay"
+		});
 
 		PublicIncludePaths.AddRange(new string[] {
 			"ProjectAG",
