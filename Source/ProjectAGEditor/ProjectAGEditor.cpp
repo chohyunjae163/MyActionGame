@@ -10,9 +10,7 @@
 #include "Animation/DebugSkelMeshComponent.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Modules/ModuleManager.h"
-#include "UtilLib/AnimationUtilLib.h"
 #include "UtilLib/EditorUtilLib.h"
-#include "UtilLib/MathUtilLib.h"
 #include "Variant_MyActionGame/Interface/CacheBoneTransformInterface.h"
 #include "Variant_MyActionGame/Interface/DrawShapesInterface.h"
 
@@ -167,11 +165,9 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 
 	void OnToggleViewDebugDraw()
 	{
-		UAnimationAsset* AnimAsset = EditorUtil::GetActiveAnimationAsset();
-		UAnimSequenceBase* AnimSequence = Cast<UAnimSequence>(AnimAsset);
-		for (const FAnimNotifyEvent& NotifyEvent : AnimSequence->Notifies)
+		if (IsValid(PreviewDrawComponent))
 		{
-			UAnimNotifyState* NotifyState = NotifyEvent.NotifyStateClass;
+			PreviewDrawComponent->SetVisibility(!PreviewDrawComponent->IsVisible());
 		}
 	}
 	

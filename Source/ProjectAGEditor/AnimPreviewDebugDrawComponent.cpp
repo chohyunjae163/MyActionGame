@@ -26,15 +26,9 @@ public:
 		static constexpr int32 NumSides = 24;
 		static constexpr float Thickness = 0.25f;
 
-		const FLinearColor LinearColor = IsSelected() ? FLinearColor::Yellow * 1.25f : FLinearColor::White;
 		for (int32 ViewIndex = 0; ViewIndex < Views.Num(); ++ViewIndex)
 		{
-			
 			FPrimitiveDrawInterface* PDI = Collector.GetPDI(ViewIndex);
-			/*FLinearColor Color = FLinearColor::Black;*/
-			//float a = 0.f;
-			//uint32 Index = 0;
-			const uint32 NumTransforms = Transforms.Num();
 			for (const FTransform& Transform : Transforms)
 			{
 				//a = Index / static_cast<float>(NumTransforms);
@@ -68,7 +62,6 @@ public:
 				);
 					break;
 				}
-				//Index++;
 			}
 		}
 	}
