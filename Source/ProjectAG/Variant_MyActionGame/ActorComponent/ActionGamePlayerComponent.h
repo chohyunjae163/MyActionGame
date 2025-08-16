@@ -3,19 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/PawnComponent.h"
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "ActionGamePlayerComponent.generated.h"
 
 
+/**
+ * Component that sets up input and camera handling for player controlled pawns (or bots that simulate players).
+ * This depends on a PawnExtensionComponent to coordinate initialization.
+ */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTAG_API UActionGamePlayerComponent : public UActorComponent, public IGameFrameworkInitStateInterface
+class PROJECTAG_API UActionGamePlayerComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UActionGamePlayerComponent();
+	UActionGamePlayerComponent(const FObjectInitializer& ObjectInitializer);
 
 	static const FName NAME_ActorFeatureName;
 	//~ Begin IGameFrameworkInitStateInterface interface
@@ -25,13 +29,21 @@ public:
 	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) override;
 	virtual void CheckDefaultInitialization() override;
 	//~ End IGameFrameworkInitStateInterface interface
+
+	//input
+	void Input_Move(const struct FInputActionValue& InputActionValue);
+	void Input_LookMouse(const struct FInputActionValue& InputActionValue);
+	
 protected:
-	// Called when the game starts
+	virtual void OnRegister() override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+private:
+	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
 
-		
+
+protected:
+	UPROPERTY(EditDefaultsOnly,Category=ActionGame,DisplayName="Input Config")
+	TObjectPtr<class UActionGameInputConfig> InputConfig;
 };

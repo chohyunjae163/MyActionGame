@@ -2,20 +2,27 @@
 
 
 #include "Variant_MyActionGame/ActorComponent/ActionGamePlayerComponent.h"
-
+#include "EnhancedInputSubsystems.h"
+#include "Variant_MyActionGame/ActionGameGameplayTags.h"
+#include "Variant_MyActionGame/Input/ActionGameInputComponent.h"
 
 
 const FName UActionGamePlayerComponent::NAME_ActorFeatureName("ActionGamePlayer");
 
-
-// Sets default values for this component's properties
-UActionGamePlayerComponent::UActionGamePlayerComponent()
+UActionGamePlayerComponent::UActionGamePlayerComponent(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+	, InputConfig(nullptr)
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+}
 
-	// ...
+
+void UActionGamePlayerComponent::OnRegister()
+{
+	Super::OnRegister();
+
+	// Register with the init state system early, this will only work if this is a game world
+	RegisterInitStateFeature();
 }
 
 // Called when the game starts
@@ -24,37 +31,77 @@ void UActionGamePlayerComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+	TryToChangeInitState(ActionGameGameplayTags::InitState_Spawned);
+	CheckDefaultInitialization();
 }
 
 
-// Called every frame
-void UActionGamePlayerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UActionGamePlayerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	Super::EndPlay(EndPlayReason);
 }
-
 
 bool UActionGamePlayerComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
-	FGameplayTag DesiredState) const
+                                                    FGameplayTag DesiredState) const
 {
-	return IGameFrameworkInitStateInterface::CanChangeInitState(Manager, CurrentState, DesiredState);
+	return true;
 }
 
 void UActionGamePlayerComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager,
 	FGameplayTag CurrentState, FGameplayTag DesiredState)
 {
-	IGameFrameworkInitStateInterface::HandleChangeInitState(Manager, CurrentState, DesiredState);
+	if (CurrentState == ActionGameGameplayTags::InitState_DataAvailable &&
+		DesiredState == ActionGameGameplayTags::InitState_DataInitialized)
+	{
+		APawn* Pawn = GetPawn<APawn>();
+		UInputComponent* InputComponent = Pawn->InputComponent;
+		InitializePlayerInput(InputComponent);
+	}
 }
+
+void UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
+{
+	const APlayerController* PlayerController = GetController<APlayerController>();
+	const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+	UEnhancedInputLocalPlayerSubsystem*	Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+
+	//todo: register input mapping context
+
+	//todo: bind input move
+	UActionGameInputComponent* ActionGameInputComponent = Cast<UActionGameInputComponent>(PlayerInputComponent);
+	ActionGameInputComponent->BindNativeAction(
+		InputConfig,
+		ActionGameGameplayTags::InputTag_Move,
+		ETriggerEvent::Triggered,
+		this,
+		&ThisClass::Input_Move);
+}
+
+
 
 void UActionGamePlayerComponent::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
 {
-	IGameFrameworkInitStateInterface::OnActorInitStateChanged(Params);
+	
 }
 
 void UActionGamePlayerComponent::CheckDefaultInitialization()
 {
-	IGameFrameworkInitStateInterface::CheckDefaultInitialization();
+	static const TArray<FGameplayTag> StateChain = {
+		ActionGameGameplayTags::InitState_Spawned,
+		ActionGameGameplayTags::InitState_DataAvailable,
+		ActionGameGameplayTags::InitState_DataInitialized,
+		ActionGameGameplayTags::InitState_GameplayReady,
+	};
+	ContinueInitStateChain(StateChain);
+}
+
+void UActionGamePlayerComponent::Input_Move(const FInputActionValue& InputActionValue)
+{
+	
+}
+
+void UActionGamePlayerComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
+{
+	
 }
 

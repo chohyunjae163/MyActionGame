@@ -67,11 +67,22 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 				{
 					//todo:
 					//try attack
+					for (const FHitResult& Hit : Hits)
+					{
+						if (Hit.bBlockingHit)
+						{
+							AActor* HitActor = Hit.GetActor();
+							UActorComponent* HitComponent = Hit.GetComponent();
+							if (IsValid(HitActor) && IsValid(HitComponent))
+							{
+								//todo: send message to hit actor?
+								
+							}
+						}
+					}
 				}				
 			}
-	
 		}
-		
 	}
 
 }
