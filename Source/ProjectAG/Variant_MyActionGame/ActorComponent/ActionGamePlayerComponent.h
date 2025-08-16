@@ -44,6 +44,9 @@ private:
 
 
 protected:
+	UPROPERTY(EditAnywhere)
+	TArray<class UInputMappingContext*> DefaultInputMappings;
+	
 	UPROPERTY(EditDefaultsOnly,Category=ActionGame,DisplayName="Input Config")
 	TObjectPtr<class UActionGameInputConfig> InputConfig;
 };

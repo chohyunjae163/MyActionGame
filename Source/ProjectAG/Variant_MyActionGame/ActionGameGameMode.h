@@ -7,10 +7,11 @@
 #include "ActionGameGameMode.generated.h"
 
 /**
- * 
+ * The base game mode class used by this project.
  */
-UCLASS()
-class PROJECTAG_API AActionGameGameMode : public AGameModeBase
+UCLASS(MinimalAPI)
+class AActionGameGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
 };

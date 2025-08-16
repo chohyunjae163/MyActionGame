@@ -66,6 +66,10 @@ void UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerIn
 	UEnhancedInputLocalPlayerSubsystem*	Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 
 	//todo: register input mapping context
+	for (const UInputMappingContext* MappingContext : DefaultInputMappings)
+	{
+		Subsystem->AddMappingContext(MappingContext,0);
+	}
 
 	//todo: bind input move
 	UActionGameInputComponent* ActionGameInputComponent = Cast<UActionGameInputComponent>(PlayerInputComponent);
@@ -97,7 +101,26 @@ void UActionGamePlayerComponent::CheckDefaultInitialization()
 
 void UActionGamePlayerComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
-	
+	APawn* Pawn = GetPawn<APawn>();
+	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
+
+	if (IsValid(Controller))
+	{
+		const FVector2D Value = InputActionValue.Get<FVector2D>();
+		const FRotator Rotator{0.f,Controller->GetControlRotation().Yaw,0.0f};
+
+		if (Value.X != 0.0f)
+		{
+			const FVector MovementDir = Rotator.RotateVector(FVector::RightVector);
+			Pawn->AddMovementInput(MovementDir,Value.X);
+		}
+
+		if (Value.Y != 0.0f)
+		{
+			const FVector MovementDir = Rotator.RotateVector(FVector::ForwardVector);
+			Pawn->AddMovementInput(MovementDir,Value.Y);
+		}
+	}
 }
 
 void UActionGamePlayerComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
