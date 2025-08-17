@@ -155,7 +155,7 @@ void UActionGamePlayerComponent::Input_LookMouse(const FInputActionValue& InputA
 
 	if (Value.Y != 0.0f)
 	{
-		Pawn->AddControllerPitchInput(Value.Y);
+		Pawn->AddControllerPitchInput(-Value.Y);
 	}
 }
 
