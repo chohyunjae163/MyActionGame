@@ -12,5 +12,5 @@ namespace ActionGameGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InitState_GameplayReady, "InitState.GameplayReady");
 
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Move, "InputTag.Move");
-
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_LookMouse, "InputTag.LookMouse");
 }

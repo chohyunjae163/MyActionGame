@@ -12,8 +12,8 @@
  * Component that sets up input and camera handling for player controlled pawns (or bots that simulate players).
  * This depends on a PawnExtensionComponent to coordinate initialization.
  */
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTAG_API UActionGamePlayerComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
+UCLASS(MinimalAPI, ClassGroup=(ActionGame), meta=(BlueprintSpawnableComponent) )
+class UActionGamePlayerComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
 {
 	GENERATED_BODY()
 
@@ -33,6 +33,8 @@ public:
 	//input
 	void Input_Move(const struct FInputActionValue& InputActionValue);
 	void Input_LookMouse(const struct FInputActionValue& InputActionValue);
+
+	//camera related
 	
 protected:
 	virtual void OnRegister() override;

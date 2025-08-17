@@ -62,23 +62,33 @@ void UActionGamePlayerComponent::HandleChangeInitState(UGameFrameworkComponentMa
 void UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
 {
 	const APlayerController* PlayerController = GetController<APlayerController>();
-	const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
-	UEnhancedInputLocalPlayerSubsystem*	Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-
-	//todo: register input mapping context
-	for (const UInputMappingContext* MappingContext : DefaultInputMappings)
+	if (IsValid(PlayerController))
 	{
-		Subsystem->AddMappingContext(MappingContext,0);
+		const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+		UEnhancedInputLocalPlayerSubsystem*	Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+
+		//todo: register input mapping context
+		for (const UInputMappingContext* MappingContext : DefaultInputMappings)
+		{
+			Subsystem->AddMappingContext(MappingContext,0);
+		}
+
+		//todo: bind input move
+		UActionGameInputComponent* ActionGameInputComponent = Cast<UActionGameInputComponent>(PlayerInputComponent);
+		ActionGameInputComponent->BindNativeAction(
+			InputConfig,
+			ActionGameGameplayTags::InputTag_Move,
+			ETriggerEvent::Triggered,
+			this,
+			&ThisClass::Input_Move);
+		ActionGameInputComponent->BindNativeAction(
+			InputConfig,
+			ActionGameGameplayTags::InputTag_LookMouse,
+			ETriggerEvent::Triggered,
+			this,
+			&ThisClass::Input_LookMouse);		
 	}
 
-	//todo: bind input move
-	UActionGameInputComponent* ActionGameInputComponent = Cast<UActionGameInputComponent>(PlayerInputComponent);
-	ActionGameInputComponent->BindNativeAction(
-		InputConfig,
-		ActionGameGameplayTags::InputTag_Move,
-		ETriggerEvent::Triggered,
-		this,
-		&ThisClass::Input_Move);
 }
 
 
@@ -102,6 +112,10 @@ void UActionGamePlayerComponent::CheckDefaultInitialization()
 void UActionGamePlayerComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
 	APawn* Pawn = GetPawn<APawn>();
+	if (!IsValid(Pawn))
+	{
+		return;
+	}
 	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
 
 	if (IsValid(Controller))
@@ -125,6 +139,23 @@ void UActionGamePlayerComponent::Input_Move(const FInputActionValue& InputAction
 
 void UActionGamePlayerComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
 {
+	APawn* Pawn = GetPawn<APawn>();
+
+	if (!IsValid(Pawn))
+	{
+		return;
+	}
 	
+	const FVector2D Value = InputActionValue.Get<FVector2D>();
+
+	if (Value.X != 0.0f)
+	{
+		Pawn->AddControllerYawInput(Value.X);
+	}
+
+	if (Value.Y != 0.0f)
+	{
+		Pawn->AddControllerPitchInput(Value.Y);
+	}
 }
 

@@ -9,8 +9,8 @@
 /**
  * 
  */
-UCLASS()
-class PROJECTAG_API AActionGamePlayerController : public AModularPlayerController
+UCLASS(MinimalAPI)
+class AActionGamePlayerController : public AModularPlayerController
 {
 	GENERATED_BODY()
 };

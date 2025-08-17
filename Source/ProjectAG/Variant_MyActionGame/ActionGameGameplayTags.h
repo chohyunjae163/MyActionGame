@@ -12,5 +12,5 @@ namespace ActionGameGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InitState_GameplayReady);
 	
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move);
-	
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_LookMouse);
 }
