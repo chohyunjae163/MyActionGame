@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/PawnComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "MeleeAttackTraceComponent.generated.h"
 
@@ -21,16 +22,14 @@ struct FMeleeAttackCapsuleTraceData
 /*
 	근접 공격 충돌을 트레이스 하는 컴포넌트.
 */
-UCLASS(MinimalAPI, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UMeleeAttackTraceComponent : public UActorComponent
+UCLASS(MinimalAPI, ClassGroup=(ActionGame), meta=(BlueprintSpawnableComponent) )
+class UMeleeAttackTraceComponent : public UPawnComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UMeleeAttackTraceComponent();
-
-	void BeginTrace(const TArray<FMeleeAttackCapsuleTraceData>& InData);
+	UMeleeAttackTraceComponent(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts
@@ -47,8 +46,6 @@ private:
 	TQueue<FTransform>				Transforms;
 	FCollisionShape					CollisionShape;
 	FGameplayMessageListenerHandle	ListenerHandle;
-		
-	float							AttackBeginTime;
-	float							AttackElapsedTime;
+
 };
 

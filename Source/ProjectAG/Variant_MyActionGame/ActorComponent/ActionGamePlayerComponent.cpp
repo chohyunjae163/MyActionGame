@@ -44,6 +44,28 @@ void UActionGamePlayerComponent::EndPlay(const EEndPlayReason::Type EndPlayReaso
 bool UActionGamePlayerComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
                                                     FGameplayTag DesiredState) const
 {
+	APawn* MyPawn = GetPawn<APawn>();
+	if (CurrentState.IsValid() == false && DesiredState == ActionGameGameplayTags::InitState_Spawned)
+	{
+		return IsValid(MyPawn);
+	}
+	if (CurrentState == ActionGameGameplayTags::InitState_Spawned && DesiredState == ActionGameGameplayTags::InitState_DataAvailable)
+	{
+		check(IsValid(MyPawn));
+
+		APlayerController* PC = GetController<APlayerController>();
+		if (!IsValid(PC))
+		{
+			return false;
+		}
+
+		if (!IsValid(PC->GetLocalPlayer()))
+		{
+			return false;
+		}
+		
+		return IsValid(MyPawn->InputComponent);
+	}
 	return true;
 }
 
@@ -65,8 +87,9 @@ void UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerIn
 	if (IsValid(PlayerController))
 	{
 		const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+		check(IsValid(LocalPlayer));
 		UEnhancedInputLocalPlayerSubsystem*	Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-
+		check(IsValid(Subsystem));
 		//todo: register input mapping context
 		for (const UInputMappingContext* MappingContext : DefaultInputMappings)
 		{
@@ -75,20 +98,22 @@ void UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerIn
 
 		//todo: bind input move
 		UActionGameInputComponent* ActionGameInputComponent = Cast<UActionGameInputComponent>(PlayerInputComponent);
-		ActionGameInputComponent->BindNativeAction(
-			InputConfig,
-			ActionGameGameplayTags::InputTag_Move,
-			ETriggerEvent::Triggered,
-			this,
-			&ThisClass::Input_Move);
-		ActionGameInputComponent->BindNativeAction(
-			InputConfig,
-			ActionGameGameplayTags::InputTag_LookMouse,
-			ETriggerEvent::Triggered,
-			this,
-			&ThisClass::Input_LookMouse);		
+		if (IsValid(ActionGameInputComponent))
+		{
+			ActionGameInputComponent->BindNativeAction(
+				InputConfig,
+				ActionGameGameplayTags::InputTag_Move,
+				ETriggerEvent::Triggered,
+				this,
+				&ThisClass::Input_Move);
+			ActionGameInputComponent->BindNativeAction(
+				InputConfig,
+				ActionGameGameplayTags::InputTag_LookMouse,
+				ETriggerEvent::Triggered,
+				this,
+				&ThisClass::Input_LookMouse);				
+		}
 	}
-
 }
 
 

@@ -19,7 +19,8 @@ public class ProjectAG : ModuleRules
 		{
 			"GameplayMessageRuntime", 
 			"ModularGameplayActors",
-			"ModularGamePlay"
+			"ModularGamePlay", 
+			"GameplayAbilities"
 		});
 
 		PublicIncludePaths.AddRange(new string[] {
