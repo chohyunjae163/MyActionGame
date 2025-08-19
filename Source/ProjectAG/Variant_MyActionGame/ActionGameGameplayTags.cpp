@@ -13,4 +13,5 @@ namespace ActionGameGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Move, "InputTag.Move");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_LookMouse, "InputTag.LookMouse");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_MeleeAttack, "InputTag.MeleeAttack");
 }

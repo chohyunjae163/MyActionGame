@@ -6,6 +6,13 @@
 #include "ModularCharacter.h"
 #include "ActionGameCharacter.generated.h"
 
+
+/**
+ *  A base character class used across the Action Game.
+ *  It is a lightweight shell Actor that can represent any character
+ *  in a game.(PC,NPC,Monster) It is intentionally kept 
+ *  minimal and relies on external data definitions (PawnData).
+ */
 UCLASS(MinimalAPI,Blueprintable)
 class AActionGameCharacter : public AModularCharacter
 {
@@ -16,9 +23,8 @@ public:
 	AActionGameCharacter();
 
 protected:
-
 	// any action game character needs this.
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,Category="Action Game")
 	TObjectPtr<class UActionGamePawnComponent> ActionGamePawnComponent;
 	
 };

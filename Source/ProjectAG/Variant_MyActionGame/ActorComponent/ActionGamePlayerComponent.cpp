@@ -90,16 +90,20 @@ void UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerIn
 		check(IsValid(LocalPlayer));
 		UEnhancedInputLocalPlayerSubsystem*	Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 		check(IsValid(Subsystem));
-		//todo: register input mapping context
+
 		for (const UInputMappingContext* MappingContext : DefaultInputMappings)
 		{
 			Subsystem->AddMappingContext(MappingContext,0);
 		}
 
-		//todo: bind input move
 		UActionGameInputComponent* ActionGameInputComponent = Cast<UActionGameInputComponent>(PlayerInputComponent);
 		if (IsValid(ActionGameInputComponent))
 		{
+			ActionGameInputComponent->BindAbilityActions(
+				InputConfig,
+				this,
+				&ThisClass::Input_AbilityInputTagPressed,
+				&ThisClass::Input_AbilityInputTagReleased);
 			ActionGameInputComponent->BindNativeAction(
 				InputConfig,
 				ActionGameGameplayTags::InputTag_Move,
@@ -132,6 +136,16 @@ void UActionGamePlayerComponent::CheckDefaultInitialization()
 		ActionGameGameplayTags::InitState_GameplayReady,
 	};
 	ContinueInitStateChain(StateChain);
+}
+
+void UActionGamePlayerComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	// handle ability input presssed
+}
+
+void UActionGamePlayerComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	// handle ability input released
 }
 
 void UActionGamePlayerComponent::Input_Move(const FInputActionValue& InputActionValue)

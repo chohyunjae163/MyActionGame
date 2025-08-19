@@ -57,4 +57,8 @@ private:
 	/** Pointer to the ability system component that is cached for convenience. */
 	UPROPERTY(Transient)
 	TObjectPtr<class UAbilitySystemComponent> AbilitySystemComponent;
+
+	/** Pawn data used to create the pawn.  */
+	UPROPERTY(EditInstanceOnly, DisplayName="Pawn Definition")
+	TObjectPtr<const class UActionGamePawnData> PawnData;
 };

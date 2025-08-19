@@ -9,8 +9,11 @@
 
 
 /**
- * Component that sets up input and camera handling for player controlled pawns (or bots that simulate players).
- * This depends on a PawnExtensionComponent to coordinate initialization.
+ * Component that sets up
+ * 1. input
+ * 2. camera handling
+ * for player controlled pawns (or bots that simulate players).
+ * This depends on a ActionGamePawnComponent to coordinate initialization.
  */
 UCLASS(MinimalAPI, ClassGroup=(ActionGame), meta=(BlueprintSpawnableComponent) )
 class UActionGamePlayerComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
@@ -30,7 +33,10 @@ public:
 	virtual void CheckDefaultInitialization() override;
 	//~ End IGameFrameworkInitStateInterface interface
 
-	//input
+	//handle inputs
+	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
+	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
+	
 	void Input_Move(const struct FInputActionValue& InputActionValue);
 	void Input_LookMouse(const struct FInputActionValue& InputActionValue);
 

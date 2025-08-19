@@ -23,6 +23,13 @@ public:
 		ETriggerEvent TriggerEvent,
 		UserClass* Object,
 		FuncType Func);
+
+	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
+	void BindAbilityActions(
+		const UActionGameInputConfig* InputConfig,
+		UserClass* Object,
+		PressedFuncType PressedFunc,
+		ReleasedFuncType ReleasedFunc);
 };
 
 template <class UserClass, typename FuncType>
@@ -33,5 +40,23 @@ void UActionGameInputComponent::BindNativeAction(const UActionGameInputConfig* I
 	if (const UInputAction* InputAction = InputConfig->FindNativeInputAction(InputTag))
 	{
 		BindAction(InputAction, TriggerEvent, Object, Func);
+	}
+}
+
+template <class UserClass, typename PressedFuncType, typename ReleasedFuncType>
+void UActionGameInputComponent::BindAbilityActions(const UActionGameInputConfig* InputConfig, UserClass* Object,
+	PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc)
+{
+	for (const auto& [InputAction, InputTag]  : InputConfig->AbilityInputActions)
+	{
+		if (PressedFunc)
+		{
+			BindAction(InputAction,ETriggerEvent::Triggered,Object,PressedFunc,InputTag);
+		}
+		if (ReleasedFunc)
+		{
+			BindAction(InputAction,ETriggerEvent::Triggered,Object,ReleasedFunc,InputTag);
+		}
+		
 	}
 }

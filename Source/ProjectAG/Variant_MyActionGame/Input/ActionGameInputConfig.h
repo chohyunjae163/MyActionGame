@@ -33,8 +33,13 @@ class PROJECTAG_API UActionGameInputConfig : public UDataAsset
 
 public:
 	TObjectPtr<const UInputAction> FindNativeInputAction(const FGameplayTag& InputTag) const;
+	TObjectPtr<const UInputAction> FindAbilityInputAction(const FGameplayTag& InputTag) const;
 	
 	// List of input actions used by the owner.  These input actions are mapped to a gameplay tag and must be manually bound.
 	UPROPERTY(EditDefaultsOnly, Meta = (TitleProperty = "InputAction"))
 	TArray<FActionGameInputAction> NativeInputActions;
+
+	// List of input actions used by the owner.  These input actions are mapped to a gameplay tag and must be manually bound.
+	UPROPERTY(EditDefaultsOnly, Meta = (TitleProperty = "InputAction"))
+	TArray<FActionGameInputAction> AbilityInputActions;
 };
