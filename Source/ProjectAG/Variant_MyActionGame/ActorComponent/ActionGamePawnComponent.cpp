@@ -119,7 +119,7 @@ void UActionGamePawnComponent::HandleChangeInitState(UGameFrameworkComponentMana
 		if(IsValid(PS))
 		{
 			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			ensureMsgf(IsValid(ASC),TEXT("A Pawn must have AbilitySystemComponent"));
+			ensureMsgf(IsValid(ASC),TEXT("A Pawn must have an AbilitySystemComponent"));
 			InitializeAbilitySystem(ASC,PS);
 		
 			UActionGameAbilitySet* AbilitySet = PawnData->AbilitySet;

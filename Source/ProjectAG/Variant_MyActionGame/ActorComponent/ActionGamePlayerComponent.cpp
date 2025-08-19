@@ -4,9 +4,11 @@
 #include "Variant_MyActionGame/ActorComponent/ActionGamePlayerComponent.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "MyAbilitySystemComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
 #include "Variant_MyActionGame/Input/ActionGameInputComponent.h"
+#include "Variant_MyActionGame/Player/ActionGamePlayerState.h"
 
 
 const FName UActionGamePlayerComponent::NAME_ActorFeatureName("ActionGamePlayer");
@@ -150,11 +152,22 @@ void UActionGamePlayerComponent::CheckDefaultInitialization()
 void UActionGamePlayerComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	// handle ability input presssed
+	AActionGamePlayerState* PS = GetPlayerState<AActionGamePlayerState>();
+	if (IsValid(PS))
+	{
+		UMyAbilitySystemComponent* MyASC = Cast<UMyAbilitySystemComponent>(PS->GetAbilitySystemComponent());
+		if (IsValid(MyASC))
+		{
+			MyASC->AbilityInputTagPressed(InputTag);	
+		}
+	}
+	
 }
 
 void UActionGamePlayerComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	// handle ability input released
+	unimplemented();
 }
 
 void UActionGamePlayerComponent::Input_Move(const FInputActionValue& InputActionValue)

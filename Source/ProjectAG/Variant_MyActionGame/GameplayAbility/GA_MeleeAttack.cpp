@@ -42,8 +42,6 @@ void UGA_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	Task->OnCancelled.AddDynamic(this, &ThisClass::OnMontageCancelled);
 
 	Task->ReadyForActivation();
-	
-	EndAbility(Handle,ActorInfo,ActivationInfo,false,false);
 }
 
 void UGA_MeleeAttack::OnMontageFinished()

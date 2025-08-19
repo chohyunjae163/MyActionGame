@@ -26,5 +26,5 @@ public:
 private:
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
 	UPROPERTY()
-	UAbilitySystemComponent* AbilitySystemComponent;
+	TObjectPtr<class UMyAbilitySystemComponent> AbilitySystemComponent;
 };

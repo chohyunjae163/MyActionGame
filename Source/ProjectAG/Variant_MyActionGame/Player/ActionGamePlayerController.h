@@ -13,4 +13,13 @@ UCLASS(MinimalAPI)
 class AActionGamePlayerController : public AModularPlayerController
 {
 	GENERATED_BODY()
+
+
+protected:
+	/** Method called after processing input */
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+
+private:
+	class AActionGamePlayerState* GetPlayerState() const;
+	class UMyAbilitySystemComponent* GetMyASC() const;
 };
