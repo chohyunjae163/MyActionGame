@@ -11,6 +11,25 @@
 
 
 /**
+ * ULyraAbilitySet
+ *
+ *	Non-mutable data asset used to grant gameplay abilities and gameplay effects.
+ */
+UCLASS(BlueprintType, Const)
+class UActionGameAbilitySet : public UPrimaryDataAsset
+{
+	GENERATED_BODY()
+
+	UActionGameAbilitySet(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+public:
+	void GiveAbilities(UAbilitySystemComponent* AbilitySystemComponent);
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UGameplayAbility>> GrantedGameplayAbilities;
+};
+
+/**
  *  Definition of a pawn 
  */
 UCLASS(MinimalAPI,Const)
@@ -18,12 +37,7 @@ class UActionGamePawnData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
-
-	// pawn blueprint
+public:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<APawn> PawnClass;
-
-	// pawn's abilities
-	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UGameplayAbility>> GrantedGameplayAbilities;
+	TObjectPtr<UActionGameAbilitySet> AbilitySet;
 };

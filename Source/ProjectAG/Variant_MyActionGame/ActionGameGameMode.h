@@ -14,4 +14,5 @@ class AActionGameGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+	AActionGameGameMode(const FObjectInitializer& ObjectInitializer);
 };

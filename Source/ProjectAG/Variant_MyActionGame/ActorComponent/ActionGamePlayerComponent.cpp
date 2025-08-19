@@ -2,7 +2,9 @@
 
 
 #include "Variant_MyActionGame/ActorComponent/ActionGamePlayerComponent.h"
+
 #include "EnhancedInputSubsystems.h"
+#include "Components/GameFrameworkComponentManager.h"
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
 #include "Variant_MyActionGame/Input/ActionGameInputComponent.h"
 
@@ -66,6 +68,7 @@ bool UActionGamePlayerComponent::CanChangeInitState(UGameFrameworkComponentManag
 		
 		return IsValid(MyPawn->InputComponent);
 	}
+	
 	return true;
 }
 
@@ -77,11 +80,15 @@ void UActionGamePlayerComponent::HandleChangeInitState(UGameFrameworkComponentMa
 	{
 		APawn* Pawn = GetPawn<APawn>();
 		UInputComponent* InputComponent = Pawn->InputComponent;
-		InitializePlayerInput(InputComponent);
+		bPlayerInputInitialized = InitializePlayerInput(InputComponent);
+	}
+	if (CurrentState == ActionGameGameplayTags::InitState_DataInitialized)
+	{
+		ensureMsgf(bPlayerInputInitialized,TEXT("Player Input is not initialized!"));
 	}
 }
 
-void UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
+bool UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
 {
 	const APlayerController* PlayerController = GetController<APlayerController>();
 	if (IsValid(PlayerController))
@@ -115,16 +122,18 @@ void UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerIn
 				ActionGameGameplayTags::InputTag_LookMouse,
 				ETriggerEvent::Triggered,
 				this,
-				&ThisClass::Input_LookMouse);				
+				&ThisClass::Input_LookMouse);
+
+			return true;
 		}
 	}
+	return false;
 }
 
 
 
 void UActionGamePlayerComponent::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
 {
-	
 }
 
 void UActionGamePlayerComponent::CheckDefaultInitialization()

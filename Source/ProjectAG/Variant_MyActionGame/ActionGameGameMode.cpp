@@ -2,3 +2,11 @@
 
 
 #include "ActionGameGameMode.h"
+
+#include "Player/ActionGamePlayerState.h"
+
+AActionGameGameMode::AActionGameGameMode(const FObjectInitializer& ObjectInitializer):
+	Super(ObjectInitializer)
+{
+	PlayerStateClass = AActionGamePlayerState::StaticClass();
+}

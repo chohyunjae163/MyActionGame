@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
+#include "Variant_MyActionGame/Data/ActionGamePawnData.h"
 #include "Variant_MyActionGame/Player/ActionGamePlayerState.h"
 
 const FName UActionGamePawnComponent::NAME_ActorFeatureName("ActionGamePawn");
@@ -34,6 +35,9 @@ void UActionGamePawnComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+	// Listen for changes to all features
+	BindOnActorInitStateChanged(NAME_None, FGameplayTag(), false);
+	ensureMsgf(IsValid(PawnData),TEXT("Pawn Data must be set for the pawn"));
 	TryToChangeInitState(ActionGameGameplayTags::InitState_Spawned);
 	CheckDefaultInitialization();
 }
@@ -81,6 +85,11 @@ bool UActionGamePawnComponent::CanChangeInitState(UGameFrameworkComponentManager
 			{
 				return false;
 			}
+
+			if (!GetPlayerState<AActionGamePlayerState>())
+			{
+				return false;
+			}
 		}
 
 		return true;
@@ -88,11 +97,14 @@ bool UActionGamePawnComponent::CanChangeInitState(UGameFrameworkComponentManager
 	if (CurrentState == ActionGameGameplayTags::InitState_DataAvailable && DesiredState == ActionGameGameplayTags::InitState_DataInitialized)
 	{
 		// Transition to initialize if all features have their data available
-		return Manager->HaveAllFeaturesReachedInitState(Pawn, ActionGameGameplayTags::InitState_DataAvailable);
+		const bool AllFeaturesReached_DataAvailable = Manager->HaveAllFeaturesReachedInitState(Pawn, ActionGameGameplayTags::InitState_DataAvailable,NAME_ActorFeatureName);
+		return AllFeaturesReached_DataAvailable;
 	}
 	if (CurrentState == ActionGameGameplayTags::InitState_DataInitialized && DesiredState == ActionGameGameplayTags::InitState_GameplayReady)
 	{
-		return true;
+		//if other features have their data initialized, move to InitState_GameplayReady
+		const bool AllFeaturesReached_DataInitialized = Manager->HaveAllFeaturesReachedInitState(Pawn, ActionGameGameplayTags::InitState_DataInitialized,NAME_ActorFeatureName);
+		return AllFeaturesReached_DataInitialized;
 	}
 
 	return false;
@@ -104,13 +116,29 @@ void UActionGamePawnComponent::HandleChangeInitState(UGameFrameworkComponentMana
 	if (CurrentState == ActionGameGameplayTags::InitState_DataAvailable && DesiredState == ActionGameGameplayTags::InitState_DataInitialized)
 	{
 		AActionGamePlayerState* PS = GetPlayerState<AActionGamePlayerState>();
-		UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-		InitializeAbilitySystem(ASC,PS);
+		if(IsValid(PS))
+		{
+			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+			ensureMsgf(IsValid(ASC),TEXT("A Pawn must have AbilitySystemComponent"));
+			InitializeAbilitySystem(ASC,PS);
+		
+			UActionGameAbilitySet* AbilitySet = PawnData->AbilitySet;
+			AbilitySet->GiveAbilities(ASC);		
+		}
+
 	}
 }
 
 void UActionGamePawnComponent::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
 {
+	// If another feature is now in DataAvailable, see if we should transition to DataInitialized
+	if (Params.FeatureName != NAME_ActorFeatureName)
+	{
+		if (Params.FeatureState == ActionGameGameplayTags::InitState_DataAvailable)
+		{
+			CheckDefaultInitialization();
+		}
+	}
 }
 
 void UActionGamePawnComponent::CheckDefaultInitialization()

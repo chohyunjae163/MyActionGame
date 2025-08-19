@@ -12,7 +12,8 @@
 /**
  *  All Pawns with ASC should have this component
  *  Initialize AbilitySystemComponent here
- *  This component also coordinates the initialization of other components that implement IGameFrameworkInitStateInterface
+ *  This component waits other components to InitState be GameReady.
+ *  Therefore, All the components are data initialized when the initstate of this component is gameplayready.
  *  Based off Lyra Project
  */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -59,6 +60,6 @@ private:
 	TObjectPtr<class UAbilitySystemComponent> AbilitySystemComponent;
 
 	/** Pawn data used to create the pawn.  */
-	UPROPERTY(EditInstanceOnly, DisplayName="Pawn Definition")
-	TObjectPtr<const class UActionGamePawnData> PawnData;
+	UPROPERTY(EditDefaultsOnly, DisplayName="Pawn Definition")
+	TObjectPtr<class UActionGamePawnData> PawnData;
 };

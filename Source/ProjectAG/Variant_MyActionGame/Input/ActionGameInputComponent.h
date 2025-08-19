@@ -47,15 +47,15 @@ template <class UserClass, typename PressedFuncType, typename ReleasedFuncType>
 void UActionGameInputComponent::BindAbilityActions(const UActionGameInputConfig* InputConfig, UserClass* Object,
 	PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc)
 {
-	for (const auto& [InputAction, InputTag]  : InputConfig->AbilityInputActions)
+	for (const FActionGameInputAction& Action  : InputConfig->AbilityInputActions)
 	{
 		if (PressedFunc)
 		{
-			BindAction(InputAction,ETriggerEvent::Triggered,Object,PressedFunc,InputTag);
+			BindAction(Action.InputAction,ETriggerEvent::Triggered,Object,PressedFunc,Action.InputTag);
 		}
 		if (ReleasedFunc)
 		{
-			BindAction(InputAction,ETriggerEvent::Triggered,Object,ReleasedFunc,InputTag);
+			BindAction(Action.InputAction,ETriggerEvent::Triggered,Object,ReleasedFunc,Action.InputTag);
 		}
 		
 	}

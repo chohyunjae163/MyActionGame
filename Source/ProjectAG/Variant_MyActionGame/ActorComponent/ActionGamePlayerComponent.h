@@ -48,7 +48,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
-	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
+	bool InitializePlayerInput(UInputComponent* PlayerInputComponent);
 
 
 protected:
@@ -57,4 +57,6 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly,Category=ActionGame,DisplayName="Input Config")
 	TObjectPtr<class UActionGameInputConfig> InputConfig;
+
+	bool bPlayerInputInitialized = false;
 };
