@@ -21,12 +21,13 @@ void UMyAbilitySystemComponent::AbilityInputTagPressed(const struct FGameplayTag
 
 void UMyAbilitySystemComponent::AbilityInputTagReleased(const struct FGameplayTag& InputTag)
 {
-	unimplemented();
+	InputReleasedTags.Add(InputTag);
 }
 
 void UMyAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGamePaused)
 {
 	AActor* MyOwner = GetOwner();
+	
 	for (const FGameplayTag& Tag : InputPressedTags)
 	{
 		FGameplayEventData Payload;
@@ -36,7 +37,20 @@ void UMyAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 		int32 NumActivated = HandleGameplayEvent(Tag,&Payload);
 		if (NumActivated == 0)
 		{
-			UE_LOG(LogAbilitySystemComponent,Warning,TEXT("Nothing Activated"));
+			UE_LOG(LogAbilitySystemComponent,Warning,TEXT("InputPressedTags Nothing Activated"));
+		}
+	}
+
+	for (const FGameplayTag& Tag : InputReleasedTags)
+	{
+		FGameplayEventData Payload;
+		Payload.EventTag    = Tag;
+		Payload.Instigator  = MyOwner;
+		Payload.Target      = MyOwner;
+		int32 NumActivated = HandleGameplayEvent(Tag,&Payload);
+		if (NumActivated == 0)
+		{
+			UE_LOG(LogAbilitySystemComponent,Warning,TEXT("InputReleasedTags Nothing Activated"));
 		}
 	}
 
@@ -47,5 +61,6 @@ void UMyAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 void UMyAbilitySystemComponent::ClearAbilityInput()
 {
 	InputPressedTags.Reset();
+	InputReleasedTags.Reset();
 }
 

@@ -167,7 +167,15 @@ void UActionGamePlayerComponent::Input_AbilityInputTagPressed(FGameplayTag Input
 void UActionGamePlayerComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	// handle ability input released
-	unimplemented();
+	AActionGamePlayerState* PS = GetPlayerState<AActionGamePlayerState>();
+	if (IsValid(PS))
+	{
+		UMyAbilitySystemComponent* MyASC = Cast<UMyAbilitySystemComponent>(PS->GetAbilitySystemComponent());
+		if (IsValid(MyASC))
+		{
+			MyASC->AbilityInputTagReleased(InputTag);	
+		}
+	}
 }
 
 void UActionGamePlayerComponent::Input_Move(const FInputActionValue& InputActionValue)
@@ -182,15 +190,16 @@ void UActionGamePlayerComponent::Input_Move(const FInputActionValue& InputAction
 	if (IsValid(Controller))
 	{
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
+		
 		const FRotator Rotator{0.f,Controller->GetControlRotation().Yaw,0.0f};
 
-		if (Value.X != 0.0f)
+		if (FMath::Abs(Value.X) > 0.1f)
 		{
 			const FVector MovementDir = Rotator.RotateVector(FVector::RightVector);
 			Pawn->AddMovementInput(MovementDir,Value.X);
 		}
 
-		if (Value.Y != 0.0f)
+		if (FMath::Abs(Value.Y) > 0.1f)
 		{
 			const FVector MovementDir = Rotator.RotateVector(FVector::ForwardVector);
 			Pawn->AddMovementInput(MovementDir,Value.Y);

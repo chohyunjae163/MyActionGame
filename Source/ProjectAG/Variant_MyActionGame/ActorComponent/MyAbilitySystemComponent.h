@@ -29,4 +29,5 @@ public:
 
 private:
 	TArray<FGameplayTag> InputPressedTags;
+	TArray<FGameplayTag> InputReleasedTags;
 };
