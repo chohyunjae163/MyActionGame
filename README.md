@@ -1,4 +1,10 @@
 # MyActionGame
-This is my UE c++ portfolio starting 12th of August, 2025.  
-this is an ongoing project.
+This is my UE C++ portfolio starting 12th of August, 2025.  
+It will be complete when it is complete.
+
+Things to implement in this project.
+- melee attack combos
+- fire projectiles
+- change weapoons
+- interact with the world
 
