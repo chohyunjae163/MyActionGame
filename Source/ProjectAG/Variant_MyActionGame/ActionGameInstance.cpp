@@ -13,7 +13,7 @@ void UActionGameInstance::Init()
 	// Register our custom init states
 	UGameFrameworkComponentManager* ComponentManager = GetSubsystem<UGameFrameworkComponentManager>(this);
 
-	if (ensure(ComponentManager))
+	if (ensure(IsValid(ComponentManager)))
 	{
 		ComponentManager->RegisterInitState(ActionGameGameplayTags::InitState_Spawned, false, FGameplayTag());
 		ComponentManager->RegisterInitState(ActionGameGameplayTags::InitState_DataAvailable, false, ActionGameGameplayTags::InitState_Spawned);
