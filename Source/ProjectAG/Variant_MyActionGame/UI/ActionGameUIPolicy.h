@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CommonActivatableWidget.h"
+#include "ActionGameHUD.h"
 #include "GameplayTagContainer.h"
 #include "GameUIPolicy.h"
 #include "ActionGameUIPolicy.generated.h"
@@ -16,7 +16,7 @@ struct FActionGameUILayer
 
 	// The layout widget to spawn
 	UPROPERTY(EditAnywhere, Category=UI)
-	TSoftClassPtr<UCommonActivatableWidget> LayerClass;
+	TSoftClassPtr<UActionGameHUD> LayerClass;
 
 	// The layer to insert the widget in
 	UPROPERTY(EditAnywhere, Category=UI, meta=(Categories="UI.Layer"))
