@@ -3,34 +3,33 @@
 
 #include "ActionGameHUD.h"
 
-#include "CommonUIExtensions.h"
-#include "NativeGameplayTags.h"
-#include "Input/CommonUIInputTypes.h"
+#include "MVVMGameSubsystem.h"
+#include "MVVMSubsystem.h"
+#include "ViewModel/CharacterViewModel.h"
 
-
-UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_ACTION_ESCAPE, "UI.Action.Escape");
-UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");
-
-void UActionGameHUD::NativeOnInitialized()
+void AActionGameHUD::BeginPlay()
 {
-	Super::NativeOnInitialized();
+	Super::BeginPlay();
+	
+	check(IsValid(PlayerOwner));
 
-	//ESC menu handling
-	FBindUIActionArgs BindUIActionArgs(FUIActionTag::ConvertChecked(TAG_UI_ACTION_ESCAPE),FSimpleDelegate::CreateUObject(this,&ThisClass::HandleEscapeAction));
-	FUIActionBindingHandle Handle = RegisterUIActionBinding(BindUIActionArgs);
-}
+	UGameInstance* GameInstance =  PlayerOwner->GetGameInstance();
+	check(IsValid(GameInstance));
+	
+	const UMVVMGameSubsystem* MVVMSubsystem = GameInstance->GetSubsystem<UMVVMGameSubsystem>();
+	check(IsValid(MVVMSubsystem));
 
-
-void UActionGameHUD::HandleEscapeAction()
-{
-	if (!EscapeMenuClass.IsNull())
+	UMVVMViewModelCollectionObject* ViewModelCollection = MVVMSubsystem->GetViewModelCollection();
+	if (IsValid(ViewModelCollection))
 	{
-		UCommonUIExtensions::PushStreamedContentToLayer_ForPlayer(GetOwningLocalPlayer(), TAG_UI_LAYER_MENU, EscapeMenuClass);
+		FMVVMViewModelContext Context;
+		FName ViewModelName = TEXT("PlayerCharacterViewModel");
+		Context.ContextClass = UCharacterViewModel::StaticClass();
+		Context.ContextName = ViewModelName;
+		UCharacterViewModel* CharacterViewModel = NewObject<UCharacterViewModel>();
+		ViewModelCollection->AddViewModelInstance(
+			Context,
+			CharacterViewModel
+			);
 	}
-}
-
-
-TOptional<FUIInputConfig> UActionGameHUD::GetDesiredInputConfig() const
-{
-	return FUIInputConfig(ECommonInputMode::All, GameMouseCaptureMode);
 }

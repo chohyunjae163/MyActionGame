@@ -3,36 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CommonActivatableWidget.h"
+#include "GameFramework/HUD.h"
 #include "ActionGameHUD.generated.h"
 
 /**
  * 
  */
-UCLASS(MinimalAPI)
-class UActionGameHUD : public UCommonActivatableWidget
+UCLASS()
+class PROJECTAG_API AActionGameHUD : public AHUD
 {
 	GENERATED_BODY()
 
-public:
-	virtual void NativeOnInitialized() override;
-
-	//~UCommonActivatableWidget interface
-	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
-	//~End of UCommonActivatableWidget interface
-private:
-	//callback for escape action
-	void HandleEscapeAction();
-
-
 protected:
-	/**
- * The menu to be displayed when the user presses the "Pause" or "Escape" button 
- */
-	UPROPERTY(EditDefaultsOnly)
-	TSoftClassPtr<UCommonActivatableWidget> EscapeMenuClass;
-
-	/** The desired mouse behavior when the game gets input. */
-	UPROPERTY(EditDefaultsOnly, Category = Input)
-	EMouseCaptureMode GameMouseCaptureMode = EMouseCaptureMode::CapturePermanently;
+	virtual void BeginPlay() override;
 };

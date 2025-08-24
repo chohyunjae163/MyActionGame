@@ -5,7 +5,7 @@
 
 #include "ActionGamePlayerState.h"
 #include "Variant_MyActionGame/ActorComponent/MyAbilitySystemComponent.h"
-
+#include "Variant_MyActionGame/UI/ActionGameHUD.h"
 
 
 class AActionGamePlayerState* AActionGamePlayerController::GetPlayerState() const
@@ -28,5 +28,20 @@ void AActionGamePlayerController::PostProcessInput(const float DeltaTime, const 
 		MyASC->ProcessAbilityInput(DeltaTime, bGamePaused);
 	}
 	Super::PostProcessInput(DeltaTime, bGamePaused);
+}
+
+void AActionGamePlayerController::SpawnDefaultHUD()
+{
+	if ( Cast<ULocalPlayer>(Player) == NULL )
+	{
+		return;
+	}
+
+	UE_LOG(LogPlayerController, Verbose, TEXT("SpawnDefaultHUD"));
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Owner = this;
+	SpawnInfo.Instigator = GetInstigator();
+	SpawnInfo.ObjectFlags |= RF_Transient;	// We never want to save HUDs into a map
+	MyHUD = GetWorld()->SpawnActor<AActionGameHUD>( SpawnInfo );
 }
 

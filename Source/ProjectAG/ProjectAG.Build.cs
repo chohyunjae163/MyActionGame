@@ -21,7 +21,10 @@ public class ProjectAG : ModuleRules
 			"ModularGameplayActors",
 			"ModularGamePlay", 
 			"GameplayAbilities",
-			"GameplayTasks", "CommonGame","CommonUI"
+			"GameplayTasks", 
+			"CommonGame",
+			"CommonUI",
+			"ModelViewViewModel"
 		});
 
 		PublicIncludePaths.AddRange(new string[] {

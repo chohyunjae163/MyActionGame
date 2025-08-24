@@ -19,6 +19,9 @@ protected:
 	/** Method called after processing input */
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 
+	//override AHUD with ActionGameHUD
+	virtual void SpawnDefaultHUD() override;
+
 private:
 	class AActionGamePlayerState* GetPlayerState() const;
 	class UMyAbilitySystemComponent* GetMyASC() const;
