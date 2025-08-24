@@ -3,20 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ActionGameLayer.h"
 #include "GameplayTagContainer.h"
 #include "GameUIPolicy.h"
 #include "ActionGameUIPolicy.generated.h"
 
 
 USTRUCT()
-struct FActionGameUILayer
+struct FActionGameUILayerContent
 {
 	GENERATED_BODY()
 
 	// The layout widget to spawn
 	UPROPERTY(EditAnywhere, Category=UI)
-	TSoftClassPtr<UActionGameLayer> LayerClass;
+	TSoftClassPtr<class UCommonActivatableWidget> ContentWidgetClass;
 
 	// The layer to insert the widget in
 	UPROPERTY(EditAnywhere, Category=UI, meta=(Categories="UI.Layer"))
@@ -26,25 +25,22 @@ struct FActionGameUILayer
 
 /**
  * Blueprint UI Policy should inherit this class
+ * push game ui layers when the layout is added to the viewport
  */
 UCLASS(MinimalAPI)
 class UActionGameUIPolicy : public UGameUIPolicy
 {
 	GENERATED_BODY()
 
-public:
-	TConstArrayView<FActionGameUILayer> GetLayers() const
-	{
-		return UI_Layers;
-	}
-
 protected:
-	//
+	// ~ begin UGameUIPolicy 
 	virtual void OnRootLayoutAddedToViewport(UCommonLocalPlayer* LocalPlayer, UPrimaryGameLayout* Layout) override;
-
+	// ~ end UGameUIPolicy
+	
 private:
 	void PushContentToLayers(const ULocalPlayer* Player);
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category=UI, meta=(TitleProperty="{LayerClass} + {LayerID}"))
-	TArray<FActionGameUILayer> UI_Layers; 
+	TArray<FActionGameUILayerContent> UI_LayerContents; 
 };

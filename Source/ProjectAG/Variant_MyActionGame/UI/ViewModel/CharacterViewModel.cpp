@@ -3,6 +3,49 @@
 
 #include "CharacterViewModel.h"
 
+#include "AbilitySystemComponent.h"
+#include "Variant_MyActionGame/GameplayAttribute/ActionGameCharacterAttributeSet.h"
+
+void UCharacterViewModel::Initialize(class UAbilitySystemComponent* ASC)
+{
+	if (IsValid(ASC))
+	{
+		const UActionGameCharacterAttributeSet* Attributes = ASC->GetSet<UActionGameCharacterAttributeSet>();
+		if (!IsValid(Attributes))
+		{
+			return;
+		}
+		
+		UE_MVVM_SET_PROPERTY_VALUE(Health,     Attributes->GetHealth());
+		UE_MVVM_SET_PROPERTY_VALUE(MaxHealth,  Attributes->GetMaxHealth());
+		UE_MVVM_SET_PROPERTY_VALUE(Stamina,    Attributes->GetStamina());
+		UE_MVVM_SET_PROPERTY_VALUE(MaxStamina, Attributes->GetMaxStamina());
+		
+		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this,&ThisClass::OnHealthChanged);
+		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).AddUObject(this,&ThisClass::OnMaxHealthChanged);
+		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetStaminaAttribute()).AddUObject(this,&ThisClass::OnStaminaChanged);
+		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxStaminaAttribute()).AddUObject(this,&ThisClass::OnMaxStaminaChanged);
+
+	}
+}
+
+void UCharacterViewModel::Deinitialize(class UAbilitySystemComponent* ASC) const
+{
+	if (IsValid(ASC))
+	{
+		const UActionGameCharacterAttributeSet* Attributes = ASC->GetSet<UActionGameCharacterAttributeSet>();
+		if (!IsValid(Attributes))
+		{
+			return;
+		}
+		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).RemoveAll(this);
+		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).RemoveAll(this);
+		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetStaminaAttribute()).RemoveAll(this);
+		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxStaminaAttribute()).RemoveAll(this);
+		
+	}
+}
+
 int32 UCharacterViewModel::GetHealth() const
 {
 	return Health;
@@ -63,5 +106,25 @@ void UCharacterViewModel::SetMaxStamina(int32 NewMaxStamina)
 float UCharacterViewModel::GetStaminaPercentage() const
 {
 	return Stamina / FMath::Max(MaxStamina,1);
+}
+
+void UCharacterViewModel::OnHealthChanged(const FOnAttributeChangeData& Data)
+{
+	SetHealth(Data.NewValue);
+}
+
+void UCharacterViewModel::OnMaxHealthChanged(const FOnAttributeChangeData& Data)
+{
+	SetMaxHealth(Data.NewValue);	
+}
+
+void UCharacterViewModel::OnStaminaChanged(const FOnAttributeChangeData& Data)
+{
+	SetStamina(Data.NewValue);
+}
+
+void UCharacterViewModel::OnMaxStaminaChanged(const FOnAttributeChangeData& Data)
+{
+	SetMaxStamina(Data.NewValue);
 }
 

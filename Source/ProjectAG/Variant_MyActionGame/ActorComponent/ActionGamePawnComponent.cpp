@@ -5,8 +5,10 @@
 
 #include "AbilitySystemComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
 #include "Variant_MyActionGame/Data/ActionGamePawnData.h"
+#include "Variant_MyActionGame/GameplayMessage/SystemInitializedMessage.h"
 #include "Variant_MyActionGame/Player/ActionGamePlayerState.h"
 
 const FName UActionGamePawnComponent::NAME_ActorFeatureName("ActionGamePawn");
@@ -121,9 +123,16 @@ void UActionGamePawnComponent::HandleChangeInitState(UGameFrameworkComponentMana
 			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
 			ensureMsgf(IsValid(ASC),TEXT("A Pawn must have an AbilitySystemComponent"));
 			InitializeAbilitySystem(ASC,PS);
-		
-			UActionGameAbilitySet* AbilitySet = PawnData->AbilitySet;
-			AbilitySet->GiveAbilities(ASC);		
+
+			//broadcast Ability System Initialization
+			UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+			const FGameplayTag Channel = ActionGameGameplayTags::Initialized_AbilitySystem;
+
+			const FSystemInitializedMessage Message {
+				.SystemOwner = GetPawn<APawn>(),
+				.SystemComponent = ASC,
+			};
+			GameplayMessageSubsystem.BroadcastMessage<FSystemInitializedMessage>(Channel,Message);		
 		}
 
 	}
@@ -177,6 +186,9 @@ void UActionGamePawnComponent::InitializeAbilitySystem(class UAbilitySystemCompo
 	APawn* Pawn = GetPawnChecked<APawn>();
 	AbilitySystemComponent = InASC;
 	AbilitySystemComponent->InitAbilityActorInfo(InOwnerActor, Pawn);
+	
+	UActionGameAbilitySet* AbilitySet = PawnData->AbilitySet;
+	AbilitySet->GiveAbilities(AbilitySystemComponent);
 }
 
 void UActionGamePawnComponent::UninitializeAbilitySystem()

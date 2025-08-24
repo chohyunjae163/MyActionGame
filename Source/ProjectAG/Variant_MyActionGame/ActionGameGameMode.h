@@ -8,6 +8,7 @@
 
 /**
  * The base game mode class used by this project.
+ *  set up my playercontroller, playerstate and hud class in the constructor 
  */
 UCLASS(MinimalAPI)
 class AActionGameGameMode : public AGameModeBase

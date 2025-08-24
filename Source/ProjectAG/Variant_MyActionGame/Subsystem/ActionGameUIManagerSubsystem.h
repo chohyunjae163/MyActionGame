@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameUIManagerSubsystem.h"
+
 #include "ActionGameUIManagerSubsystem.generated.h"
 
 /**
@@ -11,8 +12,9 @@
  *
  * @see int32 UCommonGameInstance::AddLocalPlayer(ULocalPlayer* NewPlayer, FPlatformUserId UserId)
  */
-UCLASS()
-class PROJECTAG_API UActionGameUIManagerSubsystem : public UGameUIManagerSubsystem
+UCLASS(MinimalAPI)
+class UActionGameUIManagerSubsystem : public UGameUIManagerSubsystem
 {
 	GENERATED_BODY()
+	
 };

@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ActionGameLayer.h"
+#include "ActionGameInGameHUD.h"
 
 #include "CommonUIExtensions.h"
 #include "NativeGameplayTags.h"
@@ -11,7 +11,7 @@
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_ACTION_ESCAPE, "UI.Action.Escape");
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");
 
-void UActionGameLayer::NativeOnInitialized()
+void UActionGameInGameHUD::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
@@ -21,7 +21,7 @@ void UActionGameLayer::NativeOnInitialized()
 }
 
 
-void UActionGameLayer::HandleEscapeAction()
+void UActionGameInGameHUD::HandleEscapeAction()
 {
 	if (!EscapeMenuClass.IsNull())
 	{
@@ -30,7 +30,7 @@ void UActionGameLayer::HandleEscapeAction()
 }
 
 
-TOptional<FUIInputConfig> UActionGameLayer::GetDesiredInputConfig() const
+TOptional<FUIInputConfig> UActionGameInGameHUD::GetDesiredInputConfig() const
 {
 	return FUIInputConfig(ECommonInputMode::All, GameMouseCaptureMode);
 }
