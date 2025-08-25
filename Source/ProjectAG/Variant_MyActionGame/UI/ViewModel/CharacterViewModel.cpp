@@ -15,11 +15,10 @@ void UCharacterViewModel::Initialize(class UAbilitySystemComponent* ASC)
 		{
 			return;
 		}
-		
-		UE_MVVM_SET_PROPERTY_VALUE(Health,     Attributes->GetHealth());
-		UE_MVVM_SET_PROPERTY_VALUE(MaxHealth,  Attributes->GetMaxHealth());
-		UE_MVVM_SET_PROPERTY_VALUE(Stamina,    Attributes->GetStamina());
-		UE_MVVM_SET_PROPERTY_VALUE(MaxStamina, Attributes->GetMaxStamina());
+		SetMaxHealth( Attributes->GetMaxHealth());
+		SetMaxStamina( Attributes->GetMaxStamina());
+		SetHealth( Attributes->GetHealth());
+		SetStamina( Attributes->GetStamina());
 		
 		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this,&ThisClass::OnHealthChanged);
 		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).AddUObject(this,&ThisClass::OnMaxHealthChanged);

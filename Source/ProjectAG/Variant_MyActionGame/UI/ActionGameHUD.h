@@ -3,9 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameFramework/HUD.h"
-#include "Types/MVVMViewModelContext.h"
 #include "ActionGameHUD.generated.h"
 
 /**
@@ -17,16 +15,6 @@ UCLASS()
 class AActionGameHUD : public AHUD
 {
 	GENERATED_BODY()
+	
 
-protected:
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-private:
-	class UCharacterViewModel* GetCharacterViewModel() const;
-	void OnSystemInitialized(struct FGameplayTag Channel, const struct FSystemInitializedMessage& Message);
-
-
-private:
-	FMVVMViewModelContext			Context;
-	FGameplayMessageListenerHandle	ListenerHandle;
 };

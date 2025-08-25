@@ -189,6 +189,7 @@ void UActionGamePawnComponent::InitializeAbilitySystem(class UAbilitySystemCompo
 	
 	UActionGameAbilitySet* AbilitySet = PawnData->AbilitySet;
 	AbilitySet->GiveAbilities(AbilitySystemComponent);
+	AbilitySet->ApplyEffects(AbilitySystemComponent);
 }
 
 void UActionGamePawnComponent::UninitializeAbilitySystem()

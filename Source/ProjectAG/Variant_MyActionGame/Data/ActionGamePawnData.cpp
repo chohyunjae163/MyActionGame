@@ -21,3 +21,17 @@ void UActionGameAbilitySet::GiveAbilities(UAbilitySystemComponent* AbilitySystem
 	}
 }
 
+void UActionGameAbilitySet::ApplyEffects(UAbilitySystemComponent* AbilitySystemComponent)
+{
+	for (TSubclassOf<UGameplayEffect> EffectClass : GrantedGameplayEffects)
+	{
+		FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+		FGameplayEffectSpecHandle EffectSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass,1,ContextHandle);
+		if(ensure(EffectSpecHandle.Data.IsValid()))
+		{
+			TSharedRef<FGameplayEffectSpec> Spec = EffectSpecHandle.Data.ToSharedRef();
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(Spec.Get());		
+		}
+	}
+}
+

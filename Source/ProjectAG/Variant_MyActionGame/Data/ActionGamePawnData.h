@@ -15,7 +15,7 @@
  *
  *	Non-mutable data asset used to grant gameplay abilities and gameplay effects.
  */
-UCLASS(BlueprintType, Const)
+UCLASS(MinimalAPI, BlueprintType, Const)
 class UActionGameAbilitySet : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
@@ -24,9 +24,13 @@ class UActionGameAbilitySet : public UPrimaryDataAsset
 
 public:
 	void GiveAbilities(UAbilitySystemComponent* AbilitySystemComponent);
+	void ApplyEffects(UAbilitySystemComponent* AbilitySystemComponent);
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<UGameplayAbility>> GrantedGameplayAbilities;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UGameplayEffect>> GrantedGameplayEffects;
 };
 
 /**
