@@ -90,7 +90,7 @@ void UCharacterViewModel::SetStamina(int32 NewStamina)
 {
 	if (UE_MVVM_SET_PROPERTY_VALUE(Stamina,NewStamina))
 	{
-		UE_MVVM_BROADCAST_FIELD_VALUE_CHANGED(Stamina);
+		UE_MVVM_BROADCAST_FIELD_VALUE_CHANGED(GetStaminaPercentage);
 	}
 }
 
