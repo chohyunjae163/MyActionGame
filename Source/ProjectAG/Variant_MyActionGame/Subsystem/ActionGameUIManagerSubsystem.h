@@ -9,6 +9,7 @@
 
 /**
  * this class is required for UCommonGameInstance to work.
+ * UGameUIManagerSubsystem is a part of CommonGame plugins
  *
  * @see int32 UCommonGameInstance::AddLocalPlayer(ULocalPlayer* NewPlayer, FPlatformUserId UserId)
  */

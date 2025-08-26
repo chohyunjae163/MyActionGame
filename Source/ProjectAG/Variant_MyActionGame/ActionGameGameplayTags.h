@@ -16,4 +16,6 @@ namespace ActionGameGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_MeleeAttack);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Initialized_AbilitySystem);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(WorldInteraction_CanInteract);
 }

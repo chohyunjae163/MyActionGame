@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
-#include "ActionGameInGameHUD.generated.h"
+#include "ActionGameInGameLayer.generated.h"
 
 /**
  * this is a base class for in-game HUD
  * when pressed escape, it shows menu
  */
 UCLASS(MinimalAPI)
-class UActionGameInGameHUD : public UCommonActivatableWidget
+class UActionGameInGameLayer : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
 
