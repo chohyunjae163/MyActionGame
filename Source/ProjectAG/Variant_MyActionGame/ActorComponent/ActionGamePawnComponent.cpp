@@ -8,6 +8,7 @@
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
 #include "Variant_MyActionGame/Data/ActionGamePawnData.h"
+#include "Variant_MyActionGame/GameplayMessage/PawnInitStateMessage.h"
 #include "Variant_MyActionGame/GameplayMessage/SystemInitializedMessage.h"
 #include "Variant_MyActionGame/Player/ActionGamePlayerState.h"
 
@@ -88,25 +89,21 @@ bool UActionGamePawnComponent::CanChangeInitState(UGameFrameworkComponentManager
 				return false;
 			}
 
-			if (!GetPlayerState<AActionGamePlayerState>())
-			{
-				return false;
-			}
 		}
 
 		return true;
 	}
 	if (CurrentState == ActionGameGameplayTags::InitState_DataAvailable && DesiredState == ActionGameGameplayTags::InitState_DataInitialized)
 	{
-		// Transition to initialize if all features have their data available
+		// Transition to initialize if all features(components) have their data available
 		const bool AllFeaturesReached_DataAvailable = Manager->HaveAllFeaturesReachedInitState(Pawn, ActionGameGameplayTags::InitState_DataAvailable,NAME_ActorFeatureName);
 		return AllFeaturesReached_DataAvailable;
 	}
 	if (CurrentState == ActionGameGameplayTags::InitState_DataInitialized && DesiredState == ActionGameGameplayTags::InitState_GameplayReady)
 	{
-		//if other features have their data initialized, move to InitState_GameplayReady
-		const bool AllFeaturesReached_DataInitialized = Manager->HaveAllFeaturesReachedInitState(Pawn, ActionGameGameplayTags::InitState_DataInitialized,NAME_ActorFeatureName);
-		return AllFeaturesReached_DataInitialized;
+		//make sure other features(components) have their data initialized before moving on to GameplayReady
+		ensure(Manager->HaveAllFeaturesReachedInitState(Pawn, ActionGameGameplayTags::InitState_DataInitialized,NAME_ActorFeatureName));
+		return true;
 	}
 
 	return false;
@@ -115,26 +112,18 @@ bool UActionGamePawnComponent::CanChangeInitState(UGameFrameworkComponentManager
 void UActionGamePawnComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
 	FGameplayTag DesiredState)
 {
-	if (CurrentState == ActionGameGameplayTags::InitState_DataAvailable && DesiredState == ActionGameGameplayTags::InitState_DataInitialized)
+	if (CurrentState == ActionGameGameplayTags::InitState_DataInitialized && DesiredState == ActionGameGameplayTags::InitState_GameplayReady)
 	{
-		AActionGamePlayerState* PS = GetPlayerState<AActionGamePlayerState>();
-		if(IsValid(PS))
-		{
-			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			ensureMsgf(IsValid(ASC),TEXT("A Pawn must have an AbilitySystemComponent"));
-			InitializeAbilitySystem(ASC,PS);
+		// ability system component must be ready at this stage.
+		ensure(IsValid(AbilitySystemComponent));
+		UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+		const FGameplayTag Channel = ActionGameGameplayTags::InitState_GameplayReady;
 
-			//broadcast Ability System Initialization
-			UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
-			const FGameplayTag Channel = ActionGameGameplayTags::Initialized_AbilitySystem;
-
-			const FSystemInitializedMessage Message {
-				.SystemOwner = GetPawn<APawn>(),
-				.SystemComponent = ASC,
-			};
-			GameplayMessageSubsystem.BroadcastMessage<FSystemInitializedMessage>(Channel,Message);		
-		}
-
+		const FPawnGameReadyMessage Message {
+			.Pawn = GetPawn<APawn>(),
+			.PawnASC = AbilitySystemComponent,
+		};
+		GameplayMessageSubsystem.BroadcastMessage<FPawnGameReadyMessage>(Channel,Message);
 	}
 }
 
@@ -148,6 +137,7 @@ void UActionGamePawnComponent::OnActorInitStateChanged(const FActorInitStateChan
 			CheckDefaultInitialization();
 		}
 	}
+	
 }
 
 void UActionGamePawnComponent::CheckDefaultInitialization()
@@ -214,4 +204,19 @@ void UActionGamePawnComponent::UninitializeAbilitySystem()
 		}
 	}
 	AbilitySystemComponent = nullptr;
+}
+
+void UActionGamePawnComponent::HandleControllerChanged()
+{
+	CheckDefaultInitialization();
+}
+
+void UActionGamePawnComponent::HandlePlayerStateReplicated()
+{
+	CheckDefaultInitialization();
+}
+
+void UActionGamePawnComponent::SetupPlayerInputComponent()
+{
+	CheckDefaultInitialization();
 }

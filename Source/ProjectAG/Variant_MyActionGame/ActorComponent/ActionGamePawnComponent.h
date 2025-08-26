@@ -22,6 +22,8 @@ class PROJECTAG_API UActionGamePawnComponent :  public UPawnComponent, public IG
 	GENERATED_BODY()
 
 public:
+
+	static UActionGamePawnComponent* GetActionGamePawnComponent(const AActor* Owner) { return Owner->FindComponentByClass<UActionGamePawnComponent>();} ;
 	// Sets default values for this component's properties
 	UActionGamePawnComponent(const FObjectInitializer& ObjectInitializer);
 
@@ -42,6 +44,16 @@ public:
 	/** Should be called by the owning pawn to remove itself as the avatar of the ability system. */
 	void UninitializeAbilitySystem();
 
+	
+	/** Should be called by the owning pawn when the pawn's controller changes. */
+	void HandleControllerChanged();
+
+	/** Should be called by the owning pawn when the player state has been replicated. */
+	void HandlePlayerStateReplicated();
+
+	/** Should be called by the owning pawn when the input component is setup. */
+	void SetupPlayerInputComponent();
+	
 protected:
 	// Called when the game starts
 	virtual void OnRegister() override;

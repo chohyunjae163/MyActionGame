@@ -8,6 +8,7 @@
 #include "ActionGameUIManagerSubsystem.generated.h"
 
 /**
+ * Do NOT DELETE!!!
  * this class is required for UCommonGameInstance to work.
  * UGameUIManagerSubsystem is a part of CommonGame plugins
  *

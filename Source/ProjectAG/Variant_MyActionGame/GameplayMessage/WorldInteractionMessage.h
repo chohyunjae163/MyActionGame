@@ -6,9 +6,10 @@
 UENUM(BlueprintType)
 enum class EWorldInteractionStatus : uint8
 {
-	Available = 0,
-	Interacting = 1,
-	Complete = 2,
+	Invalid = 0,
+	Available = 1,
+	Interacting = 2,
+	Complete = 3,
 };
 
 USTRUCT(BlueprintType)

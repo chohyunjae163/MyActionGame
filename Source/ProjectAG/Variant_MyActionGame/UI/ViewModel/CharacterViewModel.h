@@ -16,8 +16,8 @@ class UCharacterViewModel : public UMVVMViewModelBase
 	GENERATED_BODY()
 
 public:
-	void Initialize(class UAbilitySystemComponent* ASC);
-	void Deinitialize(class UAbilitySystemComponent* ASC) const;
+	virtual void Initialize(class UAbilitySystemComponent* ASC);
+	virtual void Deinitialize(class UAbilitySystemComponent* ASC) const;
 
 	UFUNCTION(BlueprintPure,FieldNotify)
 	float GetMaxHealth() const;

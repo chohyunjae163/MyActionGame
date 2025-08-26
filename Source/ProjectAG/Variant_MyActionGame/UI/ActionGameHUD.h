@@ -8,13 +8,11 @@
 
 /**
  * My HUD Actor.
- * add a character view model instance.
- * it listens the ability system initialization for the attributes setup in the viewmodel mentioned above.
  */
-UCLASS()
+UCLASS(MinimalAPI)
 class AActionGameHUD : public AHUD
 {
 	GENERATED_BODY()
 	
-
+	
 };

@@ -23,6 +23,19 @@ public:
 	AActionGameCharacter();
 
 protected:
+
+	
+	// ~ begin APawn interface
+	virtual void OnRep_Controller() override;
+	virtual void OnRep_PlayerState() override;
+	virtual void PossessedBy(AController* NewController) override;
+	// ~ end APawn interface
+
+	// ~ begin ACharacter interface
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	// ~ end ACharacter interface
+	
+protected:
 	// any action game character needs this.
 	UPROPERTY(VisibleAnywhere,Category="Action Game")
 	TObjectPtr<class UActionGamePawnComponent> ActionGamePawnComponent;

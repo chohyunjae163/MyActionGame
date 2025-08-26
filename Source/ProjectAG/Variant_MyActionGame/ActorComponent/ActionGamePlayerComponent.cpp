@@ -3,6 +3,7 @@
 
 #include "Variant_MyActionGame/ActorComponent/ActionGamePlayerComponent.h"
 
+#include "ActionGamePawnComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MyAbilitySystemComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
@@ -35,6 +36,7 @@ void UActionGamePlayerComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+	BindOnActorInitStateChanged(UActionGamePawnComponent::NAME_ActorFeatureName, FGameplayTag(), false);
 	TryToChangeInitState(ActionGameGameplayTags::InitState_Spawned);
 	CheckDefaultInitialization();
 }
@@ -83,6 +85,15 @@ void UActionGamePlayerComponent::HandleChangeInitState(UGameFrameworkComponentMa
 		APawn* Pawn = GetPawn<APawn>();
 		UInputComponent* InputComponent = Pawn->InputComponent;
 		bPlayerInputInitialized = InitializePlayerInput(InputComponent);
+
+		AActionGamePlayerState* PS = GetPlayerState<AActionGamePlayerState>();
+		if(IsValid(PS))
+		{
+			UActionGamePawnComponent* PawnComponent = UActionGamePawnComponent::GetActionGamePawnComponent(GetOwner());
+			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+			PawnComponent->InitializeAbilitySystem(ASC,PS);
+		}
+
 	}
 	if (CurrentState == ActionGameGameplayTags::InitState_DataInitialized)
 	{
@@ -136,6 +147,7 @@ bool UActionGamePlayerComponent::InitializePlayerInput(UInputComponent* PlayerIn
 
 void UActionGamePlayerComponent::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
 {
+	
 }
 
 void UActionGamePlayerComponent::CheckDefaultInitialization()

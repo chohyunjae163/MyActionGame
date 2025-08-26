@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "ModularPlayerState.h"
-#include "GameFramework/GameplayMessageSubsystem.h"
 #include "ActionGamePlayerState.generated.h"
 
 /**
@@ -14,7 +13,6 @@
  * An easy way to access all PlayerStates is the PlayerArray inside the AGameState class.
  *
  * Create AbilitySystemComponent and AttributeSet.  attach them to PlayerState
- * init/deinit CharacterViewModel with AbilitySystemComponent
  */
 UCLASS(MinimalAPI)
 class AActionGamePlayerState : public AModularPlayerState, public IAbilitySystemInterface
@@ -28,14 +26,6 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~ End IAbilitySystemInterface
 
-protected:
-	
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-private:
-	class UCharacterViewModel* GetCharacterViewModel() const;
-	void OnSystemInitialized(struct FGameplayTag Channel, const struct FSystemInitializedMessage& Message);
 private:
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
 	UPROPERTY()
@@ -43,7 +33,5 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UActionGameCharacterAttributeSet> PlayerAttributeSet;
-
-
-	FGameplayMessageListenerHandle	ListenerHandle;
+	
 };

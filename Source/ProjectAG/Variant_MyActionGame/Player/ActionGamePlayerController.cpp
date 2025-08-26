@@ -4,21 +4,30 @@
 #include "ActionGamePlayerController.h"
 
 #include "ActionGamePlayerState.h"
+#include "Variant_MyActionGame/ActorComponent/LocalPlayerUIBridgeComponent.h"
 #include "Variant_MyActionGame/ActorComponent/MyAbilitySystemComponent.h"
 
 
-class AActionGamePlayerState* AActionGamePlayerController::GetPlayerState() const
+
+
+AActionGamePlayerController::AActionGamePlayerController(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
+{
+	LocalPlayerUIBridge = CreateDefaultSubobject<ULocalPlayerUIBridgeComponent>("LocalPlayerUIBridgeComponent");
+}
+
+
+AActionGamePlayerState* AActionGamePlayerController::GetPlayerState() const
 {
 	return CastChecked<AActionGamePlayerState>(PlayerState,ECastCheckedType::NullAllowed);
 }
 
 
-class UMyAbilitySystemComponent* AActionGamePlayerController::GetMyASC() const
+UMyAbilitySystemComponent* AActionGamePlayerController::GetMyASC() const
 {
 	AActionGamePlayerState* MyPlayerState = GetPlayerState();
 	return CastChecked<UMyAbilitySystemComponent>(MyPlayerState->GetAbilitySystemComponent(),ECastCheckedType::NullAllowed);
 }
-
 
 void AActionGamePlayerController::PostProcessInput(const float DeltaTime, const bool bGamePaused)
 {

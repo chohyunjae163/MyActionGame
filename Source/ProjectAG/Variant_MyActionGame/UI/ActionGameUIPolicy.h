@@ -36,7 +36,7 @@ class UActionGameUIPolicy : public UGameUIPolicy
 	GENERATED_BODY()
 
 public:
-	void GetCharacterViewModelContext(OUT FMVVMViewModelContext& ViewModelContext) const;
+	[[nodiscard]] FMVVMViewModelContext GetGlobalViewModelContext(TSubclassOf<UMVVMViewModelBase> ViewModelClass) const;
 	
 protected:
 	// ~ begin UGameUIPolicy 
@@ -51,8 +51,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category=UI, meta=(TitleProperty="{ContentWidgetClass} + {LayerID}"))
 	TArray<FActionGameUILayerContent> UI_LayerContents;
 
-	//character view model context
 	UPROPERTY(EditDefaultsOnly, Category=ViewModel)
-	FMVVMViewModelContext CharacterViewModelContext;
-
+	TArray<FMVVMViewModelContext> GlobalViewModelContexts;
+	
 };

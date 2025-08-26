@@ -15,3 +15,32 @@ AActionGameCharacter::AActionGameCharacter()
 
 }
 
+void AActionGameCharacter::OnRep_Controller()
+{
+	Super::OnRep_Controller();
+
+	UActionGamePawnComponent* PawnComponent = UActionGamePawnComponent::GetActionGamePawnComponent(this);
+	PawnComponent->HandleControllerChanged();
+}
+
+void AActionGameCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	UActionGamePawnComponent* PawnComponent = UActionGamePawnComponent::GetActionGamePawnComponent(this);
+	PawnComponent->HandlePlayerStateReplicated();
+}
+
+void AActionGameCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	UActionGamePawnComponent* PawnComponent = UActionGamePawnComponent::GetActionGamePawnComponent(this);
+	PawnComponent->HandleControllerChanged();
+}
+
+void AActionGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	UActionGamePawnComponent* PawnComponent = UActionGamePawnComponent::GetActionGamePawnComponent(this);
+	PawnComponent->SetupPlayerInputComponent();
+}
+

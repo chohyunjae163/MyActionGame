@@ -10,9 +10,18 @@
 
 DEFINE_LOG_CATEGORY(LogActionGameUI);
 
-void UActionGameUIPolicy::GetCharacterViewModelContext(FMVVMViewModelContext& ViewModelContext) const
+
+FMVVMViewModelContext UActionGameUIPolicy::GetGlobalViewModelContext(
+	TSubclassOf<UMVVMViewModelBase> ViewModelClass) const
 {
-	ViewModelContext = CharacterViewModelContext;
+	for (const FMVVMViewModelContext& Context : GlobalViewModelContexts)
+	{
+		if (Context.ContextClass == ViewModelClass)
+		{
+			return Context;
+		}
+	}
+	return FMVVMViewModelContext();
 }
 
 void UActionGameUIPolicy::OnRootLayoutAddedToViewport(UCommonLocalPlayer* LocalPlayer, UPrimaryGameLayout* Layout)
@@ -35,14 +44,18 @@ void UActionGameUIPolicy::AddViewModelInstancesToGlobalCollection(const UGameIns
 	const UMVVMGameSubsystem* MVVMSubsystem = GameInstance->GetSubsystem<UMVVMGameSubsystem>();
 	check(IsValid(MVVMSubsystem));
 
+
 	UMVVMViewModelCollectionObject* ViewModelCollection = MVVMSubsystem->GetViewModelCollection();
 	if (IsValid(ViewModelCollection))
 	{
-		UCharacterViewModel* CharacterViewModel = NewObject<UCharacterViewModel>();
-		ViewModelCollection->AddViewModelInstance(
-			CharacterViewModelContext,
-			CharacterViewModel
-			);			
+		for (const FMVVMViewModelContext& Context : GlobalViewModelContexts)
+		{
+			UMVVMViewModelBase* ViewModelClass = NewObject<UMVVMViewModelBase>(this, Context.ContextClass);
+			ViewModelCollection->AddViewModelInstance(
+				Context,
+				ViewModelClass
+				);		
+		}
 	}
 }
 
