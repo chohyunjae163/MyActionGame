@@ -58,7 +58,7 @@ void UInteractableObserverComponent::BroadcastInteractionStatusChange(class UInt
 	FWorldInteractionMessage Msg;
 	Msg.InteractionObserver = this;
 	Msg.InteractionObject = Interactable;
-	Msg.InteractionStatus = EWorldInteractionStatus::Ready;
+	Msg.InteractionStatus = NewStatus;
 	GameplayMessageSubsystem.BroadcastMessage(
 			ActionGameGameplayTags::WorldInteraction_CanInteract,Msg);
 }

@@ -19,12 +19,14 @@ public:
 	virtual void Initialize(class UAbilitySystemComponent* ASC);
 	virtual void Deinitialize(class UAbilitySystemComponent* ASC) const;
 
-protected:
-	UPROPERTY(FieldNotify)
-	bool bInteractable;
 
 private:
 	void OnInteractableFound(struct FGameplayTag Channel, const struct FWorldInteractionMessage& Msg);
+
+
 private:
+	UPROPERTY(BlueprintReadOnly, FieldNotify, meta=(AllowPrivateAccess=true))
+	bool bInteractable;
+	
 	FGameplayMessageListenerHandle	ListenerHandle;
 };
