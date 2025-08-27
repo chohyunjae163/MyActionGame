@@ -4,6 +4,7 @@
 #include "ActionGameCharacter.h"
 
 #include "Variant_MyActionGame/ActorComponent/ActionGamePawnComponent.h"
+#include "Variant_MyActionGame/ActorComponent/InteractableObserverComponent.h"
 
 // Sets default values
 AActionGameCharacter::AActionGameCharacter()
@@ -12,7 +13,7 @@ AActionGameCharacter::AActionGameCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	ActionGamePawnComponent = CreateDefaultSubobject<UActionGamePawnComponent>("ActionGamePawnComponent");
-
+	InteractableObserverComponent = CreateDefaultSubobject<UInteractableObserverComponent>("InteractableObserverComponent");
 }
 
 void AActionGameCharacter::OnRep_Controller()

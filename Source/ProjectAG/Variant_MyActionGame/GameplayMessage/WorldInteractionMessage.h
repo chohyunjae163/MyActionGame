@@ -7,7 +7,7 @@ UENUM(BlueprintType)
 enum class EWorldInteractionStatus : uint8
 {
 	Invalid = 0,
-	Available = 1,
+	Ready = 1,
 	Interacting = 2,
 	Complete = 3,
 };

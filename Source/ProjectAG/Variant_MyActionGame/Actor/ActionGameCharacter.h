@@ -39,5 +39,10 @@ protected:
 	// any action game character needs this.
 	UPROPERTY(VisibleAnywhere,Category="Action Game")
 	TObjectPtr<class UActionGamePawnComponent> ActionGamePawnComponent;
+
+	//enables interacting with the world interactables
+	UPROPERTY(VisibleAnywhere,Category="Action Game")
+	TObjectPtr<class UInteractableObserverComponent> InteractableObserverComponent;
+	
 	
 };

@@ -5,6 +5,7 @@
 
 #include "Variant_MyActionGame/ActorComponent/InteractableObjectComponent.h"
 #include "Variant_MyActionGame/ActorComponent/InteractableObserverComponent.h"
+#include "Variant_MyActionGame/GameplayMessage/WorldInteractionMessage.h"
 
 
 void UWorldInteractionSystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -28,6 +29,7 @@ void UWorldInteractionSystem::RegisterObserver(UInteractableObserverComponent* O
 	if (IsValid(Observer))
 	{
 		Observers.Add(Observer);
+		ObserverInteractionStatus.Add(EWorldInteractionStatus::Invalid);
 	}
 }
 
@@ -60,27 +62,41 @@ void UWorldInteractionSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	for (UInteractableObserverComponent* Observer : Observers)
+	//check observer enter/leave interactables
+	for (int32 i = 0; i < Observers.Num(); i++)
 	{
-		if (IsValid(Observer) == false) continue;
+		if (IsValid(Observers[i]) == false) continue;
+		if (ObserverInteractionStatus[i] == EWorldInteractionStatus::Interacting) continue;
 
-		const float RadiusSquared = Observer->GetObserveRadiusSquared();
-		AActor* Owner = Observer->GetOwner();
+		const float RadiusSquared = Observers[i]->GetObserveRadiusSquared();
+		AActor* Owner = Observers[i]->GetOwner();
 		const FVector& OwnerLocation = Owner->GetActorLocation();
-		
-		for (UInteractableObjectComponent* Interactable : Interactables)
-		{
-			if (IsValid(Interactable) == false) continue;
-			if (Interactable->CanInteract() == false) continue;
-			
-			AActor* InteractableOwner = Interactable->GetOwner();
-			const FVector& InteractableLocation = InteractableOwner->GetActorLocation();
 
+		for (int32 j = 0; j < Interactables.Num(); j++)
+		{
+			if (IsValid(Interactables[i]) == false) continue;
+			if (Interactables[i]->CanInteract() == false) continue;
+			
+			AActor* InteractableOwner = Interactables[i]->GetOwner();
+			const FVector& InteractableLocation = InteractableOwner->GetActorLocation();
 			const float DistSquared = (OwnerLocation - InteractableLocation).SquaredLength();
-			if (DistSquared < RadiusSquared)
+			if (ObserverInteractionStatus[i] == EWorldInteractionStatus::Invalid)
 			{
-				Observer->OnInteractableNearby(Interactable);
+				if (DistSquared < RadiusSquared)
+				{
+					Observers[i]->OnEnterInteractable(Interactables[i]);
+					ObserverInteractionStatus[i] = EWorldInteractionStatus::Ready;
+				}				
+			}
+			else if (ObserverInteractionStatus[i] == EWorldInteractionStatus::Ready)
+			{
+				if (DistSquared > RadiusSquared)
+				{
+					Observers[i]->OnLeaveInteractable(Interactables[i]);
+					ObserverInteractionStatus[i] = EWorldInteractionStatus::Invalid;
+				}
 			}
 		}
 	}
+	
 }

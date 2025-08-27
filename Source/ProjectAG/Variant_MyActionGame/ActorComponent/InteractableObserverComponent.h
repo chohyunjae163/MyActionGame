@@ -8,6 +8,7 @@
 #include "InteractableObserverComponent.generated.h"
 
 
+enum class EWorldInteractionStatus : uint8;
 /**
  * this component is added to a pawn.
  * this component should deal with interactables nearby.
@@ -27,8 +28,14 @@ public:
 	FORCEINLINE float GetObserveRadius() const { return ObserveRadius; };
 	FORCEINLINE float GetObserveRadiusSquared() const { return ObserveRadius*ObserveRadius; };
 
-	void OnInteractableNearby(class UInteractableObjectComponent* Interactable);
+	void OnEnterInteractable(class UInteractableObjectComponent* Interactable);
+	void OnLeaveInteractable(class UInteractableObjectComponent* Interactable);
+
+private:
+	void BroadcastInteractionStatusChange(class UInteractableObjectComponent* Interactable, EWorldInteractionStatus NewStatus);
+	
 protected:
 	UPROPERTY(EditAnywhere, Category="World Interaction",meta=(UIMin=50,UIMax=500,ClampMin=50,ClampMax=500))
 	float ObserveRadius = 100.f;
+	
 };

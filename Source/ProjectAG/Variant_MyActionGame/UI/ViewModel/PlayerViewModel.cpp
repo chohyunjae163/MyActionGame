@@ -31,6 +31,6 @@ void UPlayerViewModel::Deinitialize(UAbilitySystemComponent* ASC) const
 
 void UPlayerViewModel::OnInteractableFound(struct FGameplayTag Channel, const struct FWorldInteractionMessage& Msg)
 {
-	const bool CanInteract = Msg.InteractionStatus == EWorldInteractionStatus::Available;
+	const bool CanInteract = Msg.InteractionStatus == EWorldInteractionStatus::Ready;
 	UE_MVVM_SET_PROPERTY_VALUE(bInteractable,CanInteract);
 }

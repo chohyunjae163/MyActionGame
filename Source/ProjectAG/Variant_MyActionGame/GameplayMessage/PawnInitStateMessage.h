@@ -8,6 +8,6 @@ struct FPawnGameReadyMessage
 {
 	GENERATED_BODY()
 
-	TWeakObjectPtr<APawn>							Pawn;
+	TWeakObjectPtr<APawn>							Sender;
 	TWeakObjectPtr<class UAbilitySystemComponent>	PawnASC;
 };

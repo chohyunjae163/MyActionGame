@@ -41,14 +41,24 @@ void UInteractableObserverComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
-void UInteractableObserverComponent::OnInteractableNearby(class UInteractableObjectComponent* Interactable)
+void UInteractableObserverComponent::OnEnterInteractable(class UInteractableObjectComponent* Interactable)
+{
+	BroadcastInteractionStatusChange(Interactable, EWorldInteractionStatus::Ready);
+}
+
+void UInteractableObserverComponent::OnLeaveInteractable(class UInteractableObjectComponent* Interactable)
+{
+	BroadcastInteractionStatusChange(Interactable, EWorldInteractionStatus::Invalid);
+}
+
+void UInteractableObserverComponent::BroadcastInteractionStatusChange(class UInteractableObjectComponent* Interactable, EWorldInteractionStatus NewStatus)
 {
 	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
 
 	FWorldInteractionMessage Msg;
 	Msg.InteractionObserver = this;
 	Msg.InteractionObject = Interactable;
-	Msg.InteractionStatus = EWorldInteractionStatus::Available;
+	Msg.InteractionStatus = EWorldInteractionStatus::Ready;
 	GameplayMessageSubsystem.BroadcastMessage(
 			ActionGameGameplayTags::WorldInteraction_CanInteract,Msg);
 }

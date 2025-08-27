@@ -120,7 +120,7 @@ void UActionGamePawnComponent::HandleChangeInitState(UGameFrameworkComponentMana
 		const FGameplayTag Channel = ActionGameGameplayTags::InitState_GameplayReady;
 
 		const FPawnGameReadyMessage Message {
-			.Pawn = GetPawn<APawn>(),
+			.Sender = GetPawn<APawn>(),
 			.PawnASC = AbilitySystemComponent,
 		};
 		GameplayMessageSubsystem.BroadcastMessage<FPawnGameReadyMessage>(Channel,Message);
@@ -137,7 +137,6 @@ void UActionGamePawnComponent::OnActorInitStateChanged(const FActorInitStateChan
 			CheckDefaultInitialization();
 		}
 	}
-	
 }
 
 void UActionGamePawnComponent::CheckDefaultInitialization()

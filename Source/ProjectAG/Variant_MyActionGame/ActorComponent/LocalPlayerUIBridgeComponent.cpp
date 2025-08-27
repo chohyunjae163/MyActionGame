@@ -59,10 +59,10 @@ void ULocalPlayerUIBridgeComponent::EndPlay(const EEndPlayReason::Type EndPlayRe
 void ULocalPlayerUIBridgeComponent::OnPawnGameReady(struct FGameplayTag Channel,
 	const struct FPawnGameReadyMessage& Message)
 {
-	APlayerController* PC = Cast<APlayerController>(GetOwner());
-	if (Message.Pawn == PC->GetPawn())
+	APlayerController* LocalPC = Cast<APlayerController>(GetOwner());
+	if (Message.Sender == LocalPC->GetPawn())
 	{
-		AActionGamePlayerState* PS = PC->GetPlayerState<AActionGamePlayerState>();
+		AActionGamePlayerState* PS = LocalPC->GetPlayerState<AActionGamePlayerState>();
 		check(IsValid(PS));
 		UAbilitySystemComponent* MyASC = PS->GetAbilitySystemComponent();
 		UPlayerViewModel* PlayerViewModel = GetPlayerViewModel();
