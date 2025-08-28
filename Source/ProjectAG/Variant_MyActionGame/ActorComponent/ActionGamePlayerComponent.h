@@ -10,7 +10,7 @@
 
 /**
  * Component that sets up
- * 1. input
+ * 1. move/lookmouse/ ability input
  * 2. camera handling
  * for player controlled pawns (or bots that simulate players).
  * This depends on a ActionGamePawnComponent to coordinate initialization.
@@ -24,8 +24,9 @@ public:
 	// Sets default values for this component's properties
 	UActionGamePlayerComponent(const FObjectInitializer& ObjectInitializer);
 
-	static const FName NAME_ActorFeatureName;
+
 	//~ Begin IGameFrameworkInitStateInterface interface
+	static const FName NAME_ActorFeatureName;
 	virtual FName GetFeatureName() const override { return NAME_ActorFeatureName; }
 	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const override;
 	virtual void HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) override;
@@ -39,7 +40,7 @@ public:
 	
 	void Input_Move(const struct FInputActionValue& InputActionValue);
 	void Input_LookMouse(const struct FInputActionValue& InputActionValue);
-
+	
 	//camera related
 	
 protected:

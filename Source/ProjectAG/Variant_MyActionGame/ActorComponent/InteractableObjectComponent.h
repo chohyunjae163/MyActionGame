@@ -21,13 +21,18 @@ public:
 	UInteractableObjectComponent();
 
 	bool CanInteract() const;
+
+	FORCEINLINE TObjectPtr<class UItemDefinition> GetItemDefinition() const { return ItemDef; }
 protected:
+	//~ Begin ActorComponent Interface
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
-
-
+	//~ End ActorComponent Interface
 	
 protected:
 	UPROPERTY(EditInstanceOnly,Category="World Interaction")
 	bool bInteractable;
+
+	UPROPERTY(EditAnywhere, Category="World Interaction")
+	TObjectPtr<class UItemDefinition> ItemDef;
 };

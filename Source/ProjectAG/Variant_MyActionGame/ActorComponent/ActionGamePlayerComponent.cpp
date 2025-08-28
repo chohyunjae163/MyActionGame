@@ -6,7 +6,6 @@
 #include "ActionGamePawnComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MyAbilitySystemComponent.h"
-#include "Components/GameFrameworkComponentManager.h"
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
 #include "Variant_MyActionGame/Input/ActionGameInputComponent.h"
 #include "Variant_MyActionGame/Player/ActionGamePlayerState.h"

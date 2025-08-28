@@ -14,6 +14,7 @@ namespace ActionGameGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_LookMouse);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_MeleeAttack);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Interact);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Initialized_AbilitySystem);
 

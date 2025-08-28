@@ -7,7 +7,7 @@
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
 #include "Variant_MyActionGame/GameplayMessage/WorldInteractionMessage.h"
 #include "Variant_MyActionGame/System/WorldInteractionSystem.h"
-
+#include "Variant_MyActionGame/ActorComponent/InteractableObjectComponent.h"
 
 // Sets default values for this component's properties
 UInteractableObserverComponent::UInteractableObserverComponent(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
@@ -41,18 +41,27 @@ void UInteractableObserverComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
+void UInteractableObserverComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
 void UInteractableObserverComponent::OnEnterInteractable(class UInteractableObjectComponent* Interactable)
 {
+	CurrentInteractable = Interactable;
 	BroadcastInteractionStatusChange(Interactable, EWorldInteractionStatus::Ready);
 }
 
 void UInteractableObserverComponent::OnLeaveInteractable(class UInteractableObjectComponent* Interactable)
 {
+	CurrentInteractable.Reset();
 	BroadcastInteractionStatusChange(Interactable, EWorldInteractionStatus::Invalid);
 }
 
 void UInteractableObserverComponent::BroadcastInteractionStatusChange(class UInteractableObjectComponent* Interactable, EWorldInteractionStatus NewStatus)
 {
+	
 	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
 
 	FWorldInteractionMessage Msg;
@@ -61,4 +70,9 @@ void UInteractableObserverComponent::BroadcastInteractionStatusChange(class UInt
 	Msg.InteractionStatus = NewStatus;
 	GameplayMessageSubsystem.BroadcastMessage(
 			ActionGameGameplayTags::WorldInteraction_CanInteract,Msg);
+}
+
+void UInteractableObserverComponent::OnInteractInputPressed()
+{
+	
 }

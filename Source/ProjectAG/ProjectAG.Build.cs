@@ -24,7 +24,8 @@ public class ProjectAG : ModuleRules
 			"GameplayTasks", 
 			"CommonGame",
 			"CommonUI",
-			"ModelViewViewModel"
+			"ModelViewViewModel",
+			"Paper2D",
 		});
 
 		PublicIncludePaths.AddRange(new string[] {
