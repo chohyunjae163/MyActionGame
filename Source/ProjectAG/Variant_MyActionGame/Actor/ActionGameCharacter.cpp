@@ -13,7 +13,6 @@ AActionGameCharacter::AActionGameCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	ActionGamePawnComponent = CreateDefaultSubobject<UActionGamePawnComponent>("ActionGamePawnComponent");
-	InteractableObserverComponent = CreateDefaultSubobject<UInteractableObserverComponent>("InteractableObserverComponent");
 }
 
 void AActionGameCharacter::OnRep_Controller()

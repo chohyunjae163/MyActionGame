@@ -17,9 +17,9 @@ UInventoryComponent::UInventoryComponent()
 	// ...
 }
 
-void UInventoryComponent::OnRegister()
+void UInventoryComponent::BeginPlay()
 {
-	Super::OnRegister();
+	Super::BeginPlay();
 
 	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
 	FGameplayTag Channel;
@@ -29,19 +29,19 @@ void UInventoryComponent::OnRegister()
 		&ThisClass::OnInteractItem);
 }
 
-void UInventoryComponent::OnUnregister()
+void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
 	GameplayMessageSubsystem.UnregisterListener(ListenerHandle);
-
 	
-	Super::OnUnregister();
+	Super::EndPlay(EndPlayReason);
 }
 
 void UInventoryComponent::OnInteractItem(struct FGameplayTag Channel,
-	const struct FWorldInteractionItemMessage& Message)
+	const FInstancedStruct& Message)
 {
-	for (const FInteractionItemUnit& Item : Message.Items)
+	FWorldItemInteractionPayload Payload = Message.Get<FWorldItemInteractionPayload>();
+	for (const FWorldInteractionItemUnit& Item : Payload.Items)
 	{
 		AddItem(Item.Definition);
 	}

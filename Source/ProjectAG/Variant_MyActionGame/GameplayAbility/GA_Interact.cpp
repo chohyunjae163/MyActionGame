@@ -33,6 +33,10 @@ void UGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	if (IsValid(InteractableObjectComponent))
 	{
 		const FInteractionSpec& InteractionSpec = InteractableObjectComponent->GetInteractionSpec();
+		if (InteractionSpec.Payload.IsValid() == false)
+		{
+			return;
+		}
 		const FName InteractionTag = InteractionSpec.Tag.GetTagName(); //for later querying
 		
 		// play a montage

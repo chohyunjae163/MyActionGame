@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "StructUtils/InstancedStruct.h"
 
 
 #include "WorldInteractionMessage.generated.h"
@@ -26,7 +27,7 @@ struct FWorldInteractionMessage
 };
 
 USTRUCT(Category="World Interaction")
-struct FInteractionItemUnit
+struct FWorldInteractionItemUnit
 {
 	GENERATED_BODY()
 
@@ -37,11 +38,11 @@ struct FInteractionItemUnit
 	int32 Quantity = 0;
 };
 
-USTRUCT(Category="World Interaction",DisplayName="World Interaction Items")
-struct FWorldInteractionItemMessage
+USTRUCT(Category="World Interaction",DisplayName="Payload_WorldInteractionItemList")
+struct FWorldItemInteractionPayload
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	TArray<FInteractionItemUnit> Items;
+	TArray<FWorldInteractionItemUnit> Items;
 };

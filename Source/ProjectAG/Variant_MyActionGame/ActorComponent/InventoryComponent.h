@@ -66,10 +66,11 @@ public:
 	TConstArrayView<FItemInstance> GetItems() const { return Items; };
 
 protected:
-	virtual void OnRegister() override;
-	virtual void OnUnregister() override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 private:
-	void OnInteractItem(struct FGameplayTag Channel, const struct FWorldInteractionItemMessage& Message );
+	void OnInteractItem(struct FGameplayTag Channel, const struct FInstancedStruct& Message );
 	FInventoryItemHandle AddItem(class UItemDefinition* ItemDef);
 	FItemInstance* FindItem(const FInventoryItemHandle& Handle);
 	void UseItem(const FInventoryItemHandle& Handle);

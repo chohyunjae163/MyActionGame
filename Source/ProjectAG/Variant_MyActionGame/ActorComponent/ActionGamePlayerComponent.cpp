@@ -184,7 +184,7 @@ void UActionGamePlayerComponent::Input_AbilityInputTagReleased(FGameplayTag Inpu
 		UMyAbilitySystemComponent* MyASC = Cast<UMyAbilitySystemComponent>(PS->GetAbilitySystemComponent());
 		if (IsValid(MyASC))
 		{
-			MyASC->AbilityInputTagReleased(InputTag);	
+			//MyASC->AbilityInputTagReleased(InputTag);	
 		}
 	}
 }
