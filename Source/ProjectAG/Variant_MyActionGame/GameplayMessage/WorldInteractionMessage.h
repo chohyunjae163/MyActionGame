@@ -30,9 +30,9 @@ USTRUCT(Category="World Interaction")
 struct FWorldInteractionItemUnit
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UItemDefinition> Definition;
+	
+	UPROPERTY(EditAnywhere, meta=(AllowedClasses="/Script/ProjectAG.ItemDefinition"))
+	FPrimaryAssetId AssetId;
 
 	UPROPERTY(EditAnywhere)
 	int32 Quantity = 0;

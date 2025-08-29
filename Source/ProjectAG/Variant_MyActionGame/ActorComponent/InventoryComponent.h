@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Data/ItemDefinition.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "InventoryComponent.generated.h"
 
@@ -42,7 +43,7 @@ struct FItemInstance
 	FInventoryItemHandle Handle;
 	
 	UPROPERTY(Transient)
-	TObjectPtr<class UItemDefinition> Definition;
+	FPrimaryAssetId ItemAssetId;
 
 	UPROPERTY(Transient)
 	int32 Quantity = 0;
@@ -58,6 +59,8 @@ class UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+	static const UItemDefinition* ResolveDef(const FPrimaryAssetId& Id);
+
 public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
@@ -70,12 +73,13 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
-	void OnInteractItem(struct FGameplayTag Channel, const struct FInstancedStruct& Message );
-	FInventoryItemHandle AddItem(class UItemDefinition* ItemDef);
+	void OnWorldInteractItem(struct FGameplayTag Channel, const struct FInstancedStruct& Message );
+	FInventoryItemHandle AddItem(const FPrimaryAssetId& ItemAssetId);
 	FItemInstance* FindItem(const FInventoryItemHandle& Handle);
 	void UseItem(const FInventoryItemHandle& Handle);
 	void RemoveItem(FInventoryItemHandle Handle);
 	
+
 private:
 	TArray<FItemInstance> Items;
 

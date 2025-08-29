@@ -5,6 +5,8 @@
 
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "ActionGameGameplayTags.h"
+#include "Data/ItemDefinition.h"
+#include "Engine/AssetManager.h"
 #include "GameplayMessage/WorldInteractionMessage.h"
 
 // Sets default values for this component's properties
@@ -26,7 +28,7 @@ void UInventoryComponent::BeginPlay()
 	ListenerHandle = GameplayMessageSubsystem.RegisterListener(
 		ActionGameGameplayTags::WorldInteraction_PickupItem,
 		this,
-		&ThisClass::OnInteractItem);
+		&ThisClass::OnWorldInteractItem);
 }
 
 void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -37,24 +39,24 @@ void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void UInventoryComponent::OnInteractItem(struct FGameplayTag Channel,
+void UInventoryComponent::OnWorldInteractItem(struct FGameplayTag Channel,
 	const FInstancedStruct& Message)
 {
 	FWorldItemInteractionPayload Payload = Message.Get<FWorldItemInteractionPayload>();
 	for (const FWorldInteractionItemUnit& Item : Payload.Items)
 	{
-		AddItem(Item.Definition);
+		AddItem(Item.AssetId);
 	}
 	
 }
 
-FInventoryItemHandle UInventoryComponent::AddItem(class UItemDefinition* ItemDef)
+FInventoryItemHandle UInventoryComponent::AddItem(const FPrimaryAssetId& ItemAssetId)
 {
 	FInventoryItemHandle Handle = FInventoryItemHandle::NewHandle();
 	Items.Emplace( FItemInstance
 		{
 			.Handle = Handle,
-			.Definition = ItemDef,
+			.ItemAssetId = ItemAssetId,
 			.Quantity = 1
 		});
 
@@ -93,4 +95,9 @@ void UInventoryComponent::RemoveItem(FInventoryItemHandle Handle)
 	{
 		Items.Remove(*ItemInstance);
 	}
+}
+
+const UItemDefinition* UInventoryComponent::ResolveDef(const FPrimaryAssetId& Id)
+{
+	return Cast<UItemDefinition>(UAssetManager::Get().GetPrimaryAssetObject(Id));
 }
