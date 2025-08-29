@@ -32,7 +32,7 @@ public:
 
 	FORCEINLINE float GetObserveRadius() const { return ObserveRadius; };
 	FORCEINLINE float GetObserveRadiusSquared() const { return ObserveRadius*ObserveRadius; };
-	FORCEINLINE TWeakObjectPtr<class UInteractableObjectComponent> GetInteractable() const { return CurrentInteractable; }
+	FORCEINLINE TWeakObjectPtr<class UInteractableObjectComponent> GetCurrentInteractable() const { return CurrentInteractable; }
 
 	void OnEnterInteractable(class UInteractableObjectComponent* Interactable);
 	void OnLeaveInteractable(class UInteractableObjectComponent* Interactable);

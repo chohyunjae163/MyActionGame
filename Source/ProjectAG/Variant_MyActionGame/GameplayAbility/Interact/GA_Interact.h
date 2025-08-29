@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS(MinimalAPI)
+UCLASS(MinimalAPI,Abstract)
 class UGA_Interact : public UGameplayAbility
 {
 	GENERATED_BODY()

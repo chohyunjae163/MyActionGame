@@ -3,7 +3,9 @@
 
 #include "InventoryComponent.h"
 
-
+#include "GameFramework/GameplayMessageSubsystem.h"
+#include "ActionGameGameplayTags.h"
+#include "GameplayMessage/WorldInteractionMessage.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -13,6 +15,37 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
+}
+
+void UInventoryComponent::OnRegister()
+{
+	Super::OnRegister();
+
+	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+	FGameplayTag Channel;
+	ListenerHandle = GameplayMessageSubsystem.RegisterListener(
+		ActionGameGameplayTags::WorldInteraction_PickupItem,
+		this,
+		&ThisClass::OnInteractItem);
+}
+
+void UInventoryComponent::OnUnregister()
+{
+	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+	GameplayMessageSubsystem.UnregisterListener(ListenerHandle);
+
+	
+	Super::OnUnregister();
+}
+
+void UInventoryComponent::OnInteractItem(struct FGameplayTag Channel,
+	const struct FWorldInteractionItemMessage& Message)
+{
+	for (const FInteractionItemUnit& Item : Message.Items)
+	{
+		AddItem(Item.Definition);
+	}
+	
 }
 
 FInventoryItemHandle UInventoryComponent::AddItem(class UItemDefinition* ItemDef)

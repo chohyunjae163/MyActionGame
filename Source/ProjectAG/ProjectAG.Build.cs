@@ -31,6 +31,11 @@ public class ProjectAG : ModuleRules
 		PublicIncludePaths.AddRange(new string[] {
 			"ProjectAG",
 		});
+		
+		PrivateIncludePaths.AddRange(new string[]
+		{
+			"ProjectAG/Variant_MyActionGame"
+		});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

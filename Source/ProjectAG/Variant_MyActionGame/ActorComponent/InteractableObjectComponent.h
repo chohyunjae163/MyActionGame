@@ -3,9 +3,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/SphereComponent.h"
+#include "StructUtils/InstancedStruct.h"
 #include "InteractableObjectComponent.generated.h"
 
+
+
+// interactable objects must have a spec ( maybe more than one..?)
+USTRUCT()
+struct FInteractionSpec
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere,Category="World Interaction")
+	FGameplayTag Tag;
+
+	UPROPERTY(EditAnywhere,Category="World Interaction")
+	FInstancedStruct Payload;
+
+	UPROPERTY(EditAnywhere,Category="World Interaction")
+	TObjectPtr<UAnimMontage> InstigatorMontage;
+
+	UPROPERTY(EditAnywhere,Category="World Interaction",meta=(MakeEditWidget))
+	FTransform InstigatorTransform;
+	
+};
 
 /**
  * attach this component to any actor that wants to interact with pawns. (e.g. a chest box, a simple pickup)
@@ -21,8 +44,11 @@ public:
 	UInteractableObjectComponent();
 
 	bool CanInteract() const;
+	FORCEINLINE const FInteractionSpec& GetInteractionSpec() const { return InteractionSpec; }
 
-	FORCEINLINE TObjectPtr<class UItemDefinition> GetItemDefinition() const { return ItemDef; }
+	// handle vfx/sfx
+	UFUNCTION(BlueprintImplementableEvent, Category="World Interaction")
+	void OnInteract();
 protected:
 	//~ Begin ActorComponent Interface
 	virtual void OnRegister() override;
@@ -33,6 +59,7 @@ protected:
 	UPROPERTY(EditInstanceOnly,Category="World Interaction")
 	bool bInteractable;
 
-	UPROPERTY(EditAnywhere, Category="World Interaction")
-	TObjectPtr<class UItemDefinition> ItemDef;
+	UPROPERTY(EditInstanceOnly,Category="World Interaction")
+	FInteractionSpec InteractionSpec;
+
 };

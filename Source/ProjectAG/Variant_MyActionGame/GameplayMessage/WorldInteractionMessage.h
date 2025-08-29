@@ -18,8 +18,30 @@ struct FWorldInteractionMessage
 	GENERATED_BODY()
 
 	UPROPERTY()
-	class UInteractableObserverComponent*	InteractionObserver;
+	TObjectPtr<class UInteractableObserverComponent>	InteractionObserver = nullptr;
 	UPROPERTY()
-	class UInteractableObjectComponent*		InteractionObject;
-	EWorldInteractionStatus					InteractionStatus;
+	TObjectPtr<class UInteractableObjectComponent>		InteractionObject = nullptr;
+	
+	EWorldInteractionStatus								InteractionStatus = EWorldInteractionStatus::Invalid;
+};
+
+USTRUCT(Category="World Interaction")
+struct FInteractionItemUnit
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UItemDefinition> Definition;
+
+	UPROPERTY(EditAnywhere)
+	int32 Quantity = 0;
+};
+
+USTRUCT(Category="World Interaction",DisplayName="World Interaction Items")
+struct FWorldInteractionItemMessage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TArray<FInteractionItemUnit> Items;
 };

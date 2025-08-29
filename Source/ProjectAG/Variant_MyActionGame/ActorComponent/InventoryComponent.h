@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "InventoryComponent.generated.h"
 
 
@@ -44,7 +45,7 @@ struct FItemInstance
 	TObjectPtr<class UItemDefinition> Definition;
 
 	UPROPERTY(Transient)
-	int32 Quantity;
+	int32 Quantity = 0;
 
 	bool operator==(const FItemInstance& Other) const
 	{
@@ -60,15 +61,22 @@ class UInventoryComponent : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
-
+	
+	//in case, one wants look at items.
 	TConstArrayView<FItemInstance> GetItems() const { return Items; };
-	FInventoryItemHandle AddItem(class UItemDefinition* ItemDef);
-private:
 
+protected:
+	virtual void OnRegister() override;
+	virtual void OnUnregister() override;
+private:
+	void OnInteractItem(struct FGameplayTag Channel, const struct FWorldInteractionItemMessage& Message );
+	FInventoryItemHandle AddItem(class UItemDefinition* ItemDef);
 	FItemInstance* FindItem(const FInventoryItemHandle& Handle);
 	void UseItem(const FInventoryItemHandle& Handle);
 	void RemoveItem(FInventoryItemHandle Handle);
 	
 private:
 	TArray<FItemInstance> Items;
+
+	FGameplayMessageListenerHandle ListenerHandle;
 };
