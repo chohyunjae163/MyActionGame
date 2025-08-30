@@ -4,39 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Interface/AssignableAction.h"
 #include "QuickSlotComponent.generated.h"
-
-UINTERFACE()
-class UAssignableAction : public UInterface { GENERATED_BODY() };
-
-class IAssignableAction
-{
-	GENERATED_BODY()
-public:
-	// 실행
-	virtual void Execute(AActor* Instigator) = 0;
-};
-
-
-//quickslot action
-
-
-UCLASS(Abstract)
-class UQuickSlotActionBase : public UObject, public IAssignableAction
-{
-	GENERATED_BODY()
-
-	virtual void Execute(AActor* Instigator) override {}
-};
-
-UCLASS()
-class UQuickSlotAction_ConsumeItem : public UQuickSlotActionBase
-{
-	GENERATED_BODY()
-
-	
-	virtual void Execute(AActor* Instigator) override {}
-};
 
 USTRUCT()
 struct FQuickSlot
