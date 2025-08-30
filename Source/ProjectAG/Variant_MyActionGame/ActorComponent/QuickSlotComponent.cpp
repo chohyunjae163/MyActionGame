@@ -22,8 +22,7 @@ void UQuickSlotComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-
-	AssignSlot(0, UQuickSlotAction_ConsumeItem::StaticClass());
+	
 }
 
 void UQuickSlotComponent::AssignSlot(const int32 Index, TSubclassOf<UObject> ActionClass)
