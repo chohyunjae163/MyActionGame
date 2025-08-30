@@ -24,7 +24,6 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
-	FGameplayTag Channel;
 	ListenerHandle = GameplayMessageSubsystem.RegisterListener(
 		ActionGameGameplayTags::WorldInteraction_PickupItem,
 		this,
@@ -45,22 +44,32 @@ void UInventoryComponent::OnWorldInteractItem(struct FGameplayTag Channel,
 	FWorldItemInteractionPayload Payload = Message.Get<FWorldItemInteractionPayload>();
 	for (const FWorldInteractionItemUnit& Item : Payload.Items)
 	{
-		AddItem(Item.AssetId);
+		TryAddItem(Item.AssetId);
 	}
-	
+
 }
 
-FInventoryItemHandle UInventoryComponent::AddItem(const FPrimaryAssetId& ItemAssetId)
+void UInventoryComponent::TryAddItem(const FPrimaryAssetId& ItemAssetId)
 {
-	FInventoryItemHandle Handle = FInventoryItemHandle::NewHandle();
-	Items.Emplace( FItemInstance
-		{
-			.Handle = Handle,
-			.ItemAssetId = ItemAssetId,
-			.Quantity = 1
-		});
+	const UItemDefinition* ItemDef = ResolveDef(ItemAssetId);
 
-	return Handle;
+	if (IsValid(ItemDef))
+	{
+		FInventoryItemHandle Handle = FInventoryItemHandle::NewHandle(ItemDef->GetPathName());
+		if (FItemInstance* ItemInstance = FindItem(Handle))
+		{
+			ItemInstance->Quantity++;
+		}
+		else
+		{
+			Items.Emplace( FItemInstance
+			{
+				.Handle = Handle,
+				.ItemAssetId = ItemAssetId,
+				.Quantity = 1
+			});		
+		}
+	}
 }
 
 FItemInstance* UInventoryComponent::FindItem(const FInventoryItemHandle& ItemHandle)
@@ -97,7 +106,27 @@ void UInventoryComponent::RemoveItem(FInventoryItemHandle Handle)
 	}
 }
 
+
 const UItemDefinition* UInventoryComponent::ResolveDef(const FPrimaryAssetId& Id)
 {
-	return Cast<UItemDefinition>(UAssetManager::Get().GetPrimaryAssetObject(Id));
+	UItemDefinition* ItemDef = Cast<UItemDefinition>(UAssetManager::Get().GetPrimaryAssetObject(Id));
+	if (IsValid(ItemDef))
+	{
+		return ItemDef;
+	}
+
+	TArray<FName> LoadBundles;
+	UAssetManager::Get().LoadPrimaryAsset(Id,LoadBundles,FStreamableDelegate::CreateUObject(this,&ThisClass::OnLoadAssetComplete));
+	PendingAssetsToAdd.Enqueue(Id);
+	return nullptr;
+
+}
+
+void UInventoryComponent::OnLoadAssetComplete()
+{
+	FPrimaryAssetId Id;
+	if (PendingAssetsToAdd.Dequeue(Id))
+	{
+		TryAddItem(Id);
+	}
 }

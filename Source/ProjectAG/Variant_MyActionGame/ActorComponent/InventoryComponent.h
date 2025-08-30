@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Containers/CircularQueue.h"
 #include "Data/ItemDefinition.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "InventoryComponent.generated.h"
@@ -19,10 +20,10 @@ struct FInventoryItemHandle
 
 	bool IsValid() const { return Guid.IsValid(); }
 
-	static FInventoryItemHandle NewHandle()
+	static FInventoryItemHandle NewHandle(FStringView ObjectPath)
 	{
 		FInventoryItemHandle H;
-		H.Guid = FGuid::NewGuid();
+		H.Guid = FGuid::NewDeterministicGuid(ObjectPath);
 		return H;
 	}
 
@@ -30,6 +31,7 @@ struct FInventoryItemHandle
 	{
 		return Guid == Other.Guid;
 	}
+
 };
 
 
@@ -59,7 +61,7 @@ class UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-	static const UItemDefinition* ResolveDef(const FPrimaryAssetId& Id);
+	
 
 public:
 	// Sets default values for this component's properties
@@ -74,14 +76,17 @@ protected:
 
 private:
 	void OnWorldInteractItem(struct FGameplayTag Channel, const struct FInstancedStruct& Message );
-	FInventoryItemHandle AddItem(const FPrimaryAssetId& ItemAssetId);
+	void TryAddItem(const FPrimaryAssetId& ItemAssetId);
 	FItemInstance* FindItem(const FInventoryItemHandle& Handle);
 	void UseItem(const FInventoryItemHandle& Handle);
 	void RemoveItem(FInventoryItemHandle Handle);
+
+	const UItemDefinition* ResolveDef(const FPrimaryAssetId& Id);
+	void OnLoadAssetComplete();
 	
 
 private:
-	TArray<FItemInstance> Items;
-
+	TArray<FItemInstance>	Items;
+	TQueue<FPrimaryAssetId> PendingAssetsToAdd;
 	FGameplayMessageListenerHandle ListenerHandle;
 };
