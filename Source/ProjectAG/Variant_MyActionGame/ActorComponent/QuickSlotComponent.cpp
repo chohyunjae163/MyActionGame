@@ -15,13 +15,28 @@ UQuickSlotComponent::UQuickSlotComponent()
 }
 
 
+
 // Called when the game starts
 void UQuickSlotComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// ...
-	
+
+	AssignSlot(0, UQuickSlotAction_ConsumeItem::StaticClass());
+}
+
+void UQuickSlotComponent::AssignSlot(const int32 Index, TSubclassOf<UObject> ActionClass)
+{
+	QuickSlotBar.Slots[Index].ActionClass = ActionClass;
+	UObject* ActionInstance = NewObject<UObject>(this,ActionClass);
+	QuickSlotBar.Slots[Index].ActionInstance = ActionInstance;
 }
 
 
+void UQuickSlotComponent::UseSelected()
+{
+	const int32 SelectedIndex = QuickSlotBar.SelectedIndex;
+	IAssignableAction* ActionInstance = Cast<IAssignableAction>(QuickSlotBar.Slots[SelectedIndex].ActionInstance);
+	ActionInstance->Execute(GetOwner());
+}
