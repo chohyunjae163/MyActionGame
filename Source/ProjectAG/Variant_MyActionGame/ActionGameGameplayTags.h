@@ -20,4 +20,6 @@ namespace ActionGameGameplayTags
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(WorldInteraction_CanInteract);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(WorldInteraction_PickupItem);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(CharacterEvent_UseConsumable);
 }

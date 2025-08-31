@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Interface/AssignableAction.h"
+#include "Components/PawnComponent.h"
+#include "Interface/AssignableActionInterface.h"
 #include "QuickSlotComponent.generated.h"
 
 USTRUCT()
@@ -12,7 +13,7 @@ struct FQuickSlot
 {
 	GENERATED_BODY()
 	
-	TSubclassOf<IAssignableAction> ActionClass;
+	TSubclassOf<IAssignableActionInterface> ActionClass;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UObject> ActionInstance;
@@ -27,13 +28,13 @@ struct FQuickSlotBar
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECTAG_API UQuickSlotComponent : public UActorComponent
+class PROJECTAG_API UQuickSlotComponent : public UPawnComponent
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this component's properties
-	UQuickSlotComponent();
+	UQuickSlotComponent(const FObjectInitializer& ObjectInitializer);
 
 
 

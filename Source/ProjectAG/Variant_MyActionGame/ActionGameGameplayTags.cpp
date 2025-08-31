@@ -20,4 +20,6 @@ namespace ActionGameGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG(WorldInteraction_CanInteract, "WorldInteraction.CanInteract");
 	UE_DEFINE_GAMEPLAY_TAG(WorldInteraction_PickupItem, "WorldInteraction.PickupItem");
+
+	UE_DEFINE_GAMEPLAY_TAG(CharacterEvent_UseConsumable,"CharacterEvent_UseConsumable");
 }

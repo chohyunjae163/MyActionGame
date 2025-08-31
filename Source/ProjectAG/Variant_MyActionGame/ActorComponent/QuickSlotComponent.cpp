@@ -3,9 +3,12 @@
 
 #include "QuickSlotComponent.h"
 
+#include "AssignableAction/AssignableAction_Consumable.h"
+#include "Player/ActionGamePlayerState.h"
+
 
 // Sets default values for this component's properties
-UQuickSlotComponent::UQuickSlotComponent()
+UQuickSlotComponent::UQuickSlotComponent(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -22,6 +25,9 @@ void UQuickSlotComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+
+	//sample test
+	AssignSlot(0,UAssignableAction_Consumable::StaticClass());
 	
 }
 
@@ -36,6 +42,12 @@ void UQuickSlotComponent::AssignSlot(const int32 Index, TSubclassOf<UObject> Act
 void UQuickSlotComponent::UseSelected()
 {
 	const int32 SelectedIndex = QuickSlotBar.SelectedIndex;
-	IAssignableAction* ActionInstance = Cast<IAssignableAction>(QuickSlotBar.Slots[SelectedIndex].ActionInstance);
-	ActionInstance->Execute(GetOwner());
+	IAssignableActionInterface* ActionInstance = Cast<IAssignableActionInterface>(QuickSlotBar.Slots[SelectedIndex].ActionInstance);
+	if (ActionInstance != nullptr)
+	{
+		const AActionGamePlayerState* MyPlayerState = GetPlayerState<AActionGamePlayerState>();
+		UAbilitySystemComponent* MyASC = MyPlayerState->GetAbilitySystemComponent();
+		ActionInstance->Execute(GetPawn<APawn>(),MyASC);		
+	}
+
 }
