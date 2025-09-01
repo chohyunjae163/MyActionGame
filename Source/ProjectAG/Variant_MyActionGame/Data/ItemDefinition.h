@@ -24,5 +24,8 @@ class UItemDefinition : public UPrimaryDataAsset
 	TArray<TSubclassOf<class UGameplayEffect>> Effects;
 
 	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UAssignableActionBase> AssignableAction;
+
+	UPROPERTY(EditDefaultsOnly)
 	int32 MaxQuantity;
 };

@@ -36,9 +36,10 @@ public:
 	// Sets default values for this component's properties
 	UQuickSlotComponent(const FObjectInitializer& ObjectInitializer);
 
-
-
-	//
+	void Next();
+	void Previous();
+	
+	// executes a quickslot action instance
 	void UseSelected();
 
 protected:

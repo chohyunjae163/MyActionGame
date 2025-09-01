@@ -7,7 +7,7 @@
 #include "AssignableAction_Consumable.generated.h"
 
 /**
- * 
+ * an action that triggers GameplayAbilities with CharacterEvent_UseConsumable trigger tag 
  */
 UCLASS()
 class PROJECTAG_API UAssignableAction_Consumable : public UAssignableActionBase

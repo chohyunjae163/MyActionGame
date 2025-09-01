@@ -8,6 +8,9 @@
 
 
 
+/*
+ * a single action that can be assigned to objects and be executed
+ */
 UCLASS(Abstract)
 class UAssignableActionBase : public UObject, public IAssignableActionInterface
 {

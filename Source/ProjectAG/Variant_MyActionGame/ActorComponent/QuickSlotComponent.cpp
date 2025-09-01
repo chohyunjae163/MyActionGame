@@ -18,7 +18,6 @@ UQuickSlotComponent::UQuickSlotComponent(const FObjectInitializer& ObjectInitial
 }
 
 
-
 // Called when the game starts
 void UQuickSlotComponent::BeginPlay()
 {
@@ -30,6 +29,18 @@ void UQuickSlotComponent::BeginPlay()
 	AssignSlot(0,UAssignableAction_Consumable::StaticClass());
 	
 }
+
+
+void UQuickSlotComponent::Next()
+{
+	++QuickSlotBar.SelectedIndex;
+}
+
+void UQuickSlotComponent::Previous()
+{
+	--QuickSlotBar.SelectedIndex;
+}
+
 
 void UQuickSlotComponent::AssignSlot(const int32 Index, TSubclassOf<UObject> ActionClass)
 {
