@@ -9,6 +9,9 @@
 #include "Engine/AssetManager.h"
 #include "GameplayMessage/WorldInteractionMessage.h"
 
+
+DEFINE_LOG_CATEGORY(LogInventory)
+
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -28,6 +31,10 @@ void UInventoryComponent::BeginPlay()
 		ActionGameGameplayTags::WorldInteraction_PickupItem,
 		this,
 		&ThisClass::OnWorldInteractItem);
+
+	//load save data and fill inventory
+	//after initialization of inventory component
+	//tell viewmodel to update QuickSlot data
 }
 
 void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -49,7 +56,7 @@ void UInventoryComponent::OnWorldInteractItem(struct FGameplayTag Channel,
 
 }
 
-void UInventoryComponent::TryAddItem(const FPrimaryAssetId& ItemAssetId)
+bool UInventoryComponent::TryAddItem(const FPrimaryAssetId& ItemAssetId)
 {
 	const UItemDefinition* ItemDef = ResolveDef(ItemAssetId);
 
@@ -62,14 +69,33 @@ void UInventoryComponent::TryAddItem(const FPrimaryAssetId& ItemAssetId)
 		}
 		else
 		{
-			Items.Emplace( FItemInstance
+			FItemInstance NewItemInstance
 			{
 				.Handle = Handle,
 				.ItemAssetId = ItemAssetId,
-				.Quantity = 1
-			});		
+				.Quantity = 1,  // quantity temporary
+				.QuickSlotIndex = 0, // Quick Slot Test  
+			};
+			
+			Items.Emplace(NewItemInstance);
+			//todo: what if more than three items are registered as quick slot items?
+			if (NewItemInstance.QuickSlotIndex != INDEX_NONE)
+			{
+				for (int i = 0; i < NUM_QUICK_SLOT; ++ i)
+				{
+					if (QuickSlotItems[i].IsValid())
+					{
+						continue;
+					}
+					QuickSlotItems[i] = NewItemInstance;
+				}
+				
+				
+			}
 		}
+		return true;
 	}
+	return false;
 }
 
 FItemInstance* UInventoryComponent::FindItem(const FInventoryItemHandle& ItemHandle)
@@ -127,6 +153,10 @@ void UInventoryComponent::OnLoadAssetComplete()
 	FPrimaryAssetId Id;
 	if (PendingAssetsToAdd.Dequeue(Id))
 	{
-		TryAddItem(Id);
+		const bool bAdded = TryAddItem(Id);
+		if (!bAdded)
+		{
+			UE_LOG(LogInventory,Warning,TEXT("Item not added id: %s"),*Id.ToString());
+		}
 	}
 }

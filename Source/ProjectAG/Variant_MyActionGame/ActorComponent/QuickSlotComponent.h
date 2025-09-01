@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
 #include "Components/PawnComponent.h"
 #include "Interface/AssignableActionInterface.h"
 #include "QuickSlotComponent.generated.h"

@@ -17,7 +17,6 @@ UQuickSlotComponent::UQuickSlotComponent(const FObjectInitializer& ObjectInitial
 	// ...
 }
 
-
 // Called when the game starts
 void UQuickSlotComponent::BeginPlay()
 {
@@ -25,11 +24,12 @@ void UQuickSlotComponent::BeginPlay()
 
 	// ...
 
+	
+
 	//sample test
 	AssignSlot(0,UAssignableAction_Consumable::StaticClass());
 	
 }
-
 
 void UQuickSlotComponent::Next()
 {
@@ -41,14 +41,12 @@ void UQuickSlotComponent::Previous()
 	--QuickSlotBar.SelectedIndex;
 }
 
-
 void UQuickSlotComponent::AssignSlot(const int32 Index, TSubclassOf<UObject> ActionClass)
 {
 	QuickSlotBar.Slots[Index].ActionClass = ActionClass;
 	UObject* ActionInstance = NewObject<UObject>(this,ActionClass);
 	QuickSlotBar.Slots[Index].ActionInstance = ActionInstance;
 }
-
 
 void UQuickSlotComponent::UseSelected()
 {
@@ -60,5 +58,4 @@ void UQuickSlotComponent::UseSelected()
 		UAbilitySystemComponent* MyASC = MyPlayerState->GetAbilitySystemComponent();
 		ActionInstance->Execute(GetPawn<APawn>(),MyASC);		
 	}
-
 }

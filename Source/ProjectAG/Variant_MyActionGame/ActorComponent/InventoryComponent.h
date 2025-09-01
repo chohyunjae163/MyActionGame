@@ -5,10 +5,13 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Containers/CircularQueue.h"
+#include "Data/ActionGameConsts.h"
 #include "Data/ItemDefinition.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "InventoryComponent.generated.h"
 
+
+DECLARE_LOG_CATEGORY_EXTERN(LogInventory, Log, All);
 
 USTRUCT()
 struct FInventoryItemHandle
@@ -44,16 +47,21 @@ struct FItemInstance
 	UPROPERTY()
 	FInventoryItemHandle Handle;
 	
-	UPROPERTY(Transient)
+	UPROPERTY()
 	FPrimaryAssetId ItemAssetId;
 
-	UPROPERTY(Transient)
+	UPROPERTY()
 	int32 Quantity = 0;
+
+	UPROPERTY()
+	int32 QuickSlotIndex = INDEX_NONE;
 
 	bool operator==(const FItemInstance& Other) const
 	{
 		return Handle == Other.Handle;
 	}
+
+	bool IsValid() const { return Handle.IsValid(); }
 };
 
 UCLASS(MinimalAPI,ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -76,7 +84,7 @@ protected:
 
 private:
 	void OnWorldInteractItem(struct FGameplayTag Channel, const struct FInstancedStruct& Message );
-	void TryAddItem(const FPrimaryAssetId& ItemAssetId);
+	bool TryAddItem(const FPrimaryAssetId& ItemAssetId);
 	FItemInstance* FindItem(const FInventoryItemHandle& Handle);
 	void UseItem(const FInventoryItemHandle& Handle);
 	void RemoveItem(FInventoryItemHandle Handle);
@@ -88,5 +96,6 @@ private:
 private:
 	TArray<FItemInstance>	Items;
 	TQueue<FPrimaryAssetId> PendingAssetsToAdd;
+	TStaticArray<FItemInstance, NUM_QUICK_SLOT>	QuickSlotItems;
 	FGameplayMessageListenerHandle ListenerHandle;
 };

@@ -16,8 +16,8 @@ class PROJECTAG_API UPlayerViewModel : public UCharacterViewModel
 	GENERATED_BODY()
 
 public:
-	virtual void Initialize(class UAbilitySystemComponent* ASC);
-	virtual void Deinitialize(class UAbilitySystemComponent* ASC) const;
+	virtual void Initialize(class UAbilitySystemComponent* ASC) override;
+	virtual void Deinitialize(class UAbilitySystemComponent* ASC) const override;
 
 
 private:
