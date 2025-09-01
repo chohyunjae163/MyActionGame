@@ -4,6 +4,7 @@
 #include "QuickSlotComponent.h"
 
 #include "AssignableAction/AssignableAction_Consumable.h"
+#include "Engine/AssetManager.h"
 #include "Player/ActionGamePlayerState.h"
 
 
@@ -24,10 +25,13 @@ void UQuickSlotComponent::BeginPlay()
 
 	// ...
 
-	
-
-	//sample test
-	AssignSlot(0,UAssignableAction_Consumable::StaticClass());
+	const AActionGamePlayerState* PS = GetPlayerState<AActionGamePlayerState>();
+	const TConstArrayView<FQuickSlotAssignment>& QuickSlotItems = PS->ViewQuickSlot();
+	for (int i = 0; i < QuickSlotItems.Num(); i++)
+	{
+		UItemDefinition* ItemDef = Cast<UItemDefinition>(UAssetManager::Get().GetPrimaryAssetObject(QuickSlotItems[i].ItemAssetId));
+		AssignSlot(i,ItemDef->AssignableAction);	
+	}
 	
 }
 

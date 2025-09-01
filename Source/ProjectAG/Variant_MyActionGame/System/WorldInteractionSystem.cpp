@@ -74,10 +74,10 @@ void UWorldInteractionSystem::Tick(float DeltaTime)
 
 		for (int32 j = 0; j < Interactables.Num(); j++)
 		{
-			if (IsValid(Interactables[i]) == false) continue;
-			if (Interactables[i]->CanInteract() == false) continue;
+			if (IsValid(Interactables[j]) == false) continue;
+			if (Interactables[j]->CanInteract() == false) continue;
 			
-			AActor* InteractableOwner = Interactables[i]->GetOwner();
+			AActor* InteractableOwner = Interactables[j]->GetOwner();
 			const FVector& InteractableLocation = InteractableOwner->GetActorLocation();
 			const float DistSquared = (OwnerLocation - InteractableLocation).SquaredLength();
 			if (ObserverInteractionStatus[i] == EWorldInteractionStatus::Invalid)

@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Components/PawnComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "LocalPlayerUIBridgeComponent.generated.h"
 
 
 /**
- * attaches to Player Controller
+ * attaches to a Player Controller
  * this component bridges between UI System and Game World
  * if something happens and data changes, this will tell UI
  * to update

@@ -51,7 +51,11 @@ void UInventoryComponent::OnWorldInteractItem(struct FGameplayTag Channel,
 	FWorldItemInteractionPayload Payload = Message.Get<FWorldItemInteractionPayload>();
 	for (const FWorldInteractionItemUnit& Item : Payload.Items)
 	{
-		TryAddItem(Item.AssetId);
+		const bool bAdded = TryAddItem(Item.AssetId);
+		if (bAdded)
+		{
+			//brocast inventory changed
+		}
 	}
 
 }
@@ -78,20 +82,6 @@ bool UInventoryComponent::TryAddItem(const FPrimaryAssetId& ItemAssetId)
 			};
 			
 			Items.Emplace(NewItemInstance);
-			//todo: what if more than three items are registered as quick slot items?
-			if (NewItemInstance.QuickSlotIndex != INDEX_NONE)
-			{
-				for (int i = 0; i < NUM_QUICK_SLOT; ++ i)
-				{
-					if (QuickSlotItems[i].IsValid())
-					{
-						continue;
-					}
-					QuickSlotItems[i] = NewItemInstance;
-				}
-				
-				
-			}
 		}
 		return true;
 	}
@@ -115,7 +105,7 @@ void UInventoryComponent::UseItem(const FInventoryItemHandle& ItemHandle)
 			ItemInstance->Quantity--;
 		}
 
-		if (ItemInstance->Quantity == 0)
+		if (ItemInstance->Quantity <= 0)
 		{
 			//remove
 			RemoveItem(ItemHandle);
@@ -154,7 +144,11 @@ void UInventoryComponent::OnLoadAssetComplete()
 	if (PendingAssetsToAdd.Dequeue(Id))
 	{
 		const bool bAdded = TryAddItem(Id);
-		if (!bAdded)
+		if (bAdded)
+		{
+			//broadcast inventory changed
+		}
+		else
 		{
 			UE_LOG(LogInventory,Warning,TEXT("Item not added id: %s"),*Id.ToString());
 		}

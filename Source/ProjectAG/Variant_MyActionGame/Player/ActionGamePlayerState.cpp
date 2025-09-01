@@ -24,3 +24,8 @@ UAbilitySystemComponent* AActionGamePlayerState::GetAbilitySystemComponent() con
 {
 	return AbilitySystemComponent;
 }
+
+TConstArrayView<FQuickSlotAssignment> AActionGamePlayerState::ViewQuickSlot() const
+{
+	return QuickSlotItems;
+}

@@ -5,14 +5,30 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "ModularPlayerState.h"
+#include "Data/ActionGameConsts.h"
+#include "Data/ItemDefinition.h"
 #include "ActionGamePlayerState.generated.h"
+
+
+
+
+USTRUCT()
+struct FQuickSlotAssignment
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	FPrimaryAssetId ItemAssetId;
+
+	int32 Quantity;
+};
 
 /**
  * for shared information about a specific player
  * The PlayerState is also replicated to everyone and can be used to retrieve and display data on other clients.
  * An easy way to access all PlayerStates is the PlayerArray inside the AGameState class.
  *
- * Create AbilitySystemComponent and AttributeSet.  attach them to PlayerState
+ * Create AbilitySystemComponent and AttributeSet.  attach them to the PlayerState
  */
 UCLASS(MinimalAPI)
 class AActionGamePlayerState : public AModularPlayerState, public IAbilitySystemInterface
@@ -20,11 +36,17 @@ class AActionGamePlayerState : public AModularPlayerState, public IAbilitySystem
 	GENERATED_BODY()
 
 	AActionGamePlayerState(const FObjectInitializer& ObjectInitializer);
+
+public:
 	//~ Begin IAbilitySystemInterface
 	/** Returns our Ability System Component. */
-public:
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~ End IAbilitySystemInterface
+
+	TConstArrayView<FQuickSlotAssignment> ViewQuickSlot() const;
+	
+	
 
 private:
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
@@ -33,5 +55,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UActionGameCharacterAttributeSet> PlayerAttributeSet;
+
+	TStaticArray<FQuickSlotAssignment, NUM_QUICK_SLOT>	QuickSlotItems;
 	
 };

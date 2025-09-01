@@ -26,6 +26,11 @@ struct FQuickSlotBar
 	int32						SelectedIndex;
 };
 
+/*
+ * this QuickSlotComponent references inventory component's QuickSlotItems
+ * and setup Item Actions on Initialization.
+ * When used, it only executes an assignable action.
+ */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTAG_API UQuickSlotComponent : public UPawnComponent
 {
