@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
-#include "ViewModel/QuickSlotBar_Viewmodel_Extension.h"
 #include "ActionGameInGameLayer.generated.h"
 
 /**
