@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonActivatableWidget.h"
+#include "ViewModel/QuickSlotBar_Viewmodel_Extension.h"
 #include "ActionGameInGameLayer.generated.h"
 
 /**
@@ -17,7 +18,7 @@ class UActionGameInGameLayer : public UCommonActivatableWidget
 
 public:
 	virtual void NativeOnInitialized() override;
-
+	
 	//~UCommonActivatableWidget interface
 	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
 	//~End of UCommonActivatableWidget interface

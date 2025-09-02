@@ -3,6 +3,9 @@
 
 #include "ActionGamePlayerState.h"
 #include "AbilitySystemComponent.h"
+#include "ActionGameGameplayTags.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
+#include "GameplayMessage/UIViewMessage.h"
 #include "Variant_MyActionGame/ActorComponent/MyAbilitySystemComponent.h"
 #include "Variant_MyActionGame/GameplayAttribute/ActionGameCharacterAttributeSet.h"
 
@@ -25,7 +28,47 @@ UAbilitySystemComponent* AActionGamePlayerState::GetAbilitySystemComponent() con
 	return AbilitySystemComponent;
 }
 
-TConstArrayView<FQuickSlotAssignment> AActionGamePlayerState::ViewQuickSlot() const
+TArray<FQuickSlotData> AActionGamePlayerState::ViewQuickSlot() const
 {
-	return QuickSlotItems;
+	TArray<FQuickSlotData> Ret;
+	Ret.Reserve(NUM_QUICK_SLOT);
+	for (int i  = 0; i < NUM_QUICK_SLOT; ++i)
+	{
+		Ret.Add(QuickSlotItems[i]);
+	}
+	return Ret;
+}
+
+void AActionGamePlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+	QuickSlotChangeListenerHandle = GameplayMessageSubsystem.RegisterListener(
+	ActionGameGameplayTags::UIEvent_QuickSlotChanged,
+	this,
+	&ThisClass::OnQuickSlotItemChanged);
+}
+
+void AActionGamePlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+	GameplayMessageSubsystem.UnregisterListener(QuickSlotChangeListenerHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
+void AActionGamePlayerState::OnQuickSlotItemChanged(struct FGameplayTag Channel,
+                                                    const struct FUI_QuickSlotChangedMessage& Message)
+{
+	if (Message.ItemAssetId.IsValid() == false)
+	{
+		return;
+	}
+	if (INDEX_NONE < Message.Index && Message.Index < NUM_QUICK_SLOT)
+	{
+		return;
+	}
+
+	QuickSlotItems[Message.Index].ItemAssetId = Message.ItemAssetId;
+	QuickSlotItems[Message.Index].Quantity = Message.Quantity;	
 }

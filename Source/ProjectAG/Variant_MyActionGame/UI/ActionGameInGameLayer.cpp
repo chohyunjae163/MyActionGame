@@ -7,7 +7,6 @@
 #include "NativeGameplayTags.h"
 #include "Input/CommonUIInputTypes.h"
 
-
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_ACTION_ESCAPE, "UI.Action.Escape");
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");
 
@@ -18,6 +17,7 @@ void UActionGameInGameLayer::NativeOnInitialized()
 	//ESC menu handling
 	FBindUIActionArgs BindUIActionArgs(FUIActionTag::ConvertChecked(TAG_UI_ACTION_ESCAPE),FSimpleDelegate::CreateUObject(this,&ThisClass::HandleEscapeAction));
 	FUIActionBindingHandle Handle = RegisterUIActionBinding(BindUIActionArgs);
+
 }
 
 

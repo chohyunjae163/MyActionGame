@@ -6,20 +6,21 @@
 #include "AbilitySystemInterface.h"
 #include "ModularPlayerState.h"
 #include "Data/ActionGameConsts.h"
-#include "Data/ItemDefinition.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "ActionGamePlayerState.generated.h"
 
 
 
 
-USTRUCT()
-struct FQuickSlotAssignment
+USTRUCT(BlueprintType)
+struct FQuickSlotData
 {
 	GENERATED_BODY()
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	FPrimaryAssetId ItemAssetId;
 
+	UPROPERTY(BlueprintReadWrite)
 	int32 Quantity;
 };
 
@@ -38,15 +39,18 @@ class AActionGamePlayerState : public AModularPlayerState, public IAbilitySystem
 	AActionGamePlayerState(const FObjectInitializer& ObjectInitializer);
 
 public:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	//~ Begin IAbilitySystemInterface
 	/** Returns our Ability System Component. */
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~ End IAbilitySystemInterface
 
-	TConstArrayView<FQuickSlotAssignment> ViewQuickSlot() const;
-	
-	
+	UFUNCTION(BlueprintPure)
+	TArray<FQuickSlotData> ViewQuickSlot() const;
+	void OnQuickSlotItemChanged(struct FGameplayTag Channel, const struct FUI_QuickSlotChangedMessage& Message);
+
 
 private:
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
@@ -56,6 +60,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UActionGameCharacterAttributeSet> PlayerAttributeSet;
 
-	TStaticArray<FQuickSlotAssignment, NUM_QUICK_SLOT>	QuickSlotItems;
-	
+	TStaticArray<FQuickSlotData, NUM_QUICK_SLOT>	QuickSlotItems;
+	FGameplayMessageListenerHandle					QuickSlotChangeListenerHandle;
 };

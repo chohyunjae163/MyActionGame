@@ -33,25 +33,20 @@ void ULocalPlayerUIBridgeComponent::BeginPlay()
 		ActionGameGameplayTags::InitState_GameplayReady,
 		this,
 		&ThisClass::OnPawnGameReady);
+
+
 }
 
 void ULocalPlayerUIBridgeComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
 	GameplayMessageSubsystem.UnregisterListener(ListenerHandle);
-
-	// @fixme: this cannot be done here 
-	/*
-	APlayerController* PC = Cast<APlayerController>(GetOwner());
-	AActionGamePlayerState* PS = PC->GetPlayerState<AActionGamePlayerState>();
-	check(IsValid(PS));
-	UAbilitySystemComponent* MyASC = PS->GetAbilitySystemComponent();
+	
 	UPlayerViewModel* PlayerViewModel = GetPlayerViewModel();
 	if (IsValid(PlayerViewModel))
 	{
-		PlayerViewModel->Deinitialize(MyASC);
+		PlayerViewModel->Deinitialize();
 	}
-	*/
 	
 	Super::EndPlay(EndPlayReason);
 }
@@ -76,6 +71,8 @@ void ULocalPlayerUIBridgeComponent::OnPawnGameReady(struct FGameplayTag Channel,
 		}
 	}
 }
+
+
 
 UPlayerViewModel* ULocalPlayerUIBridgeComponent::GetPlayerViewModel() const
 {

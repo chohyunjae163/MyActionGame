@@ -21,5 +21,9 @@ namespace ActionGameGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(WorldInteraction_CanInteract, "WorldInteraction.CanInteract");
 	UE_DEFINE_GAMEPLAY_TAG(WorldInteraction_PickupItem, "WorldInteraction.PickupItem");
 
+	UE_DEFINE_GAMEPLAY_TAG(CharacterEvent,"CharacterEvent");
+
 	UE_DEFINE_GAMEPLAY_TAG(CharacterEvent_UseConsumable,"CharacterEvent.UseConsumable");
+
+	UE_DEFINE_GAMEPLAY_TAG(UIEvent_QuickSlotChanged,"UI.Event.QuickSlotChanged");
 }

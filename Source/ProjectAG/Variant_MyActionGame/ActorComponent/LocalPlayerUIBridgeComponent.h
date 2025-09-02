@@ -11,8 +11,7 @@
 /**
  * attaches to a Player Controller
  * this component bridges between UI System and Game World
- * if something happens and data changes, this will tell UI
- * to update
+ * initializes viewmodels
  */
 UCLASS(MinimalAPI, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ULocalPlayerUIBridgeComponent : public UActorComponent
@@ -31,7 +30,6 @@ protected:
 private:
 	[[nodiscard]] class UPlayerViewModel* GetPlayerViewModel() const;
 	void OnPawnGameReady(struct FGameplayTag Channel, const struct FPawnGameReadyMessage& Message);
-
 private:
 	FGameplayMessageListenerHandle	ListenerHandle;
 };

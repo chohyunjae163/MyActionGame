@@ -3,8 +3,11 @@
 
 #include "QuickSlotComponent.h"
 
+#include "ActionGameGameplayTags.h"
 #include "AssignableAction/AssignableAction_Consumable.h"
+#include "Data/ItemDefinition.h"
 #include "Engine/AssetManager.h"
+#include "GameplayMessage/CharacterEventMessage.h"
 #include "Player/ActionGamePlayerState.h"
 
 
@@ -26,10 +29,10 @@ void UQuickSlotComponent::BeginPlay()
 	// ...
 
 	const AActionGamePlayerState* PS = GetPlayerState<AActionGamePlayerState>();
-	const TConstArrayView<FQuickSlotAssignment>& QuickSlotItems = PS->ViewQuickSlot();
+	const TConstArrayView<FQuickSlotData>& QuickSlotItems = PS->ViewQuickSlot();
 	for (int i = 0; i < QuickSlotItems.Num(); i++)
 	{
-		UItemDefinition* ItemDef = Cast<UItemDefinition>(UAssetManager::Get().GetPrimaryAssetObject(QuickSlotItems[i].ItemAssetId));
+		const UItemDefinition* ItemDef = Cast<UItemDefinition>(UAssetManager::Get().GetPrimaryAssetObject(QuickSlotItems[i].ItemAssetId));
 		AssignSlot(i,ItemDef->AssignableAction);	
 	}
 	
@@ -62,4 +65,9 @@ void UQuickSlotComponent::UseSelected()
 		UAbilitySystemComponent* MyASC = MyPlayerState->GetAbilitySystemComponent();
 		ActionInstance->Execute(GetPawn<APawn>(),MyASC);		
 	}
+
+	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+	FCharacterConsumableMessage Msg;
+	Msg.SlotIndex = SelectedIndex;
+	GameplayMessageSubsystem.BroadcastMessage(ActionGameGameplayTags::CharacterEvent,Msg);
 }

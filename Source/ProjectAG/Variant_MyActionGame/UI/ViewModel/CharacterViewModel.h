@@ -17,7 +17,7 @@ class UCharacterViewModel : public UMVVMViewModelBase
 
 public:
 	virtual void Initialize(class UAbilitySystemComponent* ASC);
-	virtual void Deinitialize(class UAbilitySystemComponent* ASC) const;
+	virtual void Deinitialize() const;
 
 	UFUNCTION(BlueprintPure,FieldNotify)
 	float GetMaxHealth() const;
@@ -59,5 +59,7 @@ private:
 
 	UPROPERTY(FieldNotify)
 	int32 MaxStamina;
-	
+
+	UPROPERTY(Transient)
+	TWeakObjectPtr<UAbilitySystemComponent> MyASC;
 };

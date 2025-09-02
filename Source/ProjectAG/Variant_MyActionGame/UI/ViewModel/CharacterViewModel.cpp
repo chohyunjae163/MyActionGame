@@ -10,6 +10,7 @@ void UCharacterViewModel::Initialize(class UAbilitySystemComponent* ASC)
 {
 	if (IsValid(ASC))
 	{
+		MyASC = ASC;
 		const UActionGameCharacterAttributeSet* Attributes = ASC->GetSet<UActionGameCharacterAttributeSet>();
 		if (!IsValid(Attributes))
 		{
@@ -28,19 +29,19 @@ void UCharacterViewModel::Initialize(class UAbilitySystemComponent* ASC)
 	}
 }
 
-void UCharacterViewModel::Deinitialize(class UAbilitySystemComponent* ASC) const
+void UCharacterViewModel::Deinitialize() const
 {
-	if (IsValid(ASC))
+	if (MyASC.IsValid())
 	{
-		const UActionGameCharacterAttributeSet* Attributes = ASC->GetSet<UActionGameCharacterAttributeSet>();
+		const UActionGameCharacterAttributeSet* Attributes = MyASC->GetSet<UActionGameCharacterAttributeSet>();
 		if (!IsValid(Attributes))
 		{
 			return;
 		}
-		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).RemoveAll(this);
-		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).RemoveAll(this);
-		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetStaminaAttribute()).RemoveAll(this);
-		ASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxStaminaAttribute()).RemoveAll(this);
+		MyASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).RemoveAll(this);
+		MyASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxHealthAttribute()).RemoveAll(this);
+		MyASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetStaminaAttribute()).RemoveAll(this);
+		MyASC->GetGameplayAttributeValueChangeDelegate(Attributes->GetMaxStaminaAttribute()).RemoveAll(this);
 		
 	}
 }
