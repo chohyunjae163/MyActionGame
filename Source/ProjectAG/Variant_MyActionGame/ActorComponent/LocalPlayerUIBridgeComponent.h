@@ -8,12 +8,15 @@
 #include "LocalPlayerUIBridgeComponent.generated.h"
 
 
+
+
+
 /**
  * attaches to a Player Controller
  * this component bridges between UI System and Game World
  * initializes viewmodels
  */
-UCLASS(MinimalAPI, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(MinimalAPI, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ULocalPlayerUIBridgeComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -21,6 +24,7 @@ class ULocalPlayerUIBridgeComponent : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	ULocalPlayerUIBridgeComponent(const FObjectInitializer& ObjectInitializer);
+
 
 protected:
 	// Called when the game starts

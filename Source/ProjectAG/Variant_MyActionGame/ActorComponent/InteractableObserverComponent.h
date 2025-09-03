@@ -3,9 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ViewportInteractionTypes.h"
 #include "Components/ActorComponent.h"
-#include "Components/GameFrameworkInitStateInterface.h"
 #include "Components/PawnComponent.h"
 #include "InteractableObserverComponent.generated.h"
 

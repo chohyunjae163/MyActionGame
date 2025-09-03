@@ -25,11 +25,6 @@ void UPlayerViewModel::Initialize(class AActionGamePlayerState* PlayerState)
 		this,
 		&ThisClass::OnInteractableFound));
 
-	ListenerHandles.Add(GameplayMessageSubsystem.RegisterListener(
-		ActionGameGameplayTags::CharacterEvent,
-		this,
-		&ThisClass::OnUseConsumable
-		));
 
 	QuickSlotItemData.Empty();
 	TArray<FQuickSlotData> PlayerQuickSlot = PlayerState->ViewQuickSlot();
@@ -54,6 +49,8 @@ void UPlayerViewModel::Initialize(class AActionGamePlayerState* PlayerState)
 			ItemViewData.Icon = ItemDef->Icon;
 		}));
 	}
+	
+	PlayerViewModelInitialized.Broadcast();
 }
 
 void UPlayerViewModel::Deinitialize() const
@@ -73,6 +70,9 @@ void UPlayerViewModel::Deinitialize() const
 
 void UPlayerViewModel::OnQuickSlotItemChanged(int32 Index)
 {
+	//inventory UI event
+	//drag drop?
+	//register or remove new quickslot
 	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
 	FUI_QuickSlotChangedMessage Msg;
 	//Msg.ItemAssetId = 0;
@@ -87,14 +87,6 @@ void UPlayerViewModel::OnInteractableFound(struct FGameplayTag Channel, const st
 	UE_MVVM_SET_PROPERTY_VALUE(bInteractable,CanInteract);
 }
 
-void UPlayerViewModel::OnUseConsumable(struct FGameplayTag Channel, const struct FCharacterConsumableMessage& Msg)
-{
-	const int32 SlotIndex = Msg.SlotIndex;
-
-	QuickSlotItemData[SlotIndex].Quantity -= 1;
-
-	UE_MVVM_BROADCAST_FIELD_VALUE_CHANGED(GetQuickSlotItems);
-}
 
 TArray<FItemViewData> UPlayerViewModel::GetQuickSlotItems() const
 {

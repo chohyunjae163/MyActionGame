@@ -67,7 +67,7 @@ void UGA_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
 
 		FGameplayTag Channel = InteractionSpec.Tag;
-		FInstancedStruct Payload = InteractionSpec.Payload;
+		FInstancedStruct Payload = InteractionSpec.Payload; //@see: WorldInteractionMessage.h for Payload types
 		GameplayMessageSubsystem.BroadcastMessage(Channel,Payload);
 	}
 

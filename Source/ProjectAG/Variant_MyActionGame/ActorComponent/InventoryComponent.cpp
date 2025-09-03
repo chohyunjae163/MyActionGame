@@ -51,8 +51,7 @@ void UInventoryComponent::OnWorldInteractItem(struct FGameplayTag Channel,
 	FWorldItemInteractionPayload Payload = Message.Get<FWorldItemInteractionPayload>();
 	for (const FWorldInteractionItemUnit& Item : Payload.Items)
 	{
-		const bool bAdded = TryAddItem(Item.AssetId);
-		if (bAdded)
+		if (TryAddItem(Item.AssetId))
 		{
 			//brocast inventory changed
 		}
@@ -85,6 +84,11 @@ bool UInventoryComponent::TryAddItem(const FPrimaryAssetId& ItemAssetId)
 		}
 		return true;
 	}
+
+	TArray<FName> LoadBundles;
+	UAssetManager::Get().LoadPrimaryAsset(ItemAssetId,LoadBundles,FStreamableDelegate::CreateUObject(this,&ThisClass::OnLoadAssetComplete));
+	PendingAssetsToAdd.Enqueue(ItemAssetId);
+	
 	return false;
 }
 
@@ -130,10 +134,7 @@ const UItemDefinition* UInventoryComponent::ResolveDef(const FPrimaryAssetId& Id
 	{
 		return ItemDef;
 	}
-
-	TArray<FName> LoadBundles;
-	UAssetManager::Get().LoadPrimaryAsset(Id,LoadBundles,FStreamableDelegate::CreateUObject(this,&ThisClass::OnLoadAssetComplete));
-	PendingAssetsToAdd.Enqueue(Id);
+	
 	return nullptr;
 
 }

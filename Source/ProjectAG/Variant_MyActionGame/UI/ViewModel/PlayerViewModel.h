@@ -10,6 +10,9 @@
 
 
 
+
+
+
 /**
  * 
  */
@@ -25,9 +28,12 @@ public:
 	UFUNCTION(BlueprintPure, FieldNotify)
 	TArray<FItemViewData> GetQuickSlotItems() const;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnPlayerViewModelInitialized );
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerViewModelInitialized PlayerViewModelInitialized;
+	
 private:
 	void OnInteractableFound(struct FGameplayTag Channel, const struct FWorldInteractionMessage& Msg);
-	void OnUseConsumable(struct FGameplayTag Channel, const struct FCharacterConsumableMessage& Msg);
 	void OnQuickSlotItemChanged(int32 Index);
 	
 private:
