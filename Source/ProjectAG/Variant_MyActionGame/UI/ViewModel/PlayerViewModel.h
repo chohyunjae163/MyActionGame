@@ -19,7 +19,7 @@ class UPlayerViewModel : public UCharacterViewModel
 	GENERATED_BODY()
 
 public:
-	virtual void Initialize(class UAbilitySystemComponent* ASC) override;
+	virtual void Initialize(class AActionGamePlayerState* PlayerState);
 	virtual void Deinitialize() const override;
 	
 	UFUNCTION(BlueprintPure, FieldNotify)
@@ -34,7 +34,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, FieldNotify, meta=(AllowPrivateAccess=true))
 	bool bInteractable;
 
-	TArray<FItemViewData> QuickSlotItemViews;
+	TArray<FItemViewData> QuickSlotItemData;
 
 	
 	//퀵슬롯 아이템 개수와 아이콘 이미지를 표시해야한다

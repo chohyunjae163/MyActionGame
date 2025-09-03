@@ -48,6 +48,8 @@ void AActionGamePlayerState::BeginPlay()
 	ActionGameGameplayTags::UIEvent_QuickSlotChanged,
 	this,
 	&ThisClass::OnQuickSlotItemChanged);
+
+	TempTestData();
 }
 
 void AActionGamePlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -71,4 +73,16 @@ void AActionGamePlayerState::OnQuickSlotItemChanged(struct FGameplayTag Channel,
 
 	QuickSlotItems[Message.Index].ItemAssetId = Message.ItemAssetId;
 	QuickSlotItems[Message.Index].Quantity = Message.Quantity;	
+}
+
+void AActionGamePlayerState::TempTestData()
+{
+	int32 i = 1;
+	for (FQuickSlotData& Data : QuickSlotItems)
+	{
+		Data.ItemAssetId = DallaeAssetId;
+		Data.Quantity = i;
+		i++;
+	}
+	
 }

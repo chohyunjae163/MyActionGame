@@ -31,7 +31,7 @@ struct FQuickSlotData
  *
  * Create AbilitySystemComponent and AttributeSet.  attach them to the PlayerState
  */
-UCLASS(MinimalAPI)
+UCLASS(MinimalAPI,Blueprintable)
 class AActionGamePlayerState : public AModularPlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
@@ -52,6 +52,12 @@ public:
 	void OnQuickSlotItemChanged(struct FGameplayTag Channel, const struct FUI_QuickSlotChangedMessage& Message);
 
 
+private:
+	void TempTestData();
+
+protected:
+	UPROPERTY(EditAnywhere)
+	FPrimaryAssetId DallaeAssetId;
 private:
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
 	UPROPERTY()

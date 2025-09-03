@@ -59,14 +59,14 @@ void ULocalPlayerUIBridgeComponent::OnPawnGameReady(struct FGameplayTag Channel,
 	{
 		AActionGamePlayerState* PS = LocalPC->GetPlayerState<AActionGamePlayerState>();
 		check(IsValid(PS));
-		UAbilitySystemComponent* MyASC = PS->GetAbilitySystemComponent();
 		UPlayerViewModel* PlayerViewModel = GetPlayerViewModel();
 		if (IsValid(PlayerViewModel))
 		{
 			UAbilitySystemComponent* InitializedASC = Cast<UAbilitySystemComponent>(Message.PawnASC.Get());
+			UAbilitySystemComponent* MyASC = PS->GetAbilitySystemComponent();
 			if (MyASC == InitializedASC)
 			{
-				PlayerViewModel->Initialize(MyASC);
+				PlayerViewModel->Initialize(PS);
 			}
 		}
 	}

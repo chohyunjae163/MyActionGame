@@ -16,7 +16,7 @@ class UCharacterViewModel : public UMVVMViewModelBase
 	GENERATED_BODY()
 
 public:
-	virtual void Initialize(class UAbilitySystemComponent* ASC);
+	void Initialize(class UAbilitySystemComponent* ASC);
 	virtual void Deinitialize() const;
 
 	UFUNCTION(BlueprintPure,FieldNotify)
