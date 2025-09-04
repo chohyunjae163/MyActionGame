@@ -4,6 +4,7 @@
 #include "ActionGamePlayerState.h"
 #include "AbilitySystemComponent.h"
 #include "ActionGameGameplayTags.h"
+#include "ActorComponent/InventoryComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameplayMessage/UIViewMessage.h"
 #include "Variant_MyActionGame/ActorComponent/MyAbilitySystemComponent.h"
@@ -13,14 +14,17 @@
 
 class UMVVMGameSubsystem;
 
-AActionGamePlayerState::AActionGamePlayerState(const FObjectInitializer& ObjectInitializer)
+AActionGamePlayerState::AActionGamePlayerState(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("MyInventory"));
 	// Create ability system component, and set it to be explicitly replicated
-	AbilitySystemComponent = CreateDefaultSubobject<UMyAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent = CreateDefaultSubobject<UMyAbilitySystemComponent>(TEXT("MyAbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	//...
 
-	PlayerAttributeSet = CreateDefaultSubobject<UActionGameCharacterAttributeSet>(TEXT("PlayerAttributeSet"));
+	PlayerAttributeSet = CreateDefaultSubobject<UActionGameCharacterAttributeSet>(TEXT("MyPlayerAttributeSet"));
+
+	
 }
 
 UAbilitySystemComponent* AActionGamePlayerState::GetAbilitySystemComponent() const

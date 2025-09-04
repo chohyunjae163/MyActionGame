@@ -5,6 +5,7 @@
 
 #include "Interface/SaveParticipantInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerState.h"
 #include "SaveGame/MyLocalPlayerSaveGame.h"
 
 void UActionGameLocalPlayerSaveSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -29,9 +30,9 @@ void UActionGameLocalPlayerSaveSubsystem::PlayerControllerChanged(APlayerControl
 		GetLocalPlayer(),
 		MySlotName));
 	
-	if (APawn* MyPawn = NewPlayerController->GetPawn();IsValid(MyPawn))
+	if ( APlayerState* PS = NewPlayerController->GetPlayerState<APlayerState>(); IsValid(PS) ) 
 	{
-		TArray<UActorComponent*> ActorComponents = MyPawn->GetComponentsByInterface(USaveParticipantInterface::StaticClass());
+		TArray<UActorComponent*> ActorComponents = PS->GetComponentsByInterface(USaveParticipantInterface::StaticClass());
 		for (UActorComponent* ActorComponent : ActorComponents)
 		{
 			ISaveParticipantInterface* SaveParticipant = Cast<ISaveParticipantInterface>(ActorComponent);

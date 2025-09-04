@@ -59,6 +59,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FPrimaryAssetId DallaeAssetId;
 private:
+	UPROPERTY()
+	TObjectPtr<class UInventoryComponent> InventoryComponent;
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
 	UPROPERTY()
 	TObjectPtr<class UMyAbilitySystemComponent> AbilitySystemComponent;
