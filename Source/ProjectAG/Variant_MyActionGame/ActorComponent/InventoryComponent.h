@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Data/ItemDefinition.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
+#include "Interface/SaveParticipantInterface.h"
 #include "InventoryComponent.generated.h"
 
 
@@ -13,7 +14,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogInventory, Log, All);
 
 
 UCLASS(MinimalAPI,ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class UInventoryComponent : public UActorComponent
+class UInventoryComponent : public UActorComponent, public ISaveParticipantInterface
 {
 	GENERATED_BODY()
 
@@ -24,7 +25,7 @@ public:
 	UInventoryComponent();
 	
 	//in case, one wants look at items.
-	TConstArrayView<FItemInstance> GetItems() const { return Items; };
+	TConstArrayView<FItemInstance> GetItems() const { return ItemList; };
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,17 +33,20 @@ protected:
 
 private:
 	void OnWorldInteractItem(struct FGameplayTag Channel, const struct FInstancedStruct& Message );
-	bool TryAddItem(const FPrimaryAssetId& ItemAssetId);
+	void AddItem(const FPrimaryAssetId& Id,const UItemDefinition* ItemDef,int32 NewQuantity);
 	FItemInstance* FindItem(const FInventoryItemHandle& Handle);
 	void UseItem(const FInventoryItemHandle& Handle);
 	void RemoveItem(FInventoryItemHandle Handle);
 
-	const UItemDefinition* ResolveDef(const FPrimaryAssetId& Id);
+	static const UItemDefinition* TryResolveDef(const FPrimaryAssetId& Id);
 	void OnLoadAssetComplete();
-	
 
+	// ~ begin ISaveParticipant Interface
+	virtual void WriteToSave(class USaveGame* SaveGameObject) override;
+	virtual void ReadFromSave(class USaveGame* SaveGameObject) override;
+	// ~ end ISaveParticipant Interface
 private:
-	TArray<FItemInstance>	Items;
+	TArray<FItemInstance>	ItemList;
 	TQueue<FPrimaryAssetId> PendingAssetsToAdd;
 	FGameplayMessageListenerHandle ListenerHandle;
 };

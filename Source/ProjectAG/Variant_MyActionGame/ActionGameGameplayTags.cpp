@@ -26,4 +26,6 @@ namespace ActionGameGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(CharacterEvent_UseConsumable,"CharacterEvent.UseConsumable");
 
 	UE_DEFINE_GAMEPLAY_TAG(UIEvent_QuickSlotChanged,"UI.Event.QuickSlotChanged");
+
+	UE_DEFINE_GAMEPLAY_TAG(PlayerEvent_InventoryUpdated,"PlayerEvent.InventoryUpdated");
 }

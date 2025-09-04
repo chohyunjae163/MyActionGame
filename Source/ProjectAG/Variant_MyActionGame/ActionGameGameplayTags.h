@@ -25,4 +25,6 @@ namespace ActionGameGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(CharacterEvent_UseConsumable);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(UIEvent_QuickSlotChanged);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PlayerEvent_InventoryUpdated);
 }

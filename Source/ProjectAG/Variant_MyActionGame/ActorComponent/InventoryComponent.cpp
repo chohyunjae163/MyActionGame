@@ -7,7 +7,9 @@
 #include "ActionGameGameplayTags.h"
 #include "Data/ItemDefinition.h"
 #include "Engine/AssetManager.h"
+#include "GameplayMessage/PlayerEventMessage.h"
 #include "GameplayMessage/WorldInteractionMessage.h"
+#include "SaveGame/MyLocalPlayerSaveGame.h"
 
 
 DEFINE_LOG_CATEGORY(LogInventory)
@@ -51,50 +53,49 @@ void UInventoryComponent::OnWorldInteractItem(struct FGameplayTag Channel,
 	FWorldItemInteractionPayload Payload = Message.Get<FWorldItemInteractionPayload>();
 	for (const FWorldInteractionItemUnit& Item : Payload.Items)
 	{
-		if (TryAddItem(Item.AssetId))
+		PendingAssetsToAdd.Enqueue(Item.AssetId);
+		const UItemDefinition* ItemDef = TryResolveDef(Item.AssetId);
+		if (IsValid(ItemDef))
 		{
-			//brocast inventory changed
+			OnLoadAssetComplete();
 		}
+		else
+		{
+			TArray<FName> LoadBundles;
+			UAssetManager::Get().LoadPrimaryAsset(Item.AssetId,LoadBundles,FStreamableDelegate::CreateUObject(this,&ThisClass::OnLoadAssetComplete));
+		}
+
 	}
 
 }
 
-bool UInventoryComponent::TryAddItem(const FPrimaryAssetId& ItemAssetId)
+void UInventoryComponent::AddItem(const FPrimaryAssetId& Id, const UItemDefinition* ItemDef,int32 NewQuantity)
 {
-	const UItemDefinition* ItemDef = ResolveDef(ItemAssetId);
-
 	if (IsValid(ItemDef))
 	{
 		FInventoryItemHandle Handle = FInventoryItemHandle::NewHandle(ItemDef->GetPathName());
 		if (FItemInstance* ItemInstance = FindItem(Handle))
 		{
-			ItemInstance->Quantity++;
+			ItemInstance->Quantity += NewQuantity;
 		}
 		else
 		{
 			FItemInstance NewItemInstance
 			{
 				.Handle = Handle,
-				.ItemAssetId = ItemAssetId,
-				.Quantity = 1,  // quantity temporary
+				.ItemAssetId = Id,
+				.Quantity = NewQuantity,  // quantity temporary
 				.QuickSlotIndex = 0, // Quick Slot Test  
 			};
 			
-			Items.Emplace(NewItemInstance);
+			ItemList.Emplace(NewItemInstance);
 		}
-		return true;
 	}
-
-	TArray<FName> LoadBundles;
-	UAssetManager::Get().LoadPrimaryAsset(ItemAssetId,LoadBundles,FStreamableDelegate::CreateUObject(this,&ThisClass::OnLoadAssetComplete));
-	PendingAssetsToAdd.Enqueue(ItemAssetId);
-	
-	return false;
 }
 
 FItemInstance* UInventoryComponent::FindItem(const FInventoryItemHandle& ItemHandle)
 {
-	return  Items.FindByPredicate([ItemHandle](FItemInstance& Item)
+	return  ItemList.FindByPredicate([ItemHandle](FItemInstance& Item)
 	{
 		return Item.Handle == ItemHandle;
 	});
@@ -117,17 +118,15 @@ void UInventoryComponent::UseItem(const FInventoryItemHandle& ItemHandle)
 	}
 }
 
-
 void UInventoryComponent::RemoveItem(FInventoryItemHandle Handle)
 {
 	if (FItemInstance* ItemInstance = FindItem(Handle))
 	{
-		Items.Remove(*ItemInstance);
+		ItemList.Remove(*ItemInstance);
 	}
 }
 
-
-const UItemDefinition* UInventoryComponent::ResolveDef(const FPrimaryAssetId& Id)
+const UItemDefinition* UInventoryComponent::TryResolveDef(const FPrimaryAssetId& Id)
 {
 	UItemDefinition* ItemDef = Cast<UItemDefinition>(UAssetManager::Get().GetPrimaryAssetObject(Id));
 	if (IsValid(ItemDef))
@@ -144,14 +143,48 @@ void UInventoryComponent::OnLoadAssetComplete()
 	FPrimaryAssetId Id;
 	if (PendingAssetsToAdd.Dequeue(Id))
 	{
-		const bool bAdded = TryAddItem(Id);
-		if (bAdded)
+		const UItemDefinition* ItemDefinition = TryResolveDef(Id);
+		if (ensure(IsValid(ItemDefinition)))
 		{
-			//broadcast inventory changed
+			AddItem(Id,ItemDefinition,1);
 		}
-		else
+	}
+
+	if (PendingAssetsToAdd.IsEmpty())
+	{
+		UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+		GameplayMessageSubsystem.BroadcastMessage(
+			ActionGameGameplayTags::PlayerEvent_InventoryUpdated,
+			FPlayerInventoryUpdated { ItemList });
+	}
+}
+
+void UInventoryComponent::WriteToSave(class USaveGame* SaveGameObject)
+{
+	UMyLocalPlayerSaveGame* LocalPlayerSaveGame = Cast<UMyLocalPlayerSaveGame>(SaveGameObject);
+	if (IsValid(LocalPlayerSaveGame))
+	{
+		LocalPlayerSaveGame->ItemRecords.Empty();
+		for (const FItemInstance& ItemInstance : ItemList)
 		{
-			UE_LOG(LogInventory,Warning,TEXT("Item not added id: %s"),*Id.ToString());
+			LocalPlayerSaveGame->ItemRecords.Add(
+				FItemRecord(
+					ItemInstance.ItemAssetId,
+					ItemInstance.Quantity)
+					);
+		}
+	}
+}
+
+void UInventoryComponent::ReadFromSave(class USaveGame* SaveGameObject)
+{
+	UMyLocalPlayerSaveGame* LocalPlayerSaveGame = Cast<UMyLocalPlayerSaveGame>(SaveGameObject);
+	if (IsValid(LocalPlayerSaveGame))
+	{
+		for (const FItemRecord Record : LocalPlayerSaveGame->ItemRecords)
+		{
+			const UItemDefinition* ItemDef = TryResolveDef(Record.Id);
+			AddItem(Record.Id,ItemDef,Record.Quantity);
 		}
 	}
 }
