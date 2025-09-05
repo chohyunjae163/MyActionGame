@@ -8,6 +8,7 @@
 #include "Data/ItemDefinition.h"
 #include "Engine/AssetManager.h"
 #include "GameplayMessage/PlayerEventMessage.h"
+#include "GameplayMessage/SaveMessage.h"
 #include "GameplayMessage/WorldInteractionMessage.h"
 #include "SaveGame/MyLocalPlayerSaveGame.h"
 
@@ -147,16 +148,21 @@ void UInventoryComponent::OnLoadAssetComplete()
 		if (ensure(IsValid(ItemDefinition)))
 		{
 			AddItem(Id,ItemDefinition,1);
+			
+			if (PendingAssetsToAdd.IsEmpty())
+			{
+				UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+				GameplayMessageSubsystem.BroadcastMessage(
+					ActionGameGameplayTags::PlayerEvent_InventoryUpdated,
+					FPlayerInventoryUpdated { ItemList });
+
+				GameplayMessageSubsystem.BroadcastMessage(
+					ActionGameGameplayTags::SaveEvent_Request,
+					FRequestSaveMessage { this });
+			}
 		}
 	}
 
-	if (PendingAssetsToAdd.IsEmpty())
-	{
-		UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
-		GameplayMessageSubsystem.BroadcastMessage(
-			ActionGameGameplayTags::PlayerEvent_InventoryUpdated,
-			FPlayerInventoryUpdated { ItemList });
-	}
 }
 
 void UInventoryComponent::WriteToSave(class USaveGame* SaveGameObject)
@@ -183,8 +189,17 @@ void UInventoryComponent::ReadFromSave(class USaveGame* SaveGameObject)
 	{
 		for (const FItemRecord Record : LocalPlayerSaveGame->ItemRecords)
 		{
+			PendingAssetsToAdd.Enqueue(Record.Id);
 			const UItemDefinition* ItemDef = TryResolveDef(Record.Id);
-			AddItem(Record.Id,ItemDef,Record.Quantity);
+			if (IsValid(ItemDef))
+			{
+				OnLoadAssetComplete();
+			}
+			else
+			{
+				TArray<FName> LoadBundles;
+				UAssetManager::Get().LoadPrimaryAsset(Record.Id,LoadBundles,FStreamableDelegate::CreateUObject(this,&ThisClass::OnLoadAssetComplete));
+			}
 		}
 	}
 }

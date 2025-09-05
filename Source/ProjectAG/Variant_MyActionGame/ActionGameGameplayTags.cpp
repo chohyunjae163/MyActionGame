@@ -28,4 +28,6 @@ namespace ActionGameGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(UIEvent_QuickSlotChanged,"UI.Event.QuickSlotChanged");
 
 	UE_DEFINE_GAMEPLAY_TAG(PlayerEvent_InventoryUpdated,"PlayerEvent.InventoryUpdated");
+
+	UE_DEFINE_GAMEPLAY_TAG(SaveEvent_Request,"SaveEvent.Request");
 }

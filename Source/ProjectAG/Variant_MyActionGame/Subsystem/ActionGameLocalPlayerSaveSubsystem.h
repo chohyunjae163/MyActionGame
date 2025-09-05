@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsystems/LocalPlayerSubsystem.h"
 #include "ActionGameLocalPlayerSaveSubsystem.generated.h"
@@ -32,14 +33,19 @@ public:
 	// ~ End USubsystem Interface
 
 	/** Callback for when the player controller is changed on this subsystem's owning local player */
-	virtual void PlayerControllerChanged(APlayerController* NewPlayerController);
+	virtual void PlayerControllerChanged(APlayerController* NewPlayerController) override;
 	
 	void SaveGame(FAsyncSaveGameToSlotDelegate Callback) const;
 
+private:
+	void OnRequestSave(struct FGameplayTag Channel, const struct FRequestSaveMessage& Msg);
+	void OnSaveComplete(const FString&, const int32, bool);
 private:
 	FString MySlotName;
 	int32	MyUserIndex;
 
 	UPROPERTY()
 	TObjectPtr<class UMyLocalPlayerSaveGame> MySaveGameObject;
+
+	FGameplayMessageListenerHandle SaveRequestListenerHandle;
 };

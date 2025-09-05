@@ -3,24 +3,14 @@
 
 #include "ActionGameLocalPlayerSaveSubsystem.h"
 
+#include "ActionGameGameplayTags.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "Interface/SaveParticipantInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
+#include "GameplayMessage/SaveMessage.h"
 #include "SaveGame/MyLocalPlayerSaveGame.h"
 
-void UActionGameLocalPlayerSaveSubsystem::Initialize(FSubsystemCollectionBase& Collection)
-{
-	Super::Initialize(Collection);
-
-	MySlotName = TEXT("MyLocalPlayerSaveGame");
-	MyUserIndex = 0;
-
-}
-
-void UActionGameLocalPlayerSaveSubsystem::Deinitialize()
-{
-	Super::Deinitialize();
-}
 
 void UActionGameLocalPlayerSaveSubsystem::PlayerControllerChanged(APlayerController* NewPlayerController)
 {
@@ -39,7 +29,43 @@ void UActionGameLocalPlayerSaveSubsystem::PlayerControllerChanged(APlayerControl
 			SaveParticipant->ReadFromSave(MySaveGameObject);
 		}
 	}
+	
 }
+
+void UActionGameLocalPlayerSaveSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+
+	MySlotName = TEXT("MyLocalPlayerSaveGame");
+	MyUserIndex = 0;
+
+	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+	SaveRequestListenerHandle = GameplayMessageSubsystem.RegisterListener(
+		ActionGameGameplayTags::SaveEvent_Request,this,&ThisClass::OnRequestSave);
+}
+
+void UActionGameLocalPlayerSaveSubsystem::Deinitialize()
+{
+	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
+	GameplayMessageSubsystem.UnregisterListener(SaveRequestListenerHandle);
+	
+	Super::Deinitialize();
+}
+
+void UActionGameLocalPlayerSaveSubsystem::OnRequestSave(struct FGameplayTag Channel,
+	const struct FRequestSaveMessage& Msg)
+{
+	ISaveParticipantInterface* SaveParticipant = Cast<ISaveParticipantInterface>(Msg.Requester);
+	SaveParticipant->WriteToSave(MySaveGameObject);
+
+	SaveGame(FAsyncSaveGameToSlotDelegate::CreateUObject(this,&ThisClass::OnSaveComplete));
+}
+
+void UActionGameLocalPlayerSaveSubsystem::OnSaveComplete(const FString& SlotName, const int32 SlotIndex, bool bSuccess)
+{
+	//
+}
+
 
 void UActionGameLocalPlayerSaveSubsystem::SaveGame(FAsyncSaveGameToSlotDelegate Callback) const
 {
