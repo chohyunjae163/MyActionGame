@@ -49,6 +49,12 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	const uint8 NumCheck = DeltaTime / Consts::AnimTargetFPS;
 	for (int32 i = 0; i < NumCheck; i++)
 	{
+		
+		if (Transforms.IsEmpty()) //early exit 
+		{
+			SetComponentTickEnabled(false);
+			break;
+		}
 		if (FTransform StartTransform,EndTransform; Transforms.Dequeue(StartTransform))
 		{
 			if (Transforms.Peek(EndTransform))
@@ -73,15 +79,25 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 						if (Hit.bBlockingHit)
 						{
 							AActor* HitActor = Hit.GetActor();
-							UActorComponent* HitComponent = Hit.GetComponent();
+							UPrimitiveComponent* HitComponent = Hit.GetComponent();
 							if (IsValid(HitActor) && IsValid(HitComponent))
 							{
 								//todo: send message to hit actor?
-								
+								//get my weapon component.
+								UPrimitiveComponent* MyMeleeWeaponComponent = nullptr;
+								HitActor->NotifyHit(
+									HitComponent,
+									GetOwner(),
+									MyMeleeWeaponComponent,
+									false,
+									Hit.Location,
+									Hit.Normal,
+									Hit.ImpactNormal,
+									Hit);
 							}
 						}
 					}
-				}				
+				}
 			}
 		}
 	}

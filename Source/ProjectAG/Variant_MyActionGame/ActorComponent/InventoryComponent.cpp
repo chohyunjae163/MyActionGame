@@ -34,10 +34,7 @@ void UInventoryComponent::BeginPlay()
 		ActionGameGameplayTags::WorldInteraction_PickupItem,
 		this,
 		&ThisClass::OnWorldInteractItem);
-
-	//load save data and fill inventory
-	//after initialization of inventory component
-	//tell viewmodel to update QuickSlot data
+	
 }
 
 void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)

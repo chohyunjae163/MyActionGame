@@ -49,10 +49,12 @@ void UAnimNotifyState_MeleeAttack::NotifyEnd(USkeletalMeshComponent* MeshComp, U
 		return;
 	}
 
-	//todo: notify melee attack end
+	// notify melee attack end
 	UGameplayMessageSubsystem& GameplayMessageSubsystem = UGameplayMessageSubsystem::Get(GetWorld());
 	const FGameplayTag Channel = ActionGameGameplayTags::TAG_Animation_MeleeAttack_Message;
-	
+
+
+	//send an empty message
 	GameplayMessageSubsystem.BroadcastMessage<FMeleeAttackMessage>(Channel,FMeleeAttackMessage());
 
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
