@@ -3,6 +3,7 @@
 
 #include "MeleeAttackTraceComponent.h"
 
+#include "FuncLib/ActionGameBPFuncLib.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "System/DamageExecutionSubsystem.h"
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
@@ -73,11 +74,14 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 				CollisionParams.bDebugQuery = true;
 				if (World->SweepMultiByObjectType(Hits,Start,End,Quat,Params,CollisionShape))
 				{
+					UAbilitySystemComponent* Attacker = UActionGameBPFuncLib::GetAbilitySystemComponent(GetPawn<APawn>());
 					//weapon component
 					for (const FHitResult& Hit : Hits)
 					{
 						UDamageExecutionSubsystem* DamageExecutionSubsystem = World->GetSubsystem<UDamageExecutionSubsystem>();
-						//DamageExecutionSubsystem->RequestDamage(Hit);
+						AActor* HitActor = Hit.GetActor();
+						UAbilitySystemComponent* Target = UActionGameBPFuncLib::GetAbilitySystemComponent(Cast<APawn>(HitActor));
+						DamageExecutionSubsystem->RequestDamage(Attacker,Target);
 					}
 				}
 			}

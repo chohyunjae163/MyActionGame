@@ -11,4 +11,11 @@ void UDamageExecutionSubsystem::RequestDamage(class UAbilitySystemComponent* Cau
 	FGameplayEffectSpec GameplayEffectSpec;
 	//GameplayEffectSpec.Def;
 	TargetASC->ApplyGameplayEffectSpecToSelf(GameplayEffectSpec);
+
+
+	ApplyDamageGE(GameplayEffectSpec);
+}
+
+void UDamageExecutionSubsystem::ApplyDamageGE(const struct FGameplayEffectSpec& GameplayEffectSpec)
+{
 }

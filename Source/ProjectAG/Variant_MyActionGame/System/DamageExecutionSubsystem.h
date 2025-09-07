@@ -22,5 +22,5 @@ public:
 	void RequestDamage(class UAbilitySystemComponent* CauserASC, class UAbilitySystemComponent* TargetASC);
 
 private:
-	void ApplyDamageGE();
+	void ApplyDamageGE(const struct FGameplayEffectSpec& GameplayEffectSpec);
 };
