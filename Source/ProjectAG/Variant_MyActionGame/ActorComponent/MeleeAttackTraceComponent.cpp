@@ -4,6 +4,7 @@
 #include "MeleeAttackTraceComponent.h"
 
 #include "GameFramework/GameplayMessageSubsystem.h"
+#include "System/DamageExecutionSubsystem.h"
 #include "Variant_MyActionGame/ActionGameGameplayTags.h"
 #include "Variant_MyActionGame/Consts.h"
 #include "Variant_MyActionGame/GameplayMessage/MeleeAttackMessage.h"
@@ -72,30 +73,11 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 				CollisionParams.bDebugQuery = true;
 				if (World->SweepMultiByObjectType(Hits,Start,End,Quat,Params,CollisionShape))
 				{
-					//todo:
-					//try attack
+					//weapon component
 					for (const FHitResult& Hit : Hits)
 					{
-						if (Hit.bBlockingHit)
-						{
-							AActor* HitActor = Hit.GetActor();
-							UPrimitiveComponent* HitComponent = Hit.GetComponent();
-							if (IsValid(HitActor) && IsValid(HitComponent))
-							{
-								//todo: send message to hit actor?
-								//get my weapon component.
-								UPrimitiveComponent* MyMeleeWeaponComponent = nullptr;
-								HitActor->NotifyHit(
-									HitComponent,
-									GetOwner(),
-									MyMeleeWeaponComponent,
-									false,
-									Hit.Location,
-									Hit.Normal,
-									Hit.ImpactNormal,
-									Hit);
-							}
-						}
+						UDamageExecutionSubsystem* DamageExecutionSubsystem = World->GetSubsystem<UDamageExecutionSubsystem>();
+						//DamageExecutionSubsystem->RequestDamage(Hit);
 					}
 				}
 			}
