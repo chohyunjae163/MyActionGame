@@ -75,7 +75,6 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 				if (World->SweepMultiByObjectType(Hits,Start,End,Quat,Params,CollisionShape))
 				{
 					UAbilitySystemComponent* Attacker = UActionGameBPFuncLib::GetAbilitySystemComponent(GetPawn<APawn>());
-					//weapon component
 					for (const FHitResult& Hit : Hits)
 					{
 						UDamageExecutionSubsystem* DamageExecutionSubsystem = World->GetSubsystem<UDamageExecutionSubsystem>();

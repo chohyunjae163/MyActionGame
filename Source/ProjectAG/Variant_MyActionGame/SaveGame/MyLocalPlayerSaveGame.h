@@ -13,8 +13,20 @@ struct FItemRecord
 	FPrimaryAssetId Id;
 	int32 Quantity;
 
-	FItemRecord(FPrimaryAssetId NewId, int32 NewQuantity):
-		Id(NewId),Quantity(NewQuantity)
+	FItemRecord(FPrimaryAssetId InId, int32 InQuantity):
+		Id(InId),Quantity(InQuantity)
+	{
+		
+	}
+};
+
+struct FWeaponRecord
+{
+	FPrimaryAssetId Id;
+	int32 Level;
+
+	FWeaponRecord(FPrimaryAssetId InId, int32 InLevel):
+		Id(InId),Level(InLevel)
 	{
 		
 	}

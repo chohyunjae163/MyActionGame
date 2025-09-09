@@ -1,0 +1,37 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
+#include "Data/WeaponDefinition.h"
+#include "Interface/SaveParticipantInterface.h"
+#include "EquipmentComponent.generated.h"
+
+/**
+ * attaches to PlayerState
+ * save and load current character equipments (weapons and armours)
+ * the player state has this component
+ */
+UCLASS(MinimalAPI, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class UEquipmentComponent : public UActorComponent, public ISaveParticipantInterface
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this component's properties
+	UEquipmentComponent();
+
+	const FWeaponInstance& GetWeapon() const { return MyWeapon; }
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+	// ~ begin ISaveParticipant Interface
+	virtual void WriteToSave(class USaveGame* SaveGameObject) override;
+	virtual void ReadFromSave(class USaveGame* SaveGameObject) override;
+	// ~ end ISaveParticipant Interface
+private:
+	FWeaponInstance MyWeapon; 
+};

@@ -17,8 +17,19 @@ public:
 	TSoftObjectPtr<UStaticMesh> Mesh;
 
 	UPROPERTY(EditDefaultsOnly)
-	float BaseDamage;
+	TArray<TSubclassOf<class UGameplayEffect>> Effects;
+};
 
-	UPROPERTY(EditDefaultsOnly)
-	float Weight;
+//runtime weapon info
+USTRUCT()
+struct FWeaponInstance
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	FPrimaryAssetId DataAssetId;
+
+	UPROPERTY()
+	int32 Level;
+
 };
