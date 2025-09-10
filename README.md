@@ -7,4 +7,5 @@ Things to implement in this project.
 - fire projectiles
 - change weapoons
 - interact with the world
+- procedural animation with character's locomotion. 
 
