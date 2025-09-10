@@ -13,6 +13,7 @@ struct FItemRecord
 	FPrimaryAssetId Id;
 	int32 Quantity;
 
+	FItemRecord() = default;
 	FItemRecord(FPrimaryAssetId InId, int32 InQuantity):
 		Id(InId),Quantity(InQuantity)
 	{
@@ -25,6 +26,7 @@ struct FWeaponRecord
 	FPrimaryAssetId Id;
 	int32 Level;
 
+	FWeaponRecord() = default;
 	FWeaponRecord(FPrimaryAssetId InId, int32 InLevel):
 		Id(InId),Level(InLevel)
 	{
@@ -49,12 +51,9 @@ public:
 	void UpdateInventory(TConstArrayView<FItemInstance> ItemData);
 
 	TArray<FItemRecord> ItemRecords;
+	FWeaponRecord WeaponRecord;
 private:
 	void OnInventoryUpdated(struct FGameplayTag Channel, const struct FPlayerInventoryUpdated& Msg );
 private:
-	
-	TArray<struct FItemInstance> ItemInstances;
-
-
 	
 };

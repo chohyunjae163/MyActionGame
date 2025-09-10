@@ -13,10 +13,6 @@ void UMyLocalPlayerSaveGame::InitializeSaveGame(const ULocalPlayer* LocalPlayer,
 }
 
 
-void UMyLocalPlayerSaveGame::UpdateInventory(TConstArrayView<FItemInstance> ItemList)
-{
-	ItemInstances = ItemList;
-}
 
 void UMyLocalPlayerSaveGame::OnInventoryUpdated(struct FGameplayTag Channel, const struct FPlayerInventoryUpdated& Msg)
 {
@@ -24,7 +20,15 @@ void UMyLocalPlayerSaveGame::OnInventoryUpdated(struct FGameplayTag Channel, con
 
 	//notify saving started
 	AsyncSaveGameToSlotForLocalPlayer();
-	
+}
+
+void UMyLocalPlayerSaveGame::UpdateInventory(TConstArrayView<FItemInstance> ItemList)
+{
+	ItemRecords.Empty();
+	for (const FItemInstance& Item : ItemList)
+	{
+		ItemRecords.Emplace(FItemRecord{Item.ItemAssetId,Item.Quantity});
+	}
 }
 
 void UMyLocalPlayerSaveGame::HandlePostSave(bool bSuccess)

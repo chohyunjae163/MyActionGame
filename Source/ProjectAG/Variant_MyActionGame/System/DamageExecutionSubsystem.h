@@ -19,8 +19,9 @@ class PROJECTAG_API UDamageExecutionSubsystem : public UWorldSubsystem
 public:
 
 	//receive hit data 
-	void RequestDamage(class UAbilitySystemComponent* CauserASC, class UAbilitySystemComponent* TargetASC);
+	void RequestDamage(class UAbilitySystemComponent* AttackerASC, class UAbilitySystemComponent* TargetASC);
 
 private:
+	float CalculateRawDamage(class UAbilitySystemComponent* AttackerASC);
 	void ApplyDamageGE(const struct FGameplayEffectSpec& GameplayEffectSpec);
 };

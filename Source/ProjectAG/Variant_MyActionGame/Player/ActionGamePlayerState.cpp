@@ -4,6 +4,7 @@
 #include "ActionGamePlayerState.h"
 #include "AbilitySystemComponent.h"
 #include "ActionGameGameplayTags.h"
+#include "ActorComponent/EquipmentComponent.h"
 #include "ActorComponent/InventoryComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameplayMessage/UIViewMessage.h"
@@ -17,6 +18,8 @@ class UMVVMGameSubsystem;
 AActionGamePlayerState::AActionGamePlayerState(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("MyInventory"));
+	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>(TEXT("MyEquipment"));
+	
 	// Create ability system component, and set it to be explicitly replicated
 	AbilitySystemComponent = CreateDefaultSubobject<UMyAbilitySystemComponent>(TEXT("MyAbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);

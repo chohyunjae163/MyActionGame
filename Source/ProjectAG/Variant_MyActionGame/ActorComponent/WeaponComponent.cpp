@@ -28,7 +28,7 @@ void UWeaponComponent::BeginPlay()
 
 void UWeaponComponent::OnLoadWeaponData()
 {
-	UWeaponDefinition* WeaponDef = WeaponDef = Cast<UWeaponDefinition>(UAssetManager::Get().GetPrimaryAssetObject(WeaponInstance.DataAssetId));
+	UWeaponDefinition* WeaponDef = Cast<UWeaponDefinition>(UAssetManager::Get().GetPrimaryAssetObject(WeaponInstance.DataAssetId));
 	if (IsValid(WeaponDef))
 	{
 		UAbilitySystemComponent* ASC = GetPlayerState<APlayerState>()->FindComponentByClass<UAbilitySystemComponent>();

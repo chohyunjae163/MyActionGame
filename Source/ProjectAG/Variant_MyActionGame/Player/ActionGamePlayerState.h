@@ -61,6 +61,9 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<class UInventoryComponent> InventoryComponent;
+
+	UPROPERTY()
+	TObjectPtr<class UEquipmentComponent> EquipmentComponent;
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
 	UPROPERTY()
 	TObjectPtr<class UMyAbilitySystemComponent> AbilitySystemComponent;

@@ -10,8 +10,7 @@
 
 
 /**
- * it holds a runtime character's weapon definition.
- * apply gameplay effect to owner's ASC
+ * it applies gameplay effects to owner's ASC.
  */
 UCLASS(MinimalAPI, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UWeaponComponent : public UPawnComponent
@@ -27,8 +26,9 @@ protected:
 
 private:
 	void OnLoadWeaponData();
+
+	
 private:
-	UPROPERTY(Transient)
 	FWeaponInstance WeaponInstance;
 
 };

@@ -14,7 +14,7 @@ public:
 	FName Name;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<UStaticMesh> Mesh;
+	TArray<TSoftObjectPtr<UStaticMesh>> Meshes;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<class UGameplayEffect>> Effects;

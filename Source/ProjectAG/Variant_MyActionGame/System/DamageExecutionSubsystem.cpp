@@ -4,16 +4,40 @@
 #include "DamageExecutionSubsystem.h"
 
 #include "AbilitySystemComponent.h"
+#include "GameplayAttribute/ActionGameCharacterAttributeSet.h"
+#include "GameplayEffect/GameplayEffect_Damage.h"
 
-void UDamageExecutionSubsystem::RequestDamage(class UAbilitySystemComponent* CauserASC,
+void UDamageExecutionSubsystem::RequestDamage(class UAbilitySystemComponent* AttackerASC,
                                               class UAbilitySystemComponent* TargetASC)
 {
-	FGameplayEffectSpec GameplayEffectSpec;
-	//GameplayEffectSpec.Def;
-	TargetASC->ApplyGameplayEffectSpecToSelf(GameplayEffectSpec);
+	FGameplayEffectSpecHandle SpecHandle = AttackerASC->MakeOutgoingSpec(UGameplayEffect_Damage::StaticClass(),1,AttackerASC->MakeEffectContext());
+
+	FGameplayTag GameplayTag;
 
 
-	ApplyDamageGE(GameplayEffectSpec);
+	
+	float RawDamage = CalculateRawDamage(AttackerASC);
+	SpecHandle.Data->SetSetByCallerMagnitude(GameplayTag,RawDamage);
+	
+	ApplyDamageGE(*SpecHandle.Data.Get());
+
+	
+}
+
+float UDamageExecutionSubsystem::CalculateRawDamage(class UAbilitySystemComponent* AttackerASC)
+{
+	if (IsValid(AttackerASC) == false)
+	{
+		return 0.0f;
+	}
+	const UActionGameCharacterAttributeSet* AttributeSet = Cast<UActionGameCharacterAttributeSet>(AttackerASC->GetAttributeSet(UActionGameCharacterAttributeSet::StaticClass()));
+	if (IsValid(AttributeSet) == false)
+	{
+		return 0.0f;
+	}
+	float RawDamage  = 0.0f;
+	
+	return RawDamage;
 }
 
 void UDamageExecutionSubsystem::ApplyDamageGE(const struct FGameplayEffectSpec& GameplayEffectSpec)
