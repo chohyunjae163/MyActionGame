@@ -5,10 +5,10 @@
 
 
 UCLASS(MinimalAPI,Blueprintable,Const)
-class UWeaponDefinition : public UPrimaryDataAsset
+class UEquipmentDefinition : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-
+	
 public:
 	UPROPERTY(EditDefaultsOnly)
 	FName Name;
@@ -18,11 +18,28 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<class UGameplayEffect>> Effects;
+
 };
 
-//runtime weapon info
+UCLASS(MinimalAPI,Blueprintable,Const)
+class UWeaponDefinition : public UEquipmentDefinition
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSoftObjectPtr<UAnimMontage>> MotionSet;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float BaseDamage;
+
+	UPROPERTY(EditDefaultsOnly)
+	float Weight;
+};
+
+//runtime equipment info
 USTRUCT()
-struct FWeaponInstance
+struct FRuntimeEquipmentData
 {
 	GENERATED_BODY()
 	
@@ -30,6 +47,6 @@ struct FWeaponInstance
 	FPrimaryAssetId DataAssetId;
 
 	UPROPERTY()
-	int32 Level;
+	int32 CurrentDurability;
 
 };

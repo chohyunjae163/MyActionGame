@@ -24,11 +24,11 @@ struct FItemRecord
 struct FWeaponRecord
 {
 	FPrimaryAssetId Id;
-	int32 Level;
+	int32 Durability;
 
 	FWeaponRecord() = default;
-	FWeaponRecord(FPrimaryAssetId InId, int32 InLevel):
-		Id(InId),Level(InLevel)
+	FWeaponRecord(FPrimaryAssetId InId, int32 InDurability):
+		Id(InId),Durability(InDurability)
 	{
 		
 	}

@@ -8,6 +8,15 @@
 #include "Interface/SaveParticipantInterface.h"
 #include "EquipmentComponent.generated.h"
 
+
+
+UENUM(BlueprintType)
+enum class EEquipmentType : uint8
+{
+	Weapon = 0,
+	Count,
+};
+
 /**
  * attaches to PlayerState
  * save and load current character equipments (weapons and armours)
@@ -22,7 +31,7 @@ public:
 	// Sets default values for this component's properties
 	UEquipmentComponent();
 
-	const FWeaponInstance& GetWeapon() const { return MyWeapon; }
+	const FRuntimeEquipmentData& GetWeapon() const { return Equipments[static_cast<uint8>(EEquipmentType::Weapon)]; }
 
 protected:
 	// Called when the game starts
@@ -32,6 +41,13 @@ protected:
 	virtual void WriteToSave(class USaveGame* SaveGameObject) override;
 	virtual void ReadFromSave(class USaveGame* SaveGameObject) override;
 	// ~ end ISaveParticipant Interface
+
 private:
-	FWeaponInstance MyWeapon; 
+	void OnLoadEquipmentAsset(TSharedPtr<struct FStreamableHandle>);
+
+	
+private:
+	TArray<FRuntimeEquipmentData> Equipments;
+
+
 };

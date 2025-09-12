@@ -41,11 +41,14 @@ public:
 
 
 private:
+	void OnWeaponChange(const struct FRuntimeEquipmentData& EquipmentData);
 	void OnAnimMeleeAttackMessage(struct FGameplayTag Channel, const struct FMeleeAttackMessage& Message);
 private:
 	TQueue<FTransform>				Transforms;
 	FCollisionShape					CollisionShape;
 	FGameplayMessageListenerHandle	ListenerHandle;
 
+	UPROPERTY(Transient)
+	TObjectPtr<class UWeaponDefinition> CurrentWeaponDef;
 };
 

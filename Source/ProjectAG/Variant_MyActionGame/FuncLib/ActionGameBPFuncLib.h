@@ -6,6 +6,9 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ActionGameBPFuncLib.generated.h"
 
+
+DECLARE_LOG_CATEGORY_EXTERN(LogActionGameBPFuncLib, Log, All);
+
 /**
  * 
  */
@@ -16,4 +19,5 @@ class UActionGameBPFuncLib : public UBlueprintFunctionLibrary
 
 public:
 	static class UAbilitySystemComponent* GetAbilitySystemComponent(APawn* Pawn);
+	static void GetCurrentWeapon(APawn* Pawn, OUT struct FRuntimeEquipmentData& OutWeaponData);
 };

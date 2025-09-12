@@ -10,8 +10,8 @@
 /**
  * handles damage effect of the game world
  */
-UCLASS()
-class PROJECTAG_API UDamageExecutionSubsystem : public UWorldSubsystem
+UCLASS(MinimalAPI)
+class UDamageExecutionSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
@@ -19,9 +19,9 @@ class PROJECTAG_API UDamageExecutionSubsystem : public UWorldSubsystem
 public:
 
 	//receive hit data 
-	void RequestDamage(class UAbilitySystemComponent* AttackerASC, class UAbilitySystemComponent* TargetASC);
+	static void RequestDamage(class UAbilitySystemComponent* AttackerASC, class UAbilitySystemComponent* TargetASC,const class UWeaponDefinition* AttackerWeapon);
 
 private:
-	float CalculateRawDamage(class UAbilitySystemComponent* AttackerASC);
-	void ApplyDamageGE(const struct FGameplayEffectSpec& GameplayEffectSpec);
+	static float GetCharacterStr(class UAbilitySystemComponent* AttackerASC);
+	static void ApplyDamageGE(const class UAbilitySystemComponent* AttackerASC, float InRawDamage);
 };

@@ -3,6 +3,8 @@
 
 #include "MeleeAttackTraceComponent.h"
 
+#include "Data/WeaponDefinition.h"
+#include "Engine/AssetManager.h"
 #include "FuncLib/ActionGameBPFuncLib.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "System/DamageExecutionSubsystem.h"
@@ -74,13 +76,17 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 				CollisionParams.bDebugQuery = true;
 				if (World->SweepMultiByObjectType(Hits,Start,End,Quat,Params,CollisionShape))
 				{
-					UAbilitySystemComponent* Attacker = UActionGameBPFuncLib::GetAbilitySystemComponent(GetPawn<APawn>());
-					for (const FHitResult& Hit : Hits)
+					APawn* MyPawn = GetPawn<APawn>();
+					UDamageExecutionSubsystem* DamageExecutionSubsystem = World->GetSubsystem<UDamageExecutionSubsystem>();
+					UAbilitySystemComponent* Attacker = UActionGameBPFuncLib::GetAbilitySystemComponent(MyPawn);
+					if (ensure(IsValid(CurrentWeaponDef)))
 					{
-						UDamageExecutionSubsystem* DamageExecutionSubsystem = World->GetSubsystem<UDamageExecutionSubsystem>();
-						AActor* HitActor = Hit.GetActor();
-						UAbilitySystemComponent* Target = UActionGameBPFuncLib::GetAbilitySystemComponent(Cast<APawn>(HitActor));
-						DamageExecutionSubsystem->RequestDamage(Attacker,Target);
+						for (const FHitResult& Hit : Hits)
+						{
+							AActor* HitActor = Hit.GetActor();
+							UAbilitySystemComponent* Target = UActionGameBPFuncLib::GetAbilitySystemComponent(Cast<APawn>(HitActor));
+							DamageExecutionSubsystem->RequestDamage(Attacker,Target,CurrentWeaponDef);
+						}
 					}
 				}
 			}
@@ -89,8 +95,14 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 }
 
+void UMeleeAttackTraceComponent::OnWeaponChange(const struct FRuntimeEquipmentData& EquipmentData)
+{
+	CurrentWeaponDef = Cast<UWeaponDefinition>(UAssetManager::Get().GetPrimaryAssetObject(EquipmentData.DataAssetId));
+	verify(IsValid(CurrentWeaponDef));
+}
+
 void UMeleeAttackTraceComponent::OnAnimMeleeAttackMessage(FGameplayTag Channel,
-	const struct FMeleeAttackMessage& Message)
+                                                          const struct FMeleeAttackMessage& Message)
 {
 	SetComponentTickEnabled(false);
 	if (Message.Owner != GetOwner())

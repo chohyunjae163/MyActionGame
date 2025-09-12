@@ -4,7 +4,10 @@
 #include "ActionGameBPFuncLib.h"
 
 #include "AbilitySystemComponent.h"
+#include "ActorComponent/EquipmentComponent.h"
 #include "GameFramework/PlayerState.h"
+
+DEFINE_LOG_CATEGORY(LogActionGameBPFuncLib)
 
 class UAbilitySystemComponent* UActionGameBPFuncLib::GetAbilitySystemComponent(APawn* Pawn)
 {
@@ -32,4 +35,18 @@ class UAbilitySystemComponent* UActionGameBPFuncLib::GetAbilitySystemComponent(A
 	}
 
 	return nullptr;
+}
+
+void UActionGameBPFuncLib::GetCurrentWeapon(APawn* Pawn, struct FRuntimeEquipmentData& OutWeaponData)
+{
+	UEquipmentComponent* EquipmentComponent = Pawn->FindComponentByClass<UEquipmentComponent>();
+
+	if (IsValid(EquipmentComponent))
+	{
+		OutWeaponData = EquipmentComponent->GetWeapon();	
+	}
+	else
+	{
+		UE_LOG(LogActionGameBPFuncLib,Warning,TEXT("Pawn %s has no Weapon"), *Pawn->GetName());
+	}
 }

@@ -30,8 +30,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData MaxHealth;
 
-
-public:
 	//~ Helper functions for "Health" attributes
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UActionGameCharacterAttributeSet, Health);
 	GAMEPLAYATTRIBUTE_VALUE_GETTER(Health);
@@ -43,7 +41,6 @@ public:
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(MaxHealth);
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(MaxHealth);
 
-
 	// Stamina
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -51,8 +48,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData MaxStamina;
-
-public:
+	
 	//~ Helper functions for "Stamina" attributes
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UActionGameCharacterAttributeSet, Stamina);
 	GAMEPLAYATTRIBUTE_VALUE_GETTER(Stamina);
@@ -63,4 +59,15 @@ public:
 	GAMEPLAYATTRIBUTE_VALUE_GETTER(MaxStamina);
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(MaxStamina);
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(MaxStamina);
+
+	//Strength
+public:
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayAttributeData Strength;
+	
+	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UActionGameCharacterAttributeSet, Strength);
+	GAMEPLAYATTRIBUTE_VALUE_GETTER(Strength);
+	GAMEPLAYATTRIBUTE_VALUE_SETTER(Strength);
+	GAMEPLAYATTRIBUTE_VALUE_INITTER(Strength);
 };
