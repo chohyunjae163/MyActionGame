@@ -53,16 +53,10 @@ public:
 
 
 private:
-	void TempTestData();
-
-protected:
-	UPROPERTY(EditAnywhere)
-	FPrimaryAssetId DallaeAssetId;
-private:
 	UPROPERTY()
 	TObjectPtr<class UInventoryComponent> InventoryComponent;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UEquipmentComponent> EquipmentComponent;
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
 	UPROPERTY()

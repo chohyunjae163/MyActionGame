@@ -29,4 +29,6 @@ namespace ActionGameGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PlayerEvent_InventoryUpdated);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SaveEvent_Request);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Damage)
 }

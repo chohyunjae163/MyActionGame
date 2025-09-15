@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "ActorComponent/EquipmentComponent.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/PlayerState.h"
 
 DEFINE_LOG_CATEGORY(LogActionGameBPFuncLib)
@@ -49,4 +50,36 @@ void UActionGameBPFuncLib::GetCurrentWeapon(APawn* Pawn, struct FRuntimeEquipmen
 	{
 		UE_LOG(LogActionGameBPFuncLib,Warning,TEXT("Pawn %s has no Weapon"), *Pawn->GetName());
 	}
+}
+
+USkeletalMeshComponent* UActionGameBPFuncLib::GetMyCharacterMeshComp(UActorComponent* Self)
+{
+	if (IsValid(Self) == false)
+	{
+		return nullptr;
+	}
+	AActor* Owner = Self->GetOwner();
+	if (IsValid(Owner) == false)
+	{
+		return nullptr;
+	}
+
+	if (ACharacter* Character = Cast<ACharacter>(Owner))
+	{
+		return Character->GetMesh();
+	}
+
+	if (APlayerState* PS = Cast<APlayerState>(Owner))
+	{
+		APawn* Pawn = PS->GetPawn();
+		return Pawn->FindComponentByClass<USkeletalMeshComponent>();
+	}
+
+	if (APlayerController* PC = Cast<APlayerController>(Owner))
+	{
+		APawn* Pawn = PC->GetPawn();
+		return Pawn->FindComponentByClass<USkeletalMeshComponent>();
+	}
+
+	return nullptr;
 }

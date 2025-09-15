@@ -20,4 +20,6 @@ class UActionGameBPFuncLib : public UBlueprintFunctionLibrary
 public:
 	static class UAbilitySystemComponent* GetAbilitySystemComponent(APawn* Pawn);
 	static void GetCurrentWeapon(APawn* Pawn, OUT struct FRuntimeEquipmentData& OutWeaponData);
+	static USkeletalMeshComponent* GetMyCharacterMeshComp(UActorComponent* Self);
+
 };

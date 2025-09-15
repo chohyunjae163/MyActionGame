@@ -4,18 +4,25 @@
 #include "DamageExecutionSubsystem.h"
 
 #include "AbilitySystemComponent.h"
+#include "ActionGameGameplayTags.h"
 #include "Data/WeaponDefinition.h"
 #include "GameplayAttribute/ActionGameCharacterAttributeSet.h"
 #include "GameplayEffect/GameplayEffect_Damage.h"
+
+void UDamageExecutionSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+	
+}
 
 void UDamageExecutionSubsystem::RequestDamage(class UAbilitySystemComponent* AttackerASC,
                                               class UAbilitySystemComponent* TargetASC,
                                               const class UWeaponDefinition* AttackerWeapon)
 {
 	const float WeaponDamage = AttackerWeapon->BaseDamage;
-	const float Strength = GetCharacterStr(AttackerASC);
-	const float RawDamage = Strength + WeaponDamage;
-	ApplyDamageGE(AttackerASC,RawDamage);
+	const float CharacterStr = GetCharacterStr(AttackerASC);
+	const float Damage = CalculateDamage(WeaponDamage,CharacterStr);
+	ApplyDamageGE(AttackerASC,Damage);
 }
 
 float UDamageExecutionSubsystem::GetCharacterStr(class UAbilitySystemComponent* AttackerASC)
@@ -35,10 +42,11 @@ float UDamageExecutionSubsystem::GetCharacterStr(class UAbilitySystemComponent* 
 
 void UDamageExecutionSubsystem::ApplyDamageGE(const class UAbilitySystemComponent* AttackerASC, float InRawDamage)
 {
-	FGameplayTag GameplayTag;
+	
 	FGameplayEffectSpecHandle SpecHandle = AttackerASC->MakeOutgoingSpec(UGameplayEffect_Damage::StaticClass(),1,AttackerASC->MakeEffectContext());
 	if (SpecHandle.Data.IsValid())
 	{
+		static FGameplayTag GameplayTag = ActionGameGameplayTags::SetByCaller_Damage;
 		SpecHandle.Data->SetSetByCallerMagnitude(GameplayTag,InRawDamage);		
 	}
 

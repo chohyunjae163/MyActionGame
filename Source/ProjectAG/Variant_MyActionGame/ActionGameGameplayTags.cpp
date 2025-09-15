@@ -30,4 +30,7 @@ namespace ActionGameGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(PlayerEvent_InventoryUpdated,"PlayerEvent.InventoryUpdated");
 
 	UE_DEFINE_GAMEPLAY_TAG(SaveEvent_Request,"SaveEvent.Request");
+
+	UE_DEFINE_GAMEPLAY_TAG(SetByCaller_Damage,"SetByCaller.Damage");
+	
 }

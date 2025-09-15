@@ -5,6 +5,7 @@
 
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
+#include "FuncLib/ActionGameBPFuncLib.h"
 #include "SaveGame/MyLocalPlayerSaveGame.h"
 
 
@@ -28,18 +29,24 @@ void UEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	Equipments.SetNum(static_cast<uint8>(EEquipmentType::Count));
+	// check to see if a controlled pawn has a weapon attached
+#if WITH_EDITOR
+	EDITOR_AddDefaultWeapon();
+#endif
+	
+	if (Equipments.IsEmpty() == false)
+	{
+		TArray<FPrimaryAssetId> AssetsToLoad;
+		AssetsToLoad.Reserve(Equipments.Num());
+		Algo::Transform(Equipments,AssetsToLoad,
+			[] (const FRuntimeEquipmentData& Data){ return Data.DataAssetId; });
 
-	TArray<FPrimaryAssetId> AssetsToLoad;
-	AssetsToLoad.Reserve(Equipments.Num());
-	Algo::Transform(Equipments,AssetsToLoad,
-		[] (const FRuntimeEquipmentData& Data){ return Data.DataAssetId; });
+		TArray<FName> LoadBundles;
+		FAssetManagerLoadParams Params;
+		Params.OnComplete.BindUObject(this,&ThisClass::OnLoadEquipmentAsset);
+		UAssetManager::Get().LoadPrimaryAssets(AssetsToLoad,LoadBundles,MoveTemp(Params));	
+	}
 
-	TArray<FName> LoadBundles;
-	FAssetManagerLoadParams Params;
-	Params.OnComplete.BindUObject(this,&ThisClass::OnLoadEquipmentAsset);
-	UAssetManager::Get().LoadPrimaryAssets(AssetsToLoad,LoadBundles,MoveTemp(Params));
 }
 
 void UEquipmentComponent::WriteToSave(class USaveGame* SaveGameObject)
@@ -53,15 +60,60 @@ void UEquipmentComponent::WriteToSave(class USaveGame* SaveGameObject)
 
 void UEquipmentComponent::ReadFromSave(class USaveGame* SaveGameObject)
 {
-	//load my weaaaaapon!
-	FRuntimeEquipmentData& MyWeapon = Equipments[WEAPON_INDEX];
+	//load my weapon record!
 	
 	UMyLocalPlayerSaveGame* LocalPlayerSaveGame = Cast<UMyLocalPlayerSaveGame>(SaveGameObject);
-	MyWeapon.DataAssetId = LocalPlayerSaveGame->WeaponRecord.Id;
-	MyWeapon.CurrentDurability = LocalPlayerSaveGame->WeaponRecord.Durability;
+	FWeaponRecord& WeaponRecord = LocalPlayerSaveGame->WeaponRecord;
+	if (WeaponRecord.Id.IsValid())
+	{
+		FRuntimeEquipmentData EquipmentData;
+		EquipmentData.DataAssetId = LocalPlayerSaveGame->WeaponRecord.Id;
+		EquipmentData.CurrentDurability = LocalPlayerSaveGame->WeaponRecord.Durability;
+		Equipments[WEAPON_INDEX] = EquipmentData;
+	}
+
 }
 
 void UEquipmentComponent::OnLoadEquipmentAsset(TSharedPtr<struct FStreamableHandle> Handle)
 {
 	//todo: notify all equipment data is loaded
 }
+
+#if WITH_EDITOR
+void UEquipmentComponent::EDITOR_AddDefaultWeapon()
+{
+
+	TArray<FName> LoadBundles;
+	UAssetManager::Get().LoadPrimaryAssetsWithType(TEXT
+		("WeaponDefinition"),
+		LoadBundles,
+		FStreamableDelegate::CreateUObject(this,&UEquipmentComponent::EDITOR_OnLoadAllWeapons));
+
+}
+
+void UEquipmentComponent::EDITOR_OnLoadAllWeapons()
+{
+	TArray<UObject*> Objects;
+	UAssetManager::Get().GetPrimaryAssetObjectList(TEXT("WeaponDefinition"),Objects);
+	USkeletalMeshComponent* SkeletalMeshComponent = UActionGameBPFuncLib::GetMyCharacterMeshComp(this);
+	UStaticMeshComponent* Weapon = Cast<UStaticMeshComponent>(SkeletalMeshComponent->GetChildComponent(0));
+	for (UObject* Object : Objects)
+	{
+		if (UWeaponDefinition* WeaponDefinition = Cast<UWeaponDefinition>(Object))
+		{
+			for (auto WeaponMesh : WeaponDefinition->Meshes)
+			{
+				if (Weapon->GetStaticMesh() == WeaponMesh.Get())
+				{
+					FPrimaryAssetId Id = UAssetManager::Get().GetPrimaryAssetIdForObject(Object);
+					FRuntimeEquipmentData EquipmentData;
+					EquipmentData.CurrentDurability = 100;
+					EquipmentData.DataAssetId = Id;
+					Equipments.Emplace(EquipmentData);
+					break;
+				}
+			}
+		}
+	}
+}
+#endif

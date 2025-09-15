@@ -45,9 +45,15 @@ protected:
 private:
 	void OnLoadEquipmentAsset(TSharedPtr<struct FStreamableHandle>);
 
-	
+#if WITH_EDITOR
+	//find any attached weapon on character mesh on the blueprint and add it to Equipment[Weapon]
+	void EDITOR_AddDefaultWeapon();
+	void EDITOR_OnLoadAllWeapons();
+#endif
+
 private:
 	TArray<FRuntimeEquipmentData> Equipments;
 
+	
 
 };
