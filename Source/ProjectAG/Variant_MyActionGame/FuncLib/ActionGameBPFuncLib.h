@@ -18,8 +18,8 @@ class UActionGameBPFuncLib : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	static USkeletalMeshComponent* GetMyCharacterMeshComp(UActorComponent* Self);
 	static class UAbilitySystemComponent* GetAbilitySystemComponent(APawn* Pawn);
 	static void GetCurrentWeapon(APawn* Pawn, OUT struct FRuntimeEquipmentData& OutWeaponData);
-	static USkeletalMeshComponent* GetMyCharacterMeshComp(UActorComponent* Self);
-
+	static TArray<TSoftObjectPtr<UAnimMontage>> GetAttackMotionSet(APawn* Pawn);
 };

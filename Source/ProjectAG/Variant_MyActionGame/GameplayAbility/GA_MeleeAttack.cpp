@@ -5,6 +5,7 @@
 
 #include "AbilitySystemLog.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "FuncLib/ActionGameBPFuncLib.h"
 
 void UGA_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -15,19 +16,29 @@ void UGA_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		EndAbility(Handle,ActorInfo,ActivationInfo,false,true);
 		return;
 	}
-
-	if (IsValid(MontageToPlay) == false)
+	
+	const TArray<TSoftObjectPtr<UAnimMontage>>& AttackMotionSet = UActionGameBPFuncLib::GetAttackMotionSet(Cast<APawn>(ActorInfo->AvatarActor));
+	if (AttackMotionSet.IsEmpty())
 	{
-		UE_LOG(LogAbilitySystem,Error, TEXT("Montage is a must! %hs"), __FUNCTION__);
 		EndAbility(Handle,ActorInfo,ActivationInfo,false,true);
 		return;
 	}
-	
+	UAnimMontage* DefaultAttackMontage = AttackMotionSet[0].Get();
+	UAnimMontage* CurrentAnimMontage = ActorInfo->GetAnimInstance()->GetCurrentActiveMontage();
+	if (IsValid(CurrentAnimMontage) && DefaultAttackMontage == CurrentAnimMontage)
+	{
+		//if playing the same montage, there might be a combo section
+	}
+
+	UAnimMontage* MontageToPlay = DefaultAttackMontage;
+	FName StartSection = NAME_None;
 	UAbilityTask_PlayMontageAndWait* Task =
 		UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 			this,
 			NAME_None,
-			MontageToPlay
+			MontageToPlay,
+			1.0f,
+			StartSection
 		);
 
 	if (!IsValid(Task))

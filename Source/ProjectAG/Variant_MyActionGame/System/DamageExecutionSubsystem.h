@@ -20,7 +20,7 @@ public:
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	
 	//receive hit data 
-	void RequestDamage(class UAbilitySystemComponent* AttackerASC, class UAbilitySystemComponent* TargetASC,const class UWeaponDefinition* AttackerWeapon);
+	void RequestDamageExecution(class UAbilitySystemComponent* AttackerASC, class UAbilitySystemComponent* TargetASC);
 
 protected:
 	//do damage calculation on the blueprint
@@ -28,5 +28,4 @@ protected:
 	float CalculateDamage(float WeaponDamage,float CharacterStr);
 private:
 	static float GetCharacterStr(class UAbilitySystemComponent* AttackerASC);
-	static void ApplyDamageGE(const class UAbilitySystemComponent* AttackerASC, float InRawDamage);
 };

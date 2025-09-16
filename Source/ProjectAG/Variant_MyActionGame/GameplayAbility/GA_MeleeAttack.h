@@ -30,8 +30,5 @@ private:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = MontageAbility)
-	TObjectPtr<UAnimMontage> 	MontageToPlay;
-
-	UPROPERTY(EditDefaultsOnly, Category = MontageAbility)
 	float PlayRate = 1.0f;
 };

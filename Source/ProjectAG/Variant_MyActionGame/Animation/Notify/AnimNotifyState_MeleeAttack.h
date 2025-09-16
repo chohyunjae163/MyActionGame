@@ -60,5 +60,6 @@ public:
 private:
 	//this data is filled in editor-time, used in runtime.
 	UPROPERTY()
-	TArray<FTransform> BoneCSTransforms; 
+	TArray<FTransform> BoneCSTransforms;
+
 };

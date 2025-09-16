@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "ActorComponent/EquipmentComponent.h"
+#include "Engine/AssetManager.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerState.h"
 
@@ -40,7 +41,13 @@ class UAbilitySystemComponent* UActionGameBPFuncLib::GetAbilitySystemComponent(A
 
 void UActionGameBPFuncLib::GetCurrentWeapon(APawn* Pawn, struct FRuntimeEquipmentData& OutWeaponData)
 {
+	
 	UEquipmentComponent* EquipmentComponent = Pawn->FindComponentByClass<UEquipmentComponent>();
+	if (IsValid(EquipmentComponent) == false)
+	{
+		APlayerState* PlayerState = Pawn->GetPlayerState();
+		EquipmentComponent = PlayerState->FindComponentByClass<UEquipmentComponent>();
+	}
 
 	if (IsValid(EquipmentComponent))
 	{
@@ -50,6 +57,16 @@ void UActionGameBPFuncLib::GetCurrentWeapon(APawn* Pawn, struct FRuntimeEquipmen
 	{
 		UE_LOG(LogActionGameBPFuncLib,Warning,TEXT("Pawn %s has no Weapon"), *Pawn->GetName());
 	}
+}
+
+TArray<TSoftObjectPtr<UAnimMontage>> UActionGameBPFuncLib::GetAttackMotionSet(APawn* Pawn)
+{
+	FRuntimeEquipmentData EquipmentData;
+	GetCurrentWeapon(Pawn,EquipmentData);
+
+	UObject* AssetObj = UAssetManager::Get().GetPrimaryAssetObject(EquipmentData.DataAssetId);
+	UWeaponDefinition* WeaponDefinition = Cast<UWeaponDefinition>(AssetObj);
+	return WeaponDefinition->MotionSet;
 }
 
 USkeletalMeshComponent* UActionGameBPFuncLib::GetMyCharacterMeshComp(UActorComponent* Self)

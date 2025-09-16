@@ -84,8 +84,8 @@ void UEquipmentComponent::EDITOR_AddDefaultWeapon()
 {
 
 	TArray<FName> LoadBundles;
-	UAssetManager::Get().LoadPrimaryAssetsWithType(TEXT
-		("WeaponDefinition"),
+	UAssetManager::Get().LoadPrimaryAssetsWithType(
+		TEXT("WeaponDefinition"),
 		LoadBundles,
 		FStreamableDelegate::CreateUObject(this,&UEquipmentComponent::EDITOR_OnLoadAllWeapons));
 

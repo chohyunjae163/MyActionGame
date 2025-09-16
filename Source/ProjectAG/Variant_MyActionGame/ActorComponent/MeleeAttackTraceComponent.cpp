@@ -79,14 +79,11 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 					APawn* MyPawn = GetPawn<APawn>();
 					UDamageExecutionSubsystem* DamageExecutionSubsystem = World->GetSubsystem<UDamageExecutionSubsystem>();
 					UAbilitySystemComponent* Attacker = UActionGameBPFuncLib::GetAbilitySystemComponent(MyPawn);
-					if (ensure(IsValid(CurrentWeaponDef)))
+					for (const FHitResult& Hit : Hits)
 					{
-						for (const FHitResult& Hit : Hits)
-						{
-							AActor* HitActor = Hit.GetActor();
-							UAbilitySystemComponent* Target = UActionGameBPFuncLib::GetAbilitySystemComponent(Cast<APawn>(HitActor));
-							DamageExecutionSubsystem->RequestDamage(Attacker,Target,CurrentWeaponDef);
-						}
+						AActor* HitActor = Hit.GetActor();
+						UAbilitySystemComponent* Target = UActionGameBPFuncLib::GetAbilitySystemComponent(Cast<APawn>(HitActor));
+						DamageExecutionSubsystem->RequestDamageExecution(Attacker,Target);
 					}
 				}
 			}
@@ -95,11 +92,6 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 }
 
-void UMeleeAttackTraceComponent::OnWeaponChange(const struct FRuntimeEquipmentData& EquipmentData)
-{
-	CurrentWeaponDef = Cast<UWeaponDefinition>(UAssetManager::Get().GetPrimaryAssetObject(EquipmentData.DataAssetId));
-	verify(IsValid(CurrentWeaponDef));
-}
 
 void UMeleeAttackTraceComponent::OnAnimMeleeAttackMessage(FGameplayTag Channel,
                                                           const struct FMeleeAttackMessage& Message)
@@ -124,7 +116,6 @@ void UMeleeAttackTraceComponent::OnAnimMeleeAttackMessage(FGameplayTag Channel,
 	{
 		Transforms.Enqueue(Transform);
 	}
-
 }
 
 
