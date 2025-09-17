@@ -24,14 +24,20 @@ void UGA_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 	UAnimMontage* DefaultAttackMontage = AttackMotionSet[0].Get();
-	UAnimMontage* CurrentAnimMontage = ActorInfo->GetAnimInstance()->GetCurrentActiveMontage();
+	UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
+	UAnimMontage* CurrentAnimMontage = AnimInstance->GetCurrentActiveMontage();
+	
+	FName StartSection = NAME_None;
 	if (IsValid(CurrentAnimMontage) && DefaultAttackMontage == CurrentAnimMontage)
 	{
 		//if playing the same montage, there might be a combo section
+		FAnimMontageInstance* AnimMontageInstance = AnimInstance->GetActiveMontageInstance();
+		StartSection = AnimMontageInstance->GetNextSection();
+		verify(StartSection != NAME_None);
 	}
 
 	UAnimMontage* MontageToPlay = DefaultAttackMontage;
-	FName StartSection = NAME_None;
+	
 	UAbilityTask_PlayMontageAndWait* Task =
 		UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 			this,
