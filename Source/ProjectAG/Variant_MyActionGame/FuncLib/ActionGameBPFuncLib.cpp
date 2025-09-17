@@ -89,13 +89,20 @@ USkeletalMeshComponent* UActionGameBPFuncLib::GetMyCharacterMeshComp(UActorCompo
 	if (APlayerState* PS = Cast<APlayerState>(Owner))
 	{
 		APawn* Pawn = PS->GetPawn();
-		return Pawn->FindComponentByClass<USkeletalMeshComponent>();
+		if (IsValid(Pawn))
+		{
+			return Pawn->FindComponentByClass<USkeletalMeshComponent>();
+		}
+		
 	}
 
 	if (APlayerController* PC = Cast<APlayerController>(Owner))
 	{
 		APawn* Pawn = PC->GetPawn();
-		return Pawn->FindComponentByClass<USkeletalMeshComponent>();
+		if (IsValid(Pawn))
+		{
+			return Pawn->FindComponentByClass<USkeletalMeshComponent>();
+		}
 	}
 
 	return nullptr;
