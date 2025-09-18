@@ -66,6 +66,7 @@ TArray<TSoftObjectPtr<UAnimMontage>> UActionGameBPFuncLib::GetAttackMotionSet(AP
 
 	UObject* AssetObj = UAssetManager::Get().GetPrimaryAssetObject(EquipmentData.DataAssetId);
 	UWeaponDefinition* WeaponDefinition = Cast<UWeaponDefinition>(AssetObj);
+	//motionset is soft referenced.
 	return WeaponDefinition->MotionSet;
 }
 

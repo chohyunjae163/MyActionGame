@@ -24,6 +24,11 @@ void UGA_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 	UAnimMontage* DefaultAttackMontage = AttackMotionSet[0].Get();
+	if (IsValid(DefaultAttackMontage) == false)
+	{
+		EndAbility(Handle,ActorInfo,ActivationInfo,false,true);
+		return;
+	}
 	UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
 	UAnimMontage* CurrentAnimMontage = AnimInstance->GetCurrentActiveMontage();
 	
