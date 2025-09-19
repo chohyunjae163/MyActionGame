@@ -13,6 +13,8 @@ static constexpr uint8 GetWeaponIndex() { return static_cast<uint8>(EEquipmentTy
 static constexpr uint8 WEAPON_INDEX = GetWeaponIndex();
 
 
+DEFINE_LOG_CATEGORY(LogEquipment);
+
 // Sets default values for this component's properties
 UEquipmentComponent::UEquipmentComponent()
 {
@@ -110,10 +112,28 @@ void UEquipmentComponent::EDITOR_OnLoadAllWeapons()
 					EquipmentData.CurrentDurability = 100;
 					EquipmentData.DataAssetId = Id;
 					Equipments.Emplace(EquipmentData);
+					for (auto AnimMontage : WeaponDefinition->MotionSet)
+					{
+						AnimMontage.LoadAsync(FLoadSoftObjectPathAsyncDelegate::CreateUObject(this,&UEquipmentComponent::OnSoftObjectLoaded));
+					}
 					break;
 				}
 			}
 		}
 	}
 }
+
 #endif
+
+
+void UEquipmentComponent::OnSoftObjectLoaded(const FSoftObjectPath& Path, UObject* LoadedObject)
+{
+	if (IsValid(LoadedObject))
+	{
+		UE_LOG(LogEquipment, Display, TEXT("OnSoftObjectLoaded Succeeded %s"), *Path.ToString());
+	}
+	else
+	{
+		UE_LOG(LogEquipment, Display, TEXT("OnSoftObjectLoaded Failed %s"), *Path.ToString());
+	}
+}

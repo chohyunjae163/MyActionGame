@@ -17,6 +17,9 @@ enum class EEquipmentType : uint8
 	Count,
 };
 
+
+DECLARE_LOG_CATEGORY_EXTERN(LogEquipment, Display, All);
+
 /**
  * attaches to PlayerState
  * save and load current character equipments (weapons and armours)
@@ -51,6 +54,7 @@ private:
 	void EDITOR_OnLoadAllWeapons();
 #endif
 
+	void OnSoftObjectLoaded( const FSoftObjectPath&, UObject*);
 private:
 	TArray<FRuntimeEquipmentData> Equipments;
 
