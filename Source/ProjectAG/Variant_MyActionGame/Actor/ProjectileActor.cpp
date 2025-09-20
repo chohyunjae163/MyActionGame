@@ -3,7 +3,10 @@
 
 #include "ProjectileActor.h"
 
+#include "AbilitySystemComponent.h"
+#include "FuncLib/ActionGameBPFuncLib.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "System/DamageExecutionSubsystem.h"
 
 
 // Sets default values
@@ -17,25 +20,3 @@ AProjectileActor::AProjectileActor()
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	MovementComponent->SetUpdatedComponent(RootComponent);
 }
-
-// Called when the game starts or when spawned
-void AProjectileActor::BeginPlay()
-{
-	Super::BeginPlay();
-
-	MovementComponent->OnProjectileStop.AddDynamic(this,&ThisClass::OnProjectileStopDelegate);
-	
-}
-
-void AProjectileActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	MovementComponent->OnProjectileStop.RemoveDynamic(this,&ThisClass::OnProjectileStopDelegate);
-	Super::EndPlay(EndPlayReason);
-}
-
-void AProjectileActor::OnProjectileStopDelegate(const FHitResult& HitResult)
-{
-	//if stopped, check what is happening
-	//damage around the hit point
-}
-

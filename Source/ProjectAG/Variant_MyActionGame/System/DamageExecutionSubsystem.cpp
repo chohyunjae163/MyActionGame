@@ -10,6 +10,7 @@
 #include "FuncLib/ActionGameBPFuncLib.h"
 #include "GameplayAttribute/ActionGameCharacterAttributeSet.h"
 #include "GameplayEffect/GameplayEffect_Damage.h"
+#include "Interface/DamageCauserInterface.h"
 
 void UDamageExecutionSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
@@ -17,9 +18,10 @@ void UDamageExecutionSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	
 }
 
-void UDamageExecutionSubsystem::RequestDamageExecution(class UAbilitySystemComponent* AttackerASC,
+void UDamageExecutionSubsystem::RequestDamageExecution(class IDamageCauserInterface* DamageCauser,
                                               class UAbilitySystemComponent* TargetASC)
 {
+	UAbilitySystemComponent* AttackerASC = DamageCauser->GetMyAbilitySystemComponent();
 	FRuntimeEquipmentData EquipmentData;
 	APawn* AttackingPawn = Cast<APawn>(AttackerASC->GetAvatarActor());
 	UActionGameBPFuncLib::GetCurrentWeapon(AttackingPawn,OUT EquipmentData);

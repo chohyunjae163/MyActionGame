@@ -20,7 +20,7 @@ public:
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	
 	//receive hit data 
-	void RequestDamageExecution(class UAbilitySystemComponent* AttackerASC, class UAbilitySystemComponent* TargetASC);
+	void RequestDamageExecution(class IDamageCauserInterface* DamageCauser, class UAbilitySystemComponent* TargetASC);
 
 protected:
 	//do damage calculation on the blueprint

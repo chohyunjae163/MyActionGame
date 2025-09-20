@@ -76,20 +76,24 @@ void UMeleeAttackTraceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 				CollisionParams.bDebugQuery = true;
 				if (World->SweepMultiByObjectType(Hits,Start,End,Quat,Params,CollisionShape))
 				{
-					APawn* MyPawn = GetPawn<APawn>();
 					UDamageExecutionSubsystem* DamageExecutionSubsystem = World->GetSubsystem<UDamageExecutionSubsystem>();
-					UAbilitySystemComponent* Attacker = UActionGameBPFuncLib::GetAbilitySystemComponent(MyPawn);
 					for (const FHitResult& Hit : Hits)
 					{
 						AActor* HitActor = Hit.GetActor();
 						UAbilitySystemComponent* Target = UActionGameBPFuncLib::GetAbilitySystemComponent(Cast<APawn>(HitActor));
-						DamageExecutionSubsystem->RequestDamageExecution(Attacker,Target);
+						DamageExecutionSubsystem->RequestDamageExecution(this,Target);
 					}
 				}
 			}
 		}
 	}
 
+}
+
+class UAbilitySystemComponent* UMeleeAttackTraceComponent::GetMyAbilitySystemComponent() const
+{
+	APawn* MyPawn = GetPawn<APawn>();
+	return UActionGameBPFuncLib::GetAbilitySystemComponent(MyPawn);
 }
 
 
