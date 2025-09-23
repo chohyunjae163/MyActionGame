@@ -22,6 +22,7 @@ class IDamageCauserInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual TObjectPtr<APawn> GetDamageCauserPawn() const = 0;
 
 	virtual class UAbilitySystemComponent* GetMyAbilitySystemComponent()  const = 0;
 };

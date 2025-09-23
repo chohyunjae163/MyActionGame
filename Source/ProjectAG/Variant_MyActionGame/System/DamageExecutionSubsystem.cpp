@@ -21,37 +21,28 @@ void UDamageExecutionSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 void UDamageExecutionSubsystem::RequestDamageExecution(class IDamageCauserInterface* DamageCauser,
                                               class UAbilitySystemComponent* TargetASC)
 {
-	UAbilitySystemComponent* AttackerASC = DamageCauser->GetMyAbilitySystemComponent();
-	FRuntimeEquipmentData EquipmentData;
-	APawn* AttackingPawn = Cast<APawn>(AttackerASC->GetAvatarActor());
-	UActionGameBPFuncLib::GetCurrentWeapon(AttackingPawn,OUT EquipmentData);
-	UWeaponDefinition* WeaponDefinition = Cast<UWeaponDefinition>(UAssetManager::Get().GetPrimaryAssetObject(EquipmentData.DataAssetId));
-	
-	const float WeaponDamage = WeaponDefinition->BaseDamage;
-	const float CharacterStr = GetCharacterStr(AttackerASC);
-	const float Damage = CalculateDamage(WeaponDamage,CharacterStr);
-
-	// apply damage effect
-	FGameplayEffectSpecHandle SpecHandle = AttackerASC->MakeOutgoingSpec(UGameplayEffect_Damage::StaticClass(),1,AttackerASC->MakeEffectContext());
-	if (SpecHandle.Data.IsValid())
+	APawn* AttackingPawn = DamageCauser->GetDamageCauserPawn();
+	if (IsValid(AttackingPawn))
 	{
-		static FGameplayTag GameplayTag = ActionGameGameplayTags::SetByCaller_Damage;
-		SpecHandle.Data->SetSetByCallerMagnitude(GameplayTag,Damage);
-		TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		UAbilitySystemComponent* AttackerASC = DamageCauser->GetMyAbilitySystemComponent();
+		FGameplayEffectSpecHandle SpecHandle = AttackerASC->MakeOutgoingSpec(UGameplayEffect_Damage::StaticClass(),1,AttackerASC->MakeEffectContext());
+		if (SpecHandle.Data.IsValid())
+		{
+			static FGameplayTag GameplayTag = ActionGameGameplayTags::SetByCaller_Damage;
+			FRuntimeEquipmentData EquipmentData;
+			UActionGameBPFuncLib::GetCurrentWeapon(AttackingPawn,OUT EquipmentData);
+			UWeaponDefinition* WeaponDefinition = Cast<UWeaponDefinition>(UAssetManager::Get().GetPrimaryAssetObject(EquipmentData.DataAssetId));
+			const float WeaponBaseDamage = WeaponDefinition->BaseDamage;
+			const UActionGameCharacterAttributeSet* CharacterAttributes = Cast<UActionGameCharacterAttributeSet>(AttackerASC->GetAttributeSet(UActionGameCharacterAttributeSet::StaticClass()));
+			const float TotalDamage = CalculateDamage(CharacterAttributes,WeaponBaseDamage);
+			SpecHandle.Data->SetSetByCallerMagnitude(GameplayTag,TotalDamage);
+			TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
 	}
 }
 
-float UDamageExecutionSubsystem::GetCharacterStr(class UAbilitySystemComponent* AttackerASC)
+float UDamageExecutionSubsystem::CalculateDamage_Implementation(const UActionGameCharacterAttributeSet* CharacterAttributes,float WeaponDamage)
 {
-	if (IsValid(AttackerASC) == false)
-	{
-		return 0.0f;
-	}
-	const UActionGameCharacterAttributeSet* AttributeSet =
-		Cast<UActionGameCharacterAttributeSet>(AttackerASC->GetAttributeSet(UActionGameCharacterAttributeSet::StaticClass()));
-	if (IsValid(AttributeSet) == false)
-	{
-		return 0.0f;
-	}
-	return AttributeSet->GetStrength();
+	//should be overriden by its blueprint
+	return 0.0f;
 }

@@ -30,5 +30,6 @@ private:
 		
 	// begin IDamageCauserInterface
 	virtual class UAbilitySystemComponent* GetMyAbilitySystemComponent() const override;
+	virtual TObjectPtr<APawn> GetDamageCauserPawn() const override;
 	// end IDamageCauserInterface
 };

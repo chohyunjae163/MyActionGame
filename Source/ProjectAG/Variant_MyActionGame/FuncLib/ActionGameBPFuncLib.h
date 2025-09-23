@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/WeaponDefinition.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ActionGameBPFuncLib.generated.h"
 
@@ -18,8 +19,13 @@ class UActionGameBPFuncLib : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintPure)
+	static void GetCurrentWeapon(APawn* Pawn, FRuntimeEquipmentData& OutWeaponData);
+
+	
 	static USkeletalMeshComponent* GetMyCharacterMeshComp(UActorComponent* Self);
 	static class UAbilitySystemComponent* GetAbilitySystemComponent(APawn* Pawn);
-	static void GetCurrentWeapon(APawn* Pawn, OUT struct FRuntimeEquipmentData& OutWeaponData);
 	static TArray<TSoftObjectPtr<UAnimMontage>> GetAttackMotionSet(APawn* Pawn);
+	
+
 };

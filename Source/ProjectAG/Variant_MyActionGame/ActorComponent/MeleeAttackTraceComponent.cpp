@@ -97,6 +97,11 @@ class UAbilitySystemComponent* UMeleeAttackTraceComponent::GetMyAbilitySystemCom
 }
 
 
+TObjectPtr<APawn> UMeleeAttackTraceComponent::GetDamageCauserPawn() const
+{
+	return GetPawn<APawn>();
+}
+
 void UMeleeAttackTraceComponent::OnAnimMeleeAttackMessage(FGameplayTag Channel,
                                                           const struct FMeleeAttackMessage& Message)
 {

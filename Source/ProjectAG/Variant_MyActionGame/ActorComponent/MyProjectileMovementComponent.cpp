@@ -48,6 +48,11 @@ void UMyProjectileMovementComponent::OnHit(const FHitResult& Hit)
 	DamageExecutionSubsystem->RequestDamageExecution(this,Target);
 }
 
+TObjectPtr<APawn> UMyProjectileMovementComponent::GetDamageCauserPawn() const
+{
+	return nullptr;
+}
+
 class UAbilitySystemComponent* UMyProjectileMovementComponent::GetMyAbilitySystemComponent() const
 {
 	//todo

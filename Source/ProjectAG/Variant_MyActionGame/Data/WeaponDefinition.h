@@ -38,15 +38,15 @@ public:
 };
 
 //runtime equipment info
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FRuntimeEquipmentData
 {
 	GENERATED_BODY()
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FPrimaryAssetId DataAssetId;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	int32 CurrentDurability;
 
 };

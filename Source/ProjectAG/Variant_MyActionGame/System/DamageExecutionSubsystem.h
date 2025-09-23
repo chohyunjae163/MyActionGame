@@ -24,8 +24,7 @@ public:
 
 protected:
 	//do damage calculation on the blueprint
-	UFUNCTION(BlueprintImplementableEvent)
-	float CalculateDamage(float WeaponDamage,float CharacterStr);
-private:
-	static float GetCharacterStr(class UAbilitySystemComponent* AttackerASC);
+	UFUNCTION(BlueprintNativeEvent)
+	float CalculateDamage(const class UActionGameCharacterAttributeSet* CharacterAttributes,float WeaponDamage); //should be overriden by its blueprint
+
 };
