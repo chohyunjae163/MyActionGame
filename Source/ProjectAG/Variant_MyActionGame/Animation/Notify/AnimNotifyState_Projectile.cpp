@@ -19,8 +19,6 @@ void UAnimNotifyState_Projectile::NotifyEnd(USkeletalMeshComponent* MeshComp, UA
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 }
 
-
-
 #pragma endregion
 
 #pragma region UAnimNotifyState_ProjectileCircle
@@ -58,7 +56,15 @@ void UAnimNotifyState_ProjectileCircle::DrawInEditor(FPrimitiveDrawInterface* PD
 	constexpr uint8 DepthPriority = 0;
 	const FLinearColor Red = FLinearColor::Red;
 	DrawArc(PDI,Base,X_Align,Y_Align,MinAngle,MaxAngle,Radius,Sections,Red,DepthPriority);
+
 }
+
+void UAnimNotifyState_ProjectileCircle::Cache(const TConstArrayView<FTransform>& InBoneCSTransforms)
+{
+	
+}
+
+
 #endif
 
 
