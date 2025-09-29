@@ -66,9 +66,20 @@ class FProjectAGEditorModule : public FDefaultGameModuleImpl
 		
 		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 		FName ClassName = "EditorAnimBaseObj";
-		PropertyModule.RegisterCustomClassLayout(
-			ClassName,
-			FOnGetDetailCustomizationInstance::CreateStatic(&FAnimNotifyCustomDetails::MakeInstance));
+		{
+		
+    		PropertyModule.RegisterCustomClassLayout(
+    			ClassName,
+    			FOnGetDetailCustomizationInstance::CreateStatic(&FAnimNotifyCustomDetails::MakeInstance));	
+		}
+
+		{
+			PropertyModule.RegisterCustomClassLayout(
+    			ClassName,
+    			FOnGetDetailCustomizationInstance::CreateStatic(&FMyAnimNotifyStateProjectileCustomization::MakeInstance));	
+		}
+
+		
 	};
 
 	void AddToolbarButton(FToolBarBuilder& Builder)

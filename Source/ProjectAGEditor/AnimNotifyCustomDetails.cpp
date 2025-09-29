@@ -4,7 +4,11 @@
 #include "DetailCategoryBuilder.h"
 #include "DetailLayoutBuilder.h"
 #include "DetailWidgetRow.h"
+#include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Animation/EditorNotifyObject.h"
+
+
+#define LOCTEXT_NAMESPACE "AnimNotifyCustomDetails"
 
 FOnAnimNotifyPicked FAnimNotifyCustomDetails::OnAnimNotifySelected;
 
@@ -28,17 +32,24 @@ void FMyAnimNotifyStateProjectileCustomization::CustomizeDetails(IDetailLayoutBu
 {
 
 	// 선택된 객체 가져오기
-	TArray<TWeakObjectPtr<UObject>> Objects;
-	DetailBuilder.GetObjectsBeingCustomized(Objects);
-
+	TArray<TWeakObjectPtr<UObject>> Objects = DetailBuilder.GetSelectedObjects();
+	
 	if (Objects.Num() > 0)
 	{
-		CacheBoneTransformInterface = Cast<ICacheBoneTransformInterface>(Objects[0].Get());
+		UEditorNotifyObject* EditorNotifyObject = Cast<UEditorNotifyObject>(Objects[0]);
+		UAnimNotifyState* NotifyState = EditorNotifyObject->Event.NotifyStateClass;
+		CacheBoneTransformInterface = Cast<ICacheBoneTransformInterface>(NotifyState);
 	}
 	
 	IDetailCategoryBuilder& Category = DetailBuilder.EditCategory("CustomButtons");
 	
 	Category.AddCustomRow(FText::FromString("Update Projectile Transforms"))
+	.NameContent()
+	[
+		SNew(STextBlock)
+		.Text(LOCTEXT("UpdateProjectileTransform", "Update Projectile Transforms"))
+		.Font(IDetailLayoutBuilder::GetDetailFont())
+	]
 	.ValueContent()
 	[
 		SNew(SButton)

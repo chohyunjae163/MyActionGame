@@ -12,8 +12,8 @@
 /**
  *  notify state for notifying projectile spawn
  */
-UCLASS(Abstract,MinimalAPI)
-class UAnimNotifyState_Projectile : public UAnimNotifyState, public ICacheBoneTransformInterface
+UCLASS(Abstract)
+class PROJECTAG_API UAnimNotifyState_Projectile : public UAnimNotifyState, public ICacheBoneTransformInterface
 {
 	GENERATED_BODY()
 
@@ -46,8 +46,8 @@ protected:
 	TArray<FTransform> CachedProjectileLocalTransforms;
 };
 
-UCLASS(MinimalAPI)
-class UAnimNotifyState_ProjectileCircle : public UAnimNotifyState_Projectile
+UCLASS()
+class PROJECTAG_API UAnimNotifyState_ProjectileCircle : public UAnimNotifyState_Projectile
 {
 	GENERATED_BODY()
 

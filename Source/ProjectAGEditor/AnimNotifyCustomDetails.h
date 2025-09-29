@@ -27,7 +27,7 @@ public:
 };
 
 
-class FMyAnimNotifyStateProjectileCustomization : public IDetailCustomization
+class FMyAnimNotifyStateProjectileCustomization final : public IDetailCustomization
 {
 public:
 	static TSharedRef<IDetailCustomization> MakeInstance()
